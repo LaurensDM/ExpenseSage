@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ExpenseSage</string>
+    <string name="expand">Uitbreiden</string>
+    <string name="expanded">Uitgevouwd</string>
+    <string name="expense">Uitgave</string>
+    <string name="options">Opties</string>
+    <string name="complete_btn">Compleet</string>
+    <string name="delete_btn">Verwijder</string>
+</resources>
