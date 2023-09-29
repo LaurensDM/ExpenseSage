@@ -7,4 +7,5 @@
     <string name="options">オプション</string>
     <string name="complete_btn">完了</string>
     <string name="delete_btn">削除</string>
+    <string name="back">戻る</string>
 </resources>
