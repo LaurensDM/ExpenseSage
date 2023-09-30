@@ -1,4 +1,5 @@
 package com.example.expensesage.ui
 
-class OrderViewModel {
+class OwedScreen {
+
 }
