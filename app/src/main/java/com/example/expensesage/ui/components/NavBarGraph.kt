@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.expensesage.ui.DueScreen
 import com.example.expensesage.ui.ExpenseScreen
 import com.example.expensesage.ui.OwedScreen
 import com.example.expensesage.ui.StartScreen
@@ -33,7 +34,4 @@ fun NavBarGraph(navController: NavHostController) {
     }
 }
 
-@Composable
-fun DueScreen() {
-    TODO("Not yet implemented")
-}
+
