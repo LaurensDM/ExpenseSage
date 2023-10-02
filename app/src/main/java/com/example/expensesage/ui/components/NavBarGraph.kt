@@ -4,11 +4,13 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.expensesage.ui.DueScreen
-import com.example.expensesage.ui.ExpenseScreen
-import com.example.expensesage.ui.OwedScreen
-import com.example.expensesage.ui.StartScreen
-import com.example.expensesage.ui.SummaryScreen
+import com.example.expensesage.ui.screens.DueScreen
+import com.example.expensesage.ui.screens.ExpenseScreen
+import com.example.expensesage.ui.screens.OwedScreen
+import com.example.expensesage.ui.screens.SettingScreen
+import com.example.expensesage.ui.screens.StartScreen
+import com.example.expensesage.ui.screens.SummaryScreen
+import com.example.expensesage.ui.utils.Navigations
 
 @Composable
 fun NavBarGraph(navController: NavHostController) {
@@ -30,6 +32,9 @@ fun NavBarGraph(navController: NavHostController) {
         }
         composable(Navigations.Summary.route) {
             SummaryScreen()
+        }
+        composable(Navigations.Settings.route) {
+            SettingScreen()
         }
     }
 }

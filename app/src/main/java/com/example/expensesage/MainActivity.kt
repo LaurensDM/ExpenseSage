@@ -5,6 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -12,6 +15,7 @@ import com.example.expensesage.ui.theme.ExpenseSageTheme
 
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -20,7 +24,8 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    ExpenseSageApp()
+                    val windowSize = calculateWindowSizeClass(this)
+                    ExpenseSageApp(windowSize = windowSize.widthSizeClass)
                 }
             }
         }
@@ -33,7 +38,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        ExpenseSageApp()
+        ExpenseSageApp(windowSize = WindowWidthSizeClass.Medium)
     }
 }
 
@@ -44,6 +49,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        ExpenseSageApp()
+        ExpenseSageApp(windowSize = WindowWidthSizeClass.Medium)
     }
 }

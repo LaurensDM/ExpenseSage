@@ -1,4 +1,4 @@
-package com.example.expensesage.ui
+package com.example.expensesage.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
@@ -26,11 +26,11 @@ import com.example.expensesage.data.expenses
 import com.example.expensesage.ui.components.ExpenseItem
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen (
     modifier: Modifier = Modifier
 ) {
-
     Scaffold(
         topBar = {
             ExpenseSageTopAppBar()
@@ -52,6 +52,7 @@ fun StartScreen (
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
+
     CenterAlignedTopAppBar(
         title = {
             Row(
@@ -75,7 +76,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
                 )
             }
         },
-        modifier = modifier
+        modifier = modifier,
     )
 }
 

@@ -1,4 +1,4 @@
-package com.example.expensesage.ui;
+package com.example.expensesage.ui.screens;
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.expensesage.BuildConfig
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.data.expenses
@@ -21,7 +20,7 @@ fun ExpenseScreen() {
     val normalExpenses : List<Expense> = expenses.stream().filter { !it.owed }.collect(Collectors.toList())
 
 
-    val apiKey = BuildConfig.FILE_API_KEY
+//    val apiKey = BuildConfig.FILE_API_KEY
 
     Scaffold { it ->
         LazyColumn(contentPadding = it) {
