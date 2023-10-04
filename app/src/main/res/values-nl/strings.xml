@@ -5,7 +5,7 @@
     <string name="expanded">Uitgevouwd</string>
     <string name="expense">Uitgave</string>
     <string name="options">Opties</string>
-    <string name="complete_btn">Compleet</string>
+    <string name="paid_btn">Betaald</string>
     <string name="delete_btn">Verwijder</string>
     <string name="back">Terug</string>
 </resources>

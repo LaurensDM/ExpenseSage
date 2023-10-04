@@ -8,15 +8,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.data.expenses
+import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseItem
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 import java.util.stream.Collectors
 
 @Composable
-fun ExpenseScreen() {
+fun ExpenseScreen(viewModel: MainViewModel) {
     val normalExpenses : List<Expense> = expenses.stream().filter { !it.owed }.collect(Collectors.toList())
 
 
@@ -25,8 +27,7 @@ fun ExpenseScreen() {
     Scaffold { it ->
         LazyColumn(contentPadding = it) {
             items(normalExpenses) { normalExpense ->
-                ExpenseItem(expense = normalExpense, modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-                )
+                ExpenseItem(expense = normalExpense, modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)), viewModel = viewModel)
             }
         }
     }
@@ -36,7 +37,7 @@ fun ExpenseScreen() {
 @Composable
 fun ExpenseScreenPreview() {
     ExpenseSageTheme(darkTheme = false) {
-        ExpenseScreen()
+        ExpenseScreen(viewModel = MainViewModel())
     }
 }
 
@@ -47,6 +48,6 @@ fun ExpenseScreenPreview() {
 @Composable
 fun ExpenseScreenDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        ExpenseScreen()
+        ExpenseScreen(viewModel = MainViewModel())
     }
 }

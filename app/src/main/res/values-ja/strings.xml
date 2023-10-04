@@ -5,7 +5,7 @@
     <string name="expanded">展開済み</string>
     <string name="expense">費用</string>
     <string name="options">オプション</string>
-    <string name="complete_btn">完了</string>
+    <string name="paid_btn">払った</string>
     <string name="delete_btn">削除</string>
     <string name="back">戻る</string>
 </resources>

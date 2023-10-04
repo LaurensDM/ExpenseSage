@@ -28,15 +28,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.ViewModel
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
+import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.screens.ExpenseInformation
 import com.example.expensesage.ui.screens.ExpenseSageIcon
 
 @Composable
 fun ExpenseItem(
     expense: Expense,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -71,7 +74,8 @@ fun ExpenseItem(
                         top = dimensionResource(R.dimen.padding_small),
                         bottom = dimensionResource(R.dimen.padding_medium),
                         end = dimensionResource(R.dimen.padding_medium)
-                    )
+                    ),
+                    onDetailClick = { viewModel.onDetailClick() }
                 )
             }
         }
@@ -101,7 +105,8 @@ private fun ExpenseItemButton(
 @Composable
 fun ExpenseOptions (
     owed: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onDetailClick: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -111,7 +116,7 @@ fun ExpenseOptions (
             style = MaterialTheme.typography.labelSmall
         )
         Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = modifier.fillMaxWidth()) {
-                Button(onClick = { /*TODO*/ }) {
+                Button(onClick = onDetailClick) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                     Text(text = "Details")
                 }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -38,10 +39,16 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.expensesage.data.Expense
+import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.components.Details
 import com.example.expensesage.ui.components.NavBarGraph
 import com.example.expensesage.ui.utils.NavigationType
 import com.example.expensesage.ui.utils.Navigations
@@ -101,10 +108,12 @@ fun AppBar(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseSageApp(
     navController: NavHostController = rememberNavController(),
-    windowSize: WindowWidthSizeClass
+    windowSize: WindowWidthSizeClass,
+    viewModel: MainViewModel
 ) {
     val currentScreen = navController.currentBackStackEntryAsState()
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -171,7 +180,17 @@ fun ExpenseSageApp(
             Box(modifier = Modifier.padding(innerPadding)) {
                 NavBarGraph(
                     navController = navController,
+                    viewModel = viewModel,
                 )
+                if (viewModel.isDialogShown) {
+                    Dialog(
+                        onDismissRequest = { viewModel.onDialogDismiss() },
+                        properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+                        content = {
+                            Details(expense = Expense(R.drawable.cost, "Delhaize", 16.59, false), modifier = Modifier.padding(innerPadding))
+                        }
+                    )
+                }
             }
 
         }

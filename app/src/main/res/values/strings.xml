@@ -4,7 +4,7 @@
     <string name="expanded">Expanded</string>
     <string name="expense">Expense</string>
     <string name="options">Options</string>
-    <string name="complete_btn">Complete</string>
+    <string name="paid_btn">Paid</string>
     <string name="delete_btn">Delete</string>
     <string name="back">Back</string>
 </resources>

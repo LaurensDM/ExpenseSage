@@ -21,15 +21,18 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.ViewModel
 import com.example.expensesage.R
 import com.example.expensesage.data.expenses
+import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseItem
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen (
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: MainViewModel
 ) {
     Scaffold(
         topBar = {
@@ -40,7 +43,8 @@ fun StartScreen (
             items(expenses) {
                 ExpenseItem(
                     expense = it,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    viewModel = viewModel
                 )
             }
         }
@@ -125,7 +129,7 @@ fun ExpenseInformation(
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        StartScreen()
+        StartScreen(viewModel = MainViewModel())
     }
 }
 
@@ -136,6 +140,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        StartScreen()
+        StartScreen(viewModel = MainViewModel())
     }
 }
