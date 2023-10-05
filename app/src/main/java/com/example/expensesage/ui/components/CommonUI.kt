@@ -15,8 +15,8 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,12 +28,42 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
-import androidx.lifecycle.ViewModel
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.screens.ExpenseInformation
 import com.example.expensesage.ui.screens.ExpenseSageIcon
+
+@Composable
+fun ExpenseItemHome(
+    expense: Expense,
+) {
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) ) {
+        Column(
+            modifier = Modifier
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioNoBouncy,
+                        stiffness = Spring.StiffnessMedium
+                    )
+                )
+        ) {
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimensionResource(R.dimen.padding_small)),
+//                horizontalArrangement = Arrangement.Center
+            ) {
+                ExpenseSageIcon(expense.imageResourceId)
+                ExpenseInformation(expense.expenseName, expense.expense)
+
+            }
+        }
+    }
+}
+
 
 @Composable
 fun ExpenseItem(
@@ -44,6 +74,7 @@ fun ExpenseItem(
     var expanded by remember { mutableStateOf(false) }
     Card(
         modifier = modifier
+
     ) {
         Column(
             modifier = Modifier
@@ -54,18 +85,21 @@ fun ExpenseItem(
                     )
                 )
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_small))
-            ) {
-                ExpenseSageIcon(expense.imageResourceId)
-                ExpenseInformation(expense.expenseName, expense.expense)
-                Spacer(Modifier.weight(1f))
-                ExpenseItemButton(
-                    expanded = expanded,
-                    onClick = { expanded = !expanded },
-                )
+            Button(onClick = { expanded = !expanded }, shape = MaterialTheme.shapes.medium) {
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(dimensionResource(R.dimen.padding_small)),
+                ) {
+                    ExpenseSageIcon(expense.imageResourceId)
+                    ExpenseInformation(expense.expenseName, expense.expense)
+                    Spacer(Modifier.weight(1f))
+                    ExpenseItemButton(
+                        expanded = expanded,
+                    )
+                }
             }
             if (expanded) {
                 ExpenseOptions(
@@ -85,25 +119,19 @@ fun ExpenseItem(
 @Composable
 private fun ExpenseItemButton(
     expanded: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
-    IconButton(
-        onClick = onClick,
-        modifier = modifier
-    ) {
-        Icon(
-            imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
-            contentDescription = if (expanded) stringResource(id = R.string.expand) else stringResource(
-                id = R.string.expanded
-            ) ,
-            tint = MaterialTheme.colorScheme.secondary
-        )
-    }
+
+    Icon(
+        imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
+        contentDescription = if (expanded) stringResource(id = R.string.expand) else stringResource(
+            id = R.string.expanded
+        ),
+        tint = MaterialTheme.colorScheme.onPrimary
+    )
 }
 
 @Composable
-fun ExpenseOptions (
+fun ExpenseOptions(
     owed: Boolean,
     modifier: Modifier = Modifier,
     onDetailClick: () -> Unit
@@ -115,11 +143,14 @@ fun ExpenseOptions (
             text = stringResource(id = R.string.options),
             style = MaterialTheme.typography.labelSmall
         )
-        Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = modifier.fillMaxWidth()) {
-                Button(onClick = onDetailClick) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            modifier = modifier.fillMaxWidth()
+        ) {
+            Button(onClick = onDetailClick) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
-                    Text(text = "Details")
-                }
+                Text(text = "Details")
+            }
 
 
         }
