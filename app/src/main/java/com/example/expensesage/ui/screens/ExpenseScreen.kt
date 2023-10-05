@@ -1,4 +1,4 @@
-package com.example.expensesage.ui.screens;
+package com.example.expensesage.ui.screens
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.data.expenses
@@ -17,6 +16,11 @@ import com.example.expensesage.ui.components.ExpenseItem
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 import java.util.stream.Collectors
 
+/**
+ * Composable that displays the expense screen of the app
+ *
+ * @param viewModel The view model that is used to store the state of the app
+ */
 @Composable
 fun ExpenseScreen(viewModel: MainViewModel) {
     val normalExpenses : List<Expense> = expenses.stream().filter { !it.owed }.collect(Collectors.toList())
@@ -33,6 +37,9 @@ fun ExpenseScreen(viewModel: MainViewModel) {
     }
 }
 
+/**
+ * Composable that displays what the UI of the app looks like in the design tab.
+ */
 @Preview(showSystemUi = true)
 @Composable
 fun ExpenseScreenPreview() {

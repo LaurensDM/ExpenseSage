@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.screens
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -30,14 +28,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.expensesage.R
 import com.example.expensesage.data.expenses
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 
+/**
+ * Composable that displays the start screen of the app
+ *
+ * @param modifier Modifier to apply to this layout node.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen(
-    modifier: Modifier = Modifier, viewModel: MainViewModel
+    modifier: Modifier = Modifier,
 ) {
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
@@ -77,6 +79,11 @@ fun StartScreen(
 }
 
 
+/**
+ * Composable that displays the top app bar of the app
+ *
+ * @param modifier Modifier to apply to this layout node.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
@@ -108,41 +115,11 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
     )
 }
 
-@Composable
-fun ExpenseSageIcon(
-    @DrawableRes expenseIcon: Int, modifier: Modifier = Modifier
-) {
-    Image(
-        modifier = modifier
-            .size(dimensionResource(R.dimen.image_size))
-            .padding(dimensionResource(R.dimen.padding_small)),
-//            .clip(MaterialTheme.shapes.medium),
-        contentScale = ContentScale.Crop, painter = painterResource(expenseIcon),
 
-        // Content Description is not needed here - image is decorative, and setting a null content
-        // description allows accessibility services to skip this element during navigation.
-
-        contentDescription = null
-    )
-}
-
-@Composable
-fun ExpenseInformation(
-    expenseName: String, cost: Double, modifier: Modifier = Modifier
-) {
-    Column(modifier = modifier) {
-        Text(
-            text = expenseName,
-            style = MaterialTheme.typography.displayMedium,
-            modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small))
-        )
-        Text(
-            text = stringResource(id = R.string.expense) + " $cost",
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}
-
+/**
+ * Composable that displays the top tile of the start screen. Has information about the amount of money left.
+ *
+ */
 @Composable
 fun TopTile() {
     Card(
@@ -178,30 +155,14 @@ fun TopTile() {
 
 }
 
-
-//@Composable
-//fun BottomTile() {
-//
-//        LazyColumn( contentPadding = PaddingValues(dimensionResource(R.dimen.padding_small))) {
-//            item {
-//                Text(
-//                    text = "Oi Mte",
-//                    style = MaterialTheme.typography.headlineMedium,
-//                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small))
-//                )
-//            }
-//            items(expenses) {
-//
-//            }
-//        }
-//    }
-
-
+/**
+ * Composable that displays what the UI of the app looks like in the design tab.
+ */
 @Preview(showSystemUi = true)
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        StartScreen(viewModel = MainViewModel())
+        StartScreen()
     }
 }
 
@@ -212,6 +173,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        StartScreen(viewModel = MainViewModel())
+        StartScreen()
     }
 }

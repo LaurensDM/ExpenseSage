@@ -61,6 +61,18 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 
+/**
+ * Top app bar for the app
+ *
+ * @param currentScreen the current screen
+ * @param navigationType the type of navigation required
+ * @param onNavIconPressed the action to perform when the navigation icon is pressed
+ * @param onBackIconPressed the action to perform when the back icon is pressed
+ * @param modifier the modifier to apply to this layout node
+ * @param scrollBehavior the scroll behavior of the app bar
+ * @param drawerState the state of the drawer
+ * @param scope the coroutine scope
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
@@ -125,6 +137,13 @@ fun AppBar(
     )
 }
 
+/**
+ * Main app
+ *
+ * @param navController the navController that handles the navigation
+ * @param windowSize the size of the window
+ * @param viewModel the viewModel that holds the data
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseSageApp(
@@ -210,7 +229,6 @@ fun ExpenseSageApp(
                         content = {
                             Details(
                                 expense = Expense(R.drawable.cost, "Delhaize", 16.59, false),
-                                modifier = Modifier.padding(innerPadding)
                             )
                         })
                 }
@@ -222,6 +240,11 @@ fun ExpenseSageApp(
 }
 
 
+/**
+ * Bottom navigation bar for the app
+ *
+ * @param navController the navController that handles the navigation
+ */
 @Composable
 fun BottomBar(navController: NavController) {
 
@@ -264,6 +287,13 @@ fun BottomBar(navController: NavController) {
     }
 }
 
+/**
+ * Modal drawer content for navigation drawer
+ *
+ * @param navController the navController that handles the navigation
+ * @param drawerState the state of the drawer
+ * @param scope the coroutine scope
+ */
 @Composable
 fun ModalDrawerContent(
     navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope

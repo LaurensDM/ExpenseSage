@@ -22,9 +22,14 @@ import androidx.compose.ui.unit.sp
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 
-
+/**
+ * Composable that displays the details of an expense as a dialog
+ *
+ * @param expense the expense to display
+ *
+ * */
 @Composable
-fun Details(expense: Expense, modifier: Modifier) {
+fun Details(expense: Expense) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,

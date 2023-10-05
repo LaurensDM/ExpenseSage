@@ -11,6 +11,13 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.example.expensesage.R
 
+/**
+ * Enum class that is used to store navigation information
+ *
+ * @property route The route of navigation
+ * @property title The title of navigation
+ * @property icon The icon of navigation
+ */
 enum class Navigations(val route: String, @StringRes val title: Int, val icon: ImageVector) {
     Start(
         route = "start",

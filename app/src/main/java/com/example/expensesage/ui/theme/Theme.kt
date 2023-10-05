@@ -81,6 +81,13 @@ private val darkColors = darkColorScheme(
     scrim = md_theme_dark_scrim,
 )
 
+/**
+ * Function that is used to set the theme of the app.
+ *
+ * @param darkTheme The dark theme
+ * @param dynamicColor The dynamic color
+ * @param content The content of the app
+ */
 @Composable
 fun ExpenseSageTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),

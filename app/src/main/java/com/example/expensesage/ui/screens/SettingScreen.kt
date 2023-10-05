@@ -1,4 +1,4 @@
-package com.example.expensesage.ui.screens;
+package com.example.expensesage.ui.screens
 
 import android.media.MediaPlayer
 import androidx.compose.foundation.layout.Arrangement
@@ -26,7 +26,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
@@ -38,6 +37,10 @@ import androidx.compose.ui.unit.sp
 import com.example.expensesage.R
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 
+/**
+ * Composable that displays the setting screen of the app
+ *
+ */
 @Composable
 fun SettingScreen() {
     val mContext = LocalContext.current
@@ -75,7 +78,10 @@ fun SettingScreen() {
 
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+/**
+ * Composable that displays the pocket money field
+ *
+ */
 @Composable
 fun PocketMoney() {
 //    val keyboardController = LocalSoftwareKeyboardController.current

@@ -1,7 +1,6 @@
 package com.example.expensesage.ui.components
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.ViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -14,6 +13,12 @@ import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.Navigations
 
+/**
+ * Composable that displays content based on the current route
+ *
+ * @param navController The navController that handles the navigation
+ * @param viewModel The viewModel that holds the data
+ */
 @Composable
 fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
     NavHost(
@@ -21,7 +26,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         startDestination = Navigations.Start.route,
     ) {
         composable(Navigations.Start.route) {
-            StartScreen(viewModel = viewModel)
+            StartScreen()
         }
         composable(Navigations.Expenses.route) {
             ExpenseScreen(viewModel = viewModel)

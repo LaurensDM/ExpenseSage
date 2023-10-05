@@ -18,7 +18,16 @@ import com.example.expensesage.ui.theme.ExpenseSageTheme
 
 class MainActivity : ComponentActivity() {
 
+    /**
+     * viewModel that is used to store the state of the app.
+     */
     private val viewModel by viewModels<MainViewModel>()
+
+    /**
+     * onCreate function that sets the content of the app to the ExpenseSageApp composable.
+     *
+     * @param savedInstanceState The saved instance state of the app
+     */
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,6 +47,10 @@ class MainActivity : ComponentActivity() {
 
 
 
+/**
+ * Composable that displays what the UI of the app looks like in light theme in the design tab.
+ *
+ */
 @Preview(showSystemUi = true)
 @Composable
 fun ExpensePreview() {
