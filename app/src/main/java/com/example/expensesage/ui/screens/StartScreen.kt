@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.expensesage.R
 import com.example.expensesage.data.expenses
+import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 
@@ -40,6 +41,7 @@ import com.example.expensesage.ui.theme.ExpenseSageTheme
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
+    viewModel: MainViewModel
 ) {
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
@@ -53,7 +55,7 @@ fun StartScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    TopTile()
+                    TopTile(viewModel)
                 }
                 item {
                     Spacer(modifier = Modifier.size(32.dp))
@@ -121,7 +123,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
  *
  */
 @Composable
-fun TopTile() {
+fun TopTile(viewModel: MainViewModel) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -148,7 +150,7 @@ fun TopTile() {
 
                 contentDescription = null
             )
-            Text(text = "You have $ 1  left", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "You have $ ${viewModel.money}  left", style = MaterialTheme.typography.headlineMedium)
         }
     }
 
@@ -162,7 +164,7 @@ fun TopTile() {
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        StartScreen()
+        StartScreen(viewModel = MainViewModel())
     }
 }
 
@@ -173,6 +175,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        StartScreen()
+        StartScreen(viewModel = MainViewModel())
     }
 }

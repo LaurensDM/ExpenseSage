@@ -5,7 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.expensesage.ui.MainViewModel
-import com.example.expensesage.ui.screens.DueScreen
+import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
 import com.example.expensesage.ui.screens.OwedScreen
 import com.example.expensesage.ui.screens.SettingScreen
@@ -26,7 +26,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         startDestination = Navigations.Start.route,
     ) {
         composable(Navigations.Start.route) {
-            StartScreen()
+            StartScreen( viewModel = viewModel)
         }
         composable(Navigations.Expenses.route) {
             ExpenseScreen(viewModel = viewModel)
@@ -34,8 +34,8 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         composable(Navigations.Owed.route) {
             OwedScreen()
         }
-        composable(Navigations.Due.route) {
-            DueScreen()
+        composable(Navigations.Currencies.route) {
+            CurrencyScreen()
         }
         composable(Navigations.Summary.route) {
             SummaryScreen()

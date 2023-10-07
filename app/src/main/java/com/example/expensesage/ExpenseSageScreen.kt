@@ -27,6 +27,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -35,6 +37,7 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -158,6 +161,8 @@ fun ExpenseSageApp(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
+    val snackbarHostState = remember{ SnackbarHostState() }
+
     val navigationType: NavigationType = when (windowSize) {
         WindowWidthSizeClass.Compact -> {
             NavigationType.BOTTOM_NAVIGATION
@@ -210,7 +215,7 @@ fun ExpenseSageApp(
                     scope = scope,
                 )
             },
-
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
             bottomBar = {
                 if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
                     BottomBar(navController = navController)
@@ -228,7 +233,7 @@ fun ExpenseSageApp(
                         ),
                         content = {
                             Details(
-                                expense = Expense(R.drawable.cost, "Delhaize", 16.59, false),
+                                viewModel,
                             )
                         })
                 }
@@ -254,12 +259,12 @@ fun BottomBar(navController: NavController) {
 
     NavigationBar(containerColor = MaterialTheme.colorScheme.primary) {
         screens.forEach { screen ->
+//            Badge
             NavigationBarItem(
                 label = {
                     Text(
                         text = stringResource(screen.title),
-                        fontSize = 8.sp,
-                        lineHeight = 8.sp,
+                        fontSize = 10.sp,
                     )
                 },
                 alwaysShowLabel = false,

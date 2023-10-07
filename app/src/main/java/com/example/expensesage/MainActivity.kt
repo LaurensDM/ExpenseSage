@@ -55,7 +55,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        ExpenseSageApp(windowSize = WindowWidthSizeClass.Medium, viewModel = MainViewModel())
+        ExpenseSageApp(windowSize = WindowWidthSizeClass.Compact, viewModel = MainViewModel())
     }
 }
 
@@ -66,6 +66,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        ExpenseSageApp(windowSize = WindowWidthSizeClass.Medium, viewModel = MainViewModel())
+        ExpenseSageApp(windowSize = WindowWidthSizeClass.Compact, viewModel = MainViewModel())
     }
 }

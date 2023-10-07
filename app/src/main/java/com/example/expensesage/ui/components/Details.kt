@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -19,8 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.expensesage.R
-import com.example.expensesage.data.Expense
+import com.example.expensesage.ui.MainViewModel
+
+
 
 /**
  * Composable that displays the details of an expense as a dialog
@@ -29,7 +33,7 @@ import com.example.expensesage.data.Expense
  *
  * */
 @Composable
-fun Details(expense: Expense) {
+fun Details(viewModel: MainViewModel) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -49,6 +53,7 @@ fun Details(expense: Expense) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp, alignment = Alignment.CenterVertically),
         ) {
+            AsyncImage(model = "https://random.imagecdn.app/250/250", contentDescription = null, modifier = Modifier.size(250.dp))
 
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -59,12 +64,12 @@ fun Details(expense: Expense) {
                 ),
             ) {
                 Text(
-                    text = "Topic: ${expense.expenseName}",
+                    text = "Topic: ${viewModel.selectedExpense.expenseName}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Price: € ${expense.expense}",
+                    text = "Price: € ${viewModel.selectedExpense.expense}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
@@ -77,13 +82,13 @@ fun Details(expense: Expense) {
             ) {
                 Button(
                     onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.errorContainer,
-                        contentColor = MaterialTheme.colorScheme.onErrorContainer
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 ) {
-                    Text(text = stringResource(id = R.string.delete_btn))
+                    Text(text = "Close")
                 }
-                if (expense.owed) {
+                if (viewModel.selectedExpense.owed) {
                     Button(
                         onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primaryContainer,

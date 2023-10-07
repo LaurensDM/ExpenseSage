@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -44,7 +45,7 @@ import com.example.expensesage.ui.MainViewModel
 fun ExpenseItemHome(
     expense: Expense,
 ) {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer) ) {
+    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
         Column(
             modifier = Modifier
                 .animateContentSize(
@@ -97,7 +98,14 @@ fun ExpenseItem(
                     )
                 )
         ) {
-            Button(onClick = { expanded = !expanded }, shape = MaterialTheme.shapes.medium) {
+            Button(
+                onClick = { expanded = !expanded },
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                )
+            ) {
 
 
                 Row(
@@ -115,13 +123,13 @@ fun ExpenseItem(
             }
             if (expanded) {
                 ExpenseOptions(
-                        modifier = Modifier.padding(
+                    modifier = Modifier.padding(
                         start = dimensionResource(R.dimen.padding_medium),
                         top = dimensionResource(R.dimen.padding_small),
                         bottom = dimensionResource(R.dimen.padding_medium),
                         end = dimensionResource(R.dimen.padding_medium)
                     ),
-                    onDetailClick = { viewModel.onDetailClick() }
+                    onDetailClick = { viewModel.onDetailClick(expense) }
                 )
             }
         }
@@ -143,7 +151,7 @@ private fun ExpenseItemButton(
         contentDescription = if (expanded) stringResource(id = R.string.expand) else stringResource(
             id = R.string.expanded
         ),
-        tint = MaterialTheme.colorScheme.onPrimary
+        tint = MaterialTheme.colorScheme.onSecondaryContainer
     )
 }
 
@@ -169,9 +177,23 @@ fun ExpenseOptions(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = modifier.fillMaxWidth()
         ) {
+            Button(
+                onClick = onDetailClick,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+            ) {
+//                    Text(text = stringResource(id = R.string.complete_btn))
+                Text(text = "Edit")
+            }
             Button(onClick = onDetailClick) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = "Details")
+            }
+            Button(
+                onClick = onDetailClick,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+            ) {
+//                    Text(text = stringResource(id = R.string.complete_btn))
+                Text(text = stringResource(id = R.string.delete_btn))
             }
 
 

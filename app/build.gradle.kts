@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.expensesage"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 33
         versionCode = 1
         versionName = "1.0"
@@ -77,6 +77,11 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    // Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+// Retrofit with Scalar Converter
+    implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
 
     //Room
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")

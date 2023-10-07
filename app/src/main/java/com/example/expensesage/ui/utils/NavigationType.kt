@@ -16,6 +16,6 @@ val screens = listOf(
     Navigations.Start,
     Navigations.Expenses,
     Navigations.Owed,
-    Navigations.Due,
+    Navigations.Currencies,
     Navigations.Summary,
 )

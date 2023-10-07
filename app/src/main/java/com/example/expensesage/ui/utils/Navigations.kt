@@ -32,12 +32,12 @@ enum class Navigations(val route: String, @StringRes val title: Int, val icon: I
     Owed(
         route = "owed",
         title = R.string.app_name,
-        icon = Icons.Default.CurrencyExchange
+        icon = Icons.Default.AssignmentLate
     ),
-    Due(
+    Currencies(
         route = "due",
         title = R.string.app_name,
-        icon = Icons.Default.AssignmentLate
+        icon = Icons.Default.CurrencyExchange
     ),
     Summary(
         route = "summary",
