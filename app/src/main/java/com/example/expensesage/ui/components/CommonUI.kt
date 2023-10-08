@@ -129,7 +129,8 @@ fun ExpenseItem(
                         bottom = dimensionResource(R.dimen.padding_medium),
                         end = dimensionResource(R.dimen.padding_medium)
                     ),
-                    onDetailClick = { viewModel.onDetailClick(expense) }
+                    onDetailClick = { viewModel.onDetailClick(expense) },
+                    owed = expense.owed
                 )
             }
         }
@@ -164,7 +165,8 @@ private fun ExpenseItemButton(
 @Composable
 fun ExpenseOptions(
     modifier: Modifier = Modifier,
-    onDetailClick: () -> Unit
+    onDetailClick: () -> Unit,
+    owed: Boolean
 ) {
     Column(
         modifier = modifier
@@ -198,6 +200,16 @@ fun ExpenseOptions(
 
 
         }
+        if (owed) {
+            Button(
+                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            ) {
+                Text(text = stringResource(id = R.string.paid_btn))
+            }
+        }
 
     }
 }
@@ -220,7 +232,7 @@ fun ExpenseInformation(
             modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small))
         )
         Text(
-            text = stringResource(id = R.string.expense) + " $cost",
+            text =  "$ $cost",
             style = MaterialTheme.typography.bodyLarge
         )
     }

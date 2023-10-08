@@ -88,16 +88,6 @@ fun Details(viewModel: MainViewModel) {
                 ) {
                     Text(text = "Close")
                 }
-                if (viewModel.selectedExpense.owed) {
-                    Button(
-                        onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    ) {
-                        Text(text = stringResource(id = R.string.paid_btn))
-                    }
-                }
             }
         }
     }
