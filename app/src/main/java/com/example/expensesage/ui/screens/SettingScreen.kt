@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
@@ -35,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.expensesage.R
+import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 
 /**
@@ -42,7 +44,7 @@ import com.example.expensesage.ui.utils.CurrencyVisualTransformation
  *
  */
 @Composable
-fun SettingScreen() {
+fun SettingScreen(viewModel: MainViewModel) {
     val mContext = LocalContext.current
     val mMediaPlayer = MediaPlayer.create(mContext, R.raw.rockmusic)
     mMediaPlayer.setVolume(50f, 50f)
@@ -52,16 +54,16 @@ fun SettingScreen() {
             .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        PocketMoney()
+        PocketMoney(viewModel = viewModel)
         Row {
             Text(
                 modifier = Modifier.padding(vertical = 12.dp),
                 text = "Music:",
                 style = MaterialTheme.typography.labelLarge,
                 textAlign = TextAlign.Center,
-                lineHeight = 64.sp
+                lineHeight = 64.sp,
             )
             IconButton(onClick = { mMediaPlayer.start() }) {
                 Icon(Icons.Default.PlayArrow, contentDescription = "", Modifier.size(64.dp))
@@ -72,10 +74,7 @@ fun SettingScreen() {
                 Icon(Icons.Default.Stop, contentDescription = "", Modifier.size(64.dp))
             }
         }
-
-
     }
-
 }
 
 /**
@@ -83,19 +82,20 @@ fun SettingScreen() {
  *
  */
 @Composable
-fun PocketMoney() {
+fun PocketMoney(viewModel: MainViewModel) {
 //    val keyboardController = LocalSoftwareKeyboardController.current
-    var text by rememberSaveable { mutableStateOf("") }
+    var text by rememberSaveable { mutableStateOf("${viewModel.money}") }
     var edit by rememberSaveable { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
 
     Row(
         modifier = Modifier.padding(16.dp),
     ) {
-
         TextField(
 //            prefix = { Text(text = "$") },
-            modifier = Modifier.focusRequester(focusRequester).width(164.dp),
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .width(164.dp),
             label = { Text(text = "Pocket Money") },
             placeholder = { Text(text = "Enter your pocket money") },
             value = text,
@@ -108,14 +108,27 @@ fun PocketMoney() {
             },
             singleLine = true,
             readOnly = edit,
+            enabled = !edit,
             leadingIcon = {
                 Icon(
-                    Icons.Filled.AttachMoney, contentDescription = "Localized description"
+                    Icons.Filled.AttachMoney,
+                    contentDescription = "Localized description",
                 )
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             visualTransformation = CurrencyVisualTransformation(),
-        )
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val money : Double = if (text == "" || text == "0" ) {
+                        0.0
+                    } else {
+                        text.toDouble()/100
+                    }
+                    println(text)
+                    edit = !edit
+                    viewModel.onMoneyChange(money)
+                }
+            ))
 
         IconButton(onClick = {
             edit = !edit
@@ -123,8 +136,5 @@ fun PocketMoney() {
         }) {
             Icon(Icons.Default.Edit, contentDescription = "", Modifier.size(20.dp))
         }
-
     }
 }
-
-

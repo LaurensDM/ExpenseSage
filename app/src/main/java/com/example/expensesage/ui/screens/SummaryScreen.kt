@@ -1,4 +1,7 @@
 package com.example.expensesage.ui.screens
 
-class SummaryScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun SummaryScreen() {
 }

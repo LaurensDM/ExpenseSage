@@ -20,33 +20,33 @@ import com.example.expensesage.R
  */
 enum class Navigations(val route: String, @StringRes val title: Int, val icon: ImageVector) {
     Start(
-        route = "start",
+        route = "Start",
         title =  R.string.app_name,
         icon = Icons.Default.AccountBalance
     ),
     Expenses(
-        route = "expenses",
+        route = "Expenses",
         title = R.string.expense,
         icon = Icons.Default.Paid
     ),
     Owed(
-        route = "owed",
-        title = R.string.app_name,
+        route = "Owed",
+        title = R.string.owed,
         icon = Icons.Default.AssignmentLate
     ),
     Currencies(
-        route = "due",
-        title = R.string.app_name,
+        route = "Currencies",
+        title = R.string.currencyInfo,
         icon = Icons.Default.CurrencyExchange
     ),
     Summary(
-        route = "summary",
-        title = R.string.app_name,
+        route = "Summary",
+        title = R.string.summary,
         icon = Icons.Default.InsertChartOutlined
     ),
     Settings(
-        route = "settings",
-        title = R.string.app_name,
+        route = "Settings",
+        title = R.string.settings,
         icon = Icons.Default.Settings
     )
 }

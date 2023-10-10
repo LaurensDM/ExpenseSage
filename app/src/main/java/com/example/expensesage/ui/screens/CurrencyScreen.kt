@@ -1,4 +1,7 @@
 package com.example.expensesage.ui.screens
 
-class CurrencyScreen {
+import androidx.compose.runtime.Composable
+
+@Composable
+fun CurrencyScreen() {
 }

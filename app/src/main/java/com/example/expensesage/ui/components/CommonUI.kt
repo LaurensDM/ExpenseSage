@@ -4,14 +4,19 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
@@ -27,14 +32,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.MainViewModel
+import java.time.Month
 
 /**
  * Composable that displays the expense items on the home screen
@@ -130,7 +138,7 @@ fun ExpenseItem(
                         end = dimensionResource(R.dimen.padding_medium)
                     ),
                     onDetailClick = { viewModel.onDetailClick(expense) },
-                    owed = expense.owed
+                    expense = expense
                 )
             }
         }
@@ -166,10 +174,11 @@ private fun ExpenseItemButton(
 fun ExpenseOptions(
     modifier: Modifier = Modifier,
     onDetailClick: () -> Unit,
-    owed: Boolean
+    expense: Expense
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(id = R.string.options),
@@ -181,18 +190,27 @@ fun ExpenseOptions(
         ) {
             Button(
                 onClick = onDetailClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
             ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = "Edit")
             }
-            Button(onClick = onDetailClick) {
+            Button(
+                onClick = onDetailClick,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
+            ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = "Details")
             }
             Button(
                 onClick = onDetailClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                )
             ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = stringResource(id = R.string.delete_btn))
@@ -200,9 +218,9 @@ fun ExpenseOptions(
 
 
         }
-        if (owed) {
+        if (expense.owed) {
             Button(
-                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                onClick = {  }, colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -232,7 +250,7 @@ fun ExpenseInformation(
             modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small))
         )
         Text(
-            text =  "$ $cost",
+            text = "$ $cost",
             style = MaterialTheme.typography.bodyLarge
         )
     }
@@ -260,4 +278,36 @@ fun ExpenseSageIcon(
 
         contentDescription = null
     )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ExpenseList(
+    it: PaddingValues,
+    groupedExpenses: Map<Pair<Month, Int>, List<Expense>>,
+    viewModel: MainViewModel
+) {
+    LazyColumn(contentPadding = it) {
+        item {
+            Spacer(modifier = Modifier.size(16.dp))
+        }
+        groupedExpenses.forEach {
+            stickyHeader {
+                Text(
+                    text = " ${it.key.first} ${it.key.second}",
+                    modifier = Modifier
+                        .background(color = MaterialTheme.colorScheme.surface)
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                )
+            }
+            items(it.value) { normalExpense ->
+                ExpenseItem(
+                    expense = normalExpense,
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    viewModel = viewModel
+                )
+            }
+        }
+    }
 }

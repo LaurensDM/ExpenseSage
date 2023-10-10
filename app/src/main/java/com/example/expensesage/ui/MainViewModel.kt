@@ -5,11 +5,7 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.Expense
-import com.example.expensesage.data.expenses
-import com.example.expensesage.network.ImageApi
-import kotlinx.coroutines.launch
 import java.time.Month
 
 /**
@@ -63,7 +59,8 @@ class MainViewModel : ViewModel() {
     }
 
     fun groupExpenses(list: List<Expense>): Map<Pair<Month, Int>, List<Expense>> {
-        return expenses.groupBy { it.date.month to it.date.year }
+        println(list)
+        return list.groupBy { it.date.month to it.date.year }
     }
 
 //    private fun getImages() {

@@ -32,7 +32,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
             ExpenseScreen(viewModel = viewModel)
         }
         composable(Navigations.Owed.route) {
-            OwedScreen()
+            OwedScreen(viewModel = viewModel)
         }
         composable(Navigations.Currencies.route) {
             CurrencyScreen()
@@ -41,7 +41,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
             SummaryScreen()
         }
         composable(Navigations.Settings.route) {
-            SettingScreen()
+            SettingScreen(viewModel = viewModel)
         }
     }
 }
