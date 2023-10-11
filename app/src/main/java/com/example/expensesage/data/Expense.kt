@@ -25,3 +25,5 @@ fun populateData(): List<Expense> {
         Expense(5, LocalDate.of(2023, 10, 1),  R.drawable.owed, "Rent", 500.0, true),
     )
 }
+
+val expenses = populateData()

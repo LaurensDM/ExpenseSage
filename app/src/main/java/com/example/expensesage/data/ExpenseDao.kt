@@ -23,10 +23,10 @@ interface ExpenseDao {
     @Delete
     suspend fun delete(expense: Expense)
 
-    @Query("SELECT * FROM expense_table WHERE owed = :owed ORDER BY date ASC")
+    @Query("SELECT * FROM expense_table WHERE owed = :owed ORDER BY date DESC")
     fun getExpenses(owed: Boolean): Flow<List<Expense>>
 
-    @Query("SELECT * FROM expense_table ORDER BY date ASC LIMIT 5")
+    @Query("SELECT * FROM expense_table ORDER BY date DESC LIMIT 5")
     fun getTop5Expenses(): Flow<List<Expense>>
 
     @Query("SELECT * FROM expense_table WHERE id = :id")
