@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -26,11 +28,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
 import com.example.expensesage.data.expenses
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
+import com.example.expensesage.ui.viewModels.StartViewModel
 
 /**
  * Composable that displays the start screen of the app
@@ -41,8 +46,11 @@ import com.example.expensesage.ui.theme.ExpenseSageTheme
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    startViewModel: StartViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val startUiState by startViewModel.startUiState.collectAsState();
+
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
@@ -68,7 +76,7 @@ fun StartScreen(
                         textAlign = TextAlign.Center,
                     )
                 }
-                items(expenses) {
+                items(startUiState.expenses) {
                     ExpenseItemHome(
                         expense = it,
                     )

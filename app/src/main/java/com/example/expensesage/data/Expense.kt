@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey
 import com.example.expensesage.R
 import java.time.LocalDate
 
-@Entity(tableName = "expense_table", primaryKeys = ["id"])
+@Entity(tableName = "expense_table")
 data class Expense(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
     val date: LocalDate = LocalDate.now(),
@@ -14,13 +14,14 @@ data class Expense(
     val expenseName: String = "Unknown",
     val expense: Double = 0.0,
     val owed: Boolean,
-    )
+)
 
-val expenses = listOf(
-//    Expense(LocalDate.of(2023,10,7),R.drawable.cost, "Delhaize", 16.59, false ),
-//    Expense(LocalDate.of(2023,10,6),R.drawable.owed, "Joris frieten", 6.00, true),
-//    Expense(LocalDate.of(2023,8,7),R.drawable.cost, "Delhaize", 40.00, false ),
-//    Expense(LocalDate.of(2001,7,7),R.drawable.owed, "Alex brooodje", 4.00, true),
-//    Expense(LocalDate.of(2022,10,7),R.drawable.cost, "Campus", 6.59, false ),
-    Expense(1,LocalDate.of(2023,10,7),R.drawable.cost, "Delhaize", 16.59, false ),
-).sortedByDescending { it.date }
+fun populateData(): List<Expense> {
+    return listOf(
+        Expense(1, LocalDate.of(2021, 1, 1), R.drawable.cost, "Carrefour", 40.0, false),
+        Expense(2, LocalDate.of(2022, 1, 1),  R.drawable.cost, "Delhaize", 30.0, false),
+        Expense(3, LocalDate.of(2023, 8, 10),  R.drawable.cost, "Frieten", 12.34, false),
+        Expense(4, LocalDate.of(2023, 9, 1),  R.drawable.owed, "Oortjes", 22.33, true),
+        Expense(5, LocalDate.of(2023, 10, 1),  R.drawable.owed, "Rent", 500.0, true),
+    )
+}

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.expensesage.data.Expense
+import kotlinx.coroutines.flow.single
 import java.time.Month
 
 /**
@@ -13,7 +14,6 @@ import java.time.Month
  *
  */
 class MainViewModel : ViewModel() {
-
 
 
     var isDialogShown by mutableStateOf(false)
@@ -50,7 +50,8 @@ class MainViewModel : ViewModel() {
         isDialogShown = false
     }
 
-    fun onMoneyChange(newMoney: Double) {
+     fun onMoneyChange(newMoney: Double) {
+
         money = newMoney
     }
 
