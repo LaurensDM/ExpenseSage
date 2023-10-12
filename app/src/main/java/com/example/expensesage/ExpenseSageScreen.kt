@@ -105,7 +105,7 @@ fun AppBar(
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
-            } else if (currentScreen.route == Navigations.Settings.route) {
+            } else if (currentScreen.route == Navigations.Settings.route || currentScreen.route == Navigations.Edit.route) {
                 IconButton(onClick = onBackIconPressed) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
@@ -147,9 +147,15 @@ fun ExpenseSageApp(
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
-    val currentScreen = Navigations.valueOf(
-        backStackEntry?.destination?.route ?: Navigations.Start.name,
-    )
+    val currentScreen =
+        if (backStackEntry?.destination?.route?.contains("Edit") == true){
+            Navigations.Edit
+        } else {
+            Navigations.valueOf(
+                backStackEntry?.destination?.route ?: Navigations.Start.name,
+            )
+        }
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 

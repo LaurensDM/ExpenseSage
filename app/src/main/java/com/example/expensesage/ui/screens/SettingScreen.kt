@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -35,9 +36,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
+import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 /**
  * Composable that displays the setting screen of the app
@@ -82,11 +86,14 @@ fun SettingScreen(viewModel: MainViewModel) {
  *
  */
 @Composable
-fun PocketMoney(viewModel: MainViewModel) {
+fun PocketMoney(viewModel: MainViewModel, settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
 //    val keyboardController = LocalSoftwareKeyboardController.current
-    var text by rememberSaveable { mutableStateOf("${viewModel.money}") }
+    val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
     var edit by rememberSaveable { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
+    var text by rememberSaveable { mutableStateOf("$moneyAvailable") }
+
+
 
     Row(
         modifier = Modifier.padding(16.dp),
@@ -124,9 +131,8 @@ fun PocketMoney(viewModel: MainViewModel) {
                     } else {
                         text.toDouble()/100
                     }
-                    println(text)
                     edit = !edit
-                    viewModel.onMoneyChange(money)
+                    settingsViewModel.onMoneyChange(money)
                 }
             ))
 

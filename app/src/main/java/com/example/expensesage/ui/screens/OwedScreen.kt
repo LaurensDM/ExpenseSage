@@ -1,25 +1,40 @@
 package com.example.expensesage.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import com.example.expensesage.data.Expense
-import com.example.expensesage.data.expenses
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseList
-import java.util.stream.Collectors
+import com.example.expensesage.ui.viewModels.ListViewModel
 
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OwedScreen(viewModel: MainViewModel) {
-    val normalExpenses: List<Expense> =
-        expenses.stream().filter { it.owed }.collect(Collectors.toList())
-    val groupedExpenses = viewModel.groupExpenses(normalExpenses)
+fun OwedScreen(
+    viewModel: MainViewModel,
+    dataViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onCreateClicked: () -> Unit = {}
+) {
+    val uiState by dataViewModel.getExpenses(true).collectAsState()
 
-    Scaffold { it ->
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(Icons.Default.Add, contentDescription = "Add expense")
+            }
+//                ExpenseSageFloatingActionButton(onAddClicked = onCreateClicked)
+        },
+    ) { it ->
 
-        ExpenseList(it = it, groupedExpenses = groupedExpenses, viewModel = viewModel)
+        ExpenseList(it = it, groupedExpenses = uiState.expenses, viewModel = viewModel)
 
     }
 

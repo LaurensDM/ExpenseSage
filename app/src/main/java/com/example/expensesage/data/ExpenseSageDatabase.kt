@@ -1,8 +1,5 @@
 package com.example.expensesage.data
 
-import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.Dispatchers
 import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
@@ -11,10 +8,15 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.expensesage.data.converter.DateConverter
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 @TypeConverters(value = [DateConverter::class])
-@Database(entities = [Expense::class, User::class], version = 1, exportSchema = false)
+@Database(
+    entities = [Expense::class, User::class],
+    version = 2,
+    exportSchema = false
+)
 abstract class ExpenseSageDatabase : RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
@@ -29,7 +31,7 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                     context,
                     ExpenseSageDatabase::class.java,
                     "expensesage_database"
-                ).addCallback(object : RoomDatabase.Callback() {
+                ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
                         // Use a coroutine to insert data
@@ -39,11 +41,21 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                         }
                     }
                 })
+//                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }
         }
 
 
+    }
+
+//    @DeleteTable(tableName = "user_table")
+//    class UserDeleteMigration : AutoMigrationSpec{
+//        @Override
+//        override fun onPostMigrate(db: SupportSQLiteDatabase) {
+//            // Invoked once auto migration is done
+//        }
+//    }
 }
-}
+

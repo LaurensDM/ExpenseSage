@@ -78,6 +78,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("io.coil-kt:coil-gif:2.4.0")
     // Retrofit
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
 // Retrofit with Scalar Converter
@@ -87,4 +88,6 @@ dependencies {
     implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
     ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
     implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

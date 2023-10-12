@@ -6,8 +6,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.expensesage.data.Expense
-import kotlinx.coroutines.flow.single
-import java.time.Month
 
 /**
  * Main ViewModel class that is used to store the state of the app
@@ -50,19 +48,13 @@ class MainViewModel : ViewModel() {
         isDialogShown = false
     }
 
-     fun onMoneyChange(newMoney: Double) {
 
-        money = newMoney
-    }
 
     fun changeCurrencyModifier(modifier: Double) {
         currencyModifier = modifier
     }
 
-    fun groupExpenses(list: List<Expense>): Map<Pair<Month, Int>, List<Expense>> {
-        println(list)
-        return list.groupBy { it.date.month to it.date.year }
-    }
+
 
 //    private fun getImages() {
 //        viewModelScope.launch {
