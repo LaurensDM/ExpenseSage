@@ -71,6 +71,11 @@ fun Details(viewModel: MainViewModel) {
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
+                Text(
+                    text = "Created: ${viewModel.selectedExpense.date}",
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center,
+                )
             }
 
             Row(

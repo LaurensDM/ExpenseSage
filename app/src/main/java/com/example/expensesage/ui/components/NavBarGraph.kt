@@ -7,7 +7,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.screens.CurrencyScreen
-import com.example.expensesage.ui.screens.EditScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
 import com.example.expensesage.ui.screens.OwedScreen
 import com.example.expensesage.ui.screens.SettingScreen
@@ -52,7 +51,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         }
         composable(Navigations.Owed.route) {
             OwedScreen(viewModel = viewModel,
-                onCreateClicked = { navController.navigate("Edit/-1") }
+//                onCreateClicked = { navController.navigate(Navigations.Currencies.route) }
             )
         }
         composable(Navigations.Currencies.route) {
@@ -64,10 +63,10 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         composable(Navigations.Settings.route) {
             SettingScreen(viewModel = viewModel)
         }
-        composable(Navigations.Edit.route) { navBackStackEntry ->
-            val id = navBackStackEntry.arguments?.getString("id") ?: ""
-            EditScreen(id = id, onDoneClicked = { navController.navigate(Navigations.Start.route) })
-        }
+//        composable(Navigations.Edit.route) { navBackStackEntry ->
+//            val id = navBackStackEntry.arguments?.getString("id") ?: ""
+//            Edit(id = id, onDoneClicked = { navController.navigate(Navigations.Start.route) })
+//        }
     }
 }
 

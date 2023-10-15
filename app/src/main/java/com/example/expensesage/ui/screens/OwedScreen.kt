@@ -13,6 +13,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseList
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
 
 
@@ -21,13 +22,12 @@ import com.example.expensesage.ui.viewModels.ListViewModel
 fun OwedScreen(
     viewModel: MainViewModel,
     dataViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    onCreateClicked: () -> Unit = {}
 ) {
     val uiState by dataViewModel.getExpenses(true).collectAsState()
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { /*TODO*/ }) {
+            FloatingActionButton(onClick = {viewModel.showModal(modalType = ModalType.CREATE)} ) {
                 Icon(Icons.Default.Add, contentDescription = "Add expense")
             }
 //                ExpenseSageFloatingActionButton(onAddClicked = onCreateClicked)

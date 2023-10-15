@@ -54,8 +54,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.components.Create
 import com.example.expensesage.ui.components.Details
+import com.example.expensesage.ui.components.Edit
 import com.example.expensesage.ui.components.NavBarGraph
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.NavigationType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.utils.screens
@@ -87,7 +90,12 @@ fun AppBar(
     scope: CoroutineScope,
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(text = stringResource(id = currentScreen.title), color = MaterialTheme.colorScheme.onPrimary) },
+        title = {
+            Text(
+                text = stringResource(id = currentScreen.title),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
@@ -148,7 +156,7 @@ fun ExpenseSageApp(
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
     val currentScreen =
-        if (backStackEntry?.destination?.route?.contains("Edit") == true){
+        if (backStackEntry?.destination?.route?.contains("Edit") == true) {
             Navigations.Edit
         } else {
             Navigations.valueOf(
@@ -239,9 +247,25 @@ fun ExpenseSageApp(
                             dismissOnClickOutside = true,
                         ),
                         content = {
-                            Details(
-                                viewModel,
-                            )
+                            when (viewModel.currentModalType) {
+                                ModalType.DETAIL -> {
+                                    Details(
+                                        viewModel,
+                                    )
+                                }
+
+                                ModalType.EDIT -> {
+                                    Edit(
+                                        viewModel,
+                                    )
+                                }
+
+                                else -> {
+                                    Create(
+                                        viewModel = viewModel,
+                                    )
+                                }
+                            }
                         },
                     )
                 }

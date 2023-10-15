@@ -50,6 +50,7 @@ import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import java.time.Month
 
@@ -147,8 +148,8 @@ fun ExpenseItem(
                         bottom = dimensionResource(R.dimen.padding_medium),
                         end = dimensionResource(R.dimen.padding_medium)
                     ),
-                    onEditClicked = { viewModel.onDetailClick(expense) },
-                    onDetailClick = { viewModel.onDetailClick(expense) },
+                    onEditClicked = { viewModel.showModal(expense, modalType = ModalType.EDIT) },
+                    onDetailClick = { viewModel.showModal(expense, modalType = ModalType.DETAIL) },
                     expense = expense,
                     dataViewModel = dataViewModel
                 )

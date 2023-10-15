@@ -10,9 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.data.expenses
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseList
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
 
 /**
@@ -31,7 +33,7 @@ fun ExpenseScreen(
 //    val apiKey = BuildConfig.FILE_API_KEY
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { onCreateClicked() } ) {
+            FloatingActionButton(onClick = { viewModel.showModal(modalType = ModalType.CREATE) } ) {
                 Icon(Icons.Default.Add, contentDescription = "Add expense")
             }
         },

@@ -1,6 +1,10 @@
 package com.example.expensesage.ui.viewModels
 
 import android.icu.text.NumberFormat
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
@@ -9,29 +13,43 @@ import com.example.expensesage.data.ExpenseRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
 class ExpenseDetailsViewModel(
+    private val savedStateHandle: SavedStateHandle,
     private val expenseRepository: ExpenseRepository,
 ) : ViewModel() {
-
-
-    fun getExpense(id: Int): StateFlow<ExpenseDetailState> {
-        val uiState: StateFlow<ExpenseDetailState> =
-            expenseRepository.getExpense(id)
+    var expenseUIState by mutableStateOf(ExpenseUIState())
+        private set
+    init {
+        viewModelScope.launch {
+            expenseUIState = expenseRepository.getExpense(1)
                 .filterNotNull()
-                .map {
-                    ExpenseDetailState(expenseDetails = it.toExpenseDetails())
-                }.stateIn(
-                    scope = viewModelScope,
-                    started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-                    initialValue = ExpenseDetailState()
-                )
-        return uiState;
+                .first()
+                .toExpenseUIState(true)
+        }
     }
+
+
+//    fun getExpense(id: Int): StateFlow<ExpenseUIState> {
+//        println(savedStateHandle.keys())
+//        val uiState: StateFlow<ExpenseUIState> =
+//            expenseRepository.getExpense(id)
+//                .filterNotNull()
+//                .map {
+//                    ExpenseUIState(expenseDetails = it.toExpenseDetails())
+//                }.stateIn(
+//                    scope = viewModelScope,
+//                    started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+//                    initialValue = ExpenseUIState()
+//                )
+//        expenseUIState = uiState.value
+//        return uiState;
+//    }
 
     fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
@@ -57,6 +75,13 @@ class ExpenseDetailsViewModel(
 
     }
 
+    fun updateUIState(expense: ExpenseDetail) {
+        expenseUIState = ExpenseUIState(
+            expenseDetails = expense,
+            isEntryValid = validateInput(expense)
+        )
+    }
+
     private fun validateInput(expense: ExpenseDetail): Boolean {
         return true
     }
@@ -68,7 +93,7 @@ class ExpenseDetailsViewModel(
 
 }
 
-data class ExpenseDetailState(
+data class ExpenseUIState(
     val expenseDetails: ExpenseDetail = ExpenseDetail(),
     val isEntryValid: Boolean = false
 )
@@ -97,6 +122,13 @@ fun ExpenseDetail.toExpense(): Expense = Expense(
     imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
     date = LocalDate.parse(date)
 )
+
+fun Expense.toExpenseUIState(isEntryValid: Boolean): ExpenseUIState {
+    return ExpenseUIState(
+        expenseDetails = this.toExpenseDetails(),
+        isEntryValid = isEntryValid
+    )
+}
 
 fun Expense.formatedPrice(): String {
     return NumberFormat.getCurrencyInstance().format(expense)
