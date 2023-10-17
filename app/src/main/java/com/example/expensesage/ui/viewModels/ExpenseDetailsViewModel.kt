@@ -10,12 +10,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.data.ExpenseRepository
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
@@ -25,6 +21,7 @@ class ExpenseDetailsViewModel(
 ) : ViewModel() {
     var expenseUIState by mutableStateOf(ExpenseUIState())
         private set
+
     init {
         viewModelScope.launch {
             expenseUIState = expenseRepository.getExpense(1)
@@ -57,7 +54,16 @@ class ExpenseDetailsViewModel(
         }
     }
 
-     fun saveExpense(expense: ExpenseDetail) {
+    fun payOwed(expense: Expense) {
+
+        val payedExpense = expense.copy(owed = false, imageResourceId = R.drawable.cost)
+
+        viewModelScope.launch {
+            expenseRepository.update(expense = payedExpense)
+        }
+    }
+
+    fun saveExpense(expense: ExpenseDetail) {
         viewModelScope.launch {
             if (validateInput(expense)) {
                 expenseRepository.insert(expense = expense.toExpense())

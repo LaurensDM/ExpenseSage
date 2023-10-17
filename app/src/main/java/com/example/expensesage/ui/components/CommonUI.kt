@@ -150,6 +150,7 @@ fun ExpenseItem(
                     ),
                     onEditClicked = { viewModel.showModal(expense, modalType = ModalType.EDIT) },
                     onDetailClick = { viewModel.showModal(expense, modalType = ModalType.DETAIL) },
+                    onPayedClick = { dataViewModel.payOwed(expense)},
                     expense = expense,
                     dataViewModel = dataViewModel
                 )
@@ -188,6 +189,7 @@ fun ExpenseOptions(
     modifier: Modifier = Modifier,
     onEditClicked: () -> Unit = {},
     onDetailClick: () -> Unit,
+    onPayedClick: () -> Unit = {},
     expense: Expense,
     dataViewModel: ExpenseDetailsViewModel
 ) {
@@ -235,7 +237,7 @@ fun ExpenseOptions(
         }
         if (expense.owed) {
             Button(
-                onClick = { }, colors = ButtonDefaults.buttonColors(
+                onClick = onPayedClick, colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.expensesage.ExpenseSageApplication
+import com.example.expensesage.ui.viewModels.APIViewModel
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
@@ -23,6 +24,9 @@ object AppViewModelProvider {
         }
         initializer {
             SettingsViewModel(userSettings = expenseSageApplicaton().userSettings)
+        }
+        initializer {
+            APIViewModel()
         }
     }
 }

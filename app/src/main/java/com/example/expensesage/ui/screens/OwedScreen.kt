@@ -27,7 +27,7 @@ fun OwedScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {viewModel.showModal(modalType = ModalType.CREATE)} ) {
+            FloatingActionButton(onClick = {viewModel.showModal(modalType = ModalType.CREATE, owed = true)} ) {
                 Icon(Icons.Default.Add, contentDescription = "Add expense")
             }
 //                ExpenseSageFloatingActionButton(onAddClicked = onCreateClicked)

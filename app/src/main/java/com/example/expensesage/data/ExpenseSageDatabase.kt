@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 @TypeConverters(value = [DateConverter::class])
 @Database(
     entities = [Expense::class, User::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class ExpenseSageDatabase : RoomDatabase() {

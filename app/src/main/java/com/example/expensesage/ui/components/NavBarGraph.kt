@@ -1,10 +1,12 @@
 package com.example.expensesage.ui.components
 
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
@@ -13,6 +15,7 @@ import com.example.expensesage.ui.screens.SettingScreen
 import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.Navigations
+import com.example.expensesage.ui.viewModels.APIViewModel
 
 /**
  * Composable that displays content based on the current route
@@ -21,7 +24,7 @@ import com.example.expensesage.ui.utils.Navigations
  * @param viewModel The viewModel that holds the data
  */
 @Composable
-fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
+fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
     NavHost(
         navController = navController,
         startDestination = Navigations.Start.route,
@@ -55,7 +58,8 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
             )
         }
         composable(Navigations.Currencies.route) {
-            CurrencyScreen()
+           val apiViewModel: APIViewModel = viewModel(factory = AppViewModelProvider.Factory)
+            CurrencyScreen(apiViewModel.currencyUiState, onRetry = {apiViewModel.getCurrencies()})
         }
         composable(Navigations.Summary.route) {
             SummaryScreen()
