@@ -5,19 +5,15 @@ import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.expensesage.R
 import com.example.expensesage.data.Expense
-import com.example.expensesage.data.expenses
-import com.example.expensesage.network.ImageApi
-import kotlinx.coroutines.launch
-import java.time.Month
+import com.example.expensesage.ui.utils.ModalType
 
 /**
  * Main ViewModel class that is used to store the state of the app
  *
  */
 class MainViewModel : ViewModel() {
-
 
 
     var isDialogShown by mutableStateOf(false)
@@ -31,18 +27,27 @@ class MainViewModel : ViewModel() {
 
     var selectedExpense: Expense by mutableStateOf(
         value = Expense(
-            imageResourceId = 0,
+            imageResourceId =  R.drawable.cost,
             owed = false
         )
     )
         private set
 
+    var isOwed: Boolean by mutableStateOf(false)
+        private set
+
+    var currentModalType: ModalType by mutableStateOf(ModalType.DETAIL)
+        private set
+
+
     /**
      * Function that is called when the user clicks on the detail button. Shows dialog
      *
      */
-    fun onDetailClick(expense: Expense) {
+    fun showModal(expense: Expense = Expense(imageResourceId = R.drawable.cost, owed = false), owed: Boolean = false, modalType: ModalType) {
         selectedExpense = expense
+        currentModalType = modalType
+        isOwed = owed
         isDialogShown = true
     }
 
@@ -54,17 +59,13 @@ class MainViewModel : ViewModel() {
         isDialogShown = false
     }
 
-    fun onMoneyChange(newMoney: Double) {
-        money = newMoney
-    }
+
 
     fun changeCurrencyModifier(modifier: Double) {
         currencyModifier = modifier
     }
 
-    fun groupExpenses(list: List<Expense>): Map<Pair<Month, Int>, List<Expense>> {
-        return expenses.groupBy { it.date.month to it.date.year }
-    }
+
 
 //    private fun getImages() {
 //        viewModelScope.launch {

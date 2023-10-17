@@ -1,31 +1,21 @@
 package com.example.expensesage.ui.screens
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.example.expensesage.R
-import com.example.expensesage.data.Expense
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.data.expenses
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
-import com.example.expensesage.ui.components.ExpenseItem
-import com.example.expensesage.ui.theme.ExpenseSageTheme
-import java.util.stream.Collectors
+import com.example.expensesage.ui.components.ExpenseList
+import com.example.expensesage.ui.utils.ModalType
+import com.example.expensesage.ui.viewModels.ListViewModel
 
 /**
  * Composable that displays the expense screen of the app
@@ -34,33 +24,22 @@ import java.util.stream.Collectors
  */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ExpenseScreen(viewModel: MainViewModel) {
-    val normalExpenses: List<Expense> =
-        expenses.stream().filter { !it.owed }.collect(Collectors.toList())
-    val groupedExpenses = viewModel.groupExpenses(normalExpenses)
-
+fun ExpenseScreen(
+    viewModel: MainViewModel,
+    dataViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    onCreateClicked: () -> Unit ,
+) {
+    val uiState by dataViewModel.getExpenses(false).collectAsState()
 //    val apiKey = BuildConfig.FILE_API_KEY
-
-    Scaffold { it ->
-
-
-        LazyColumn(contentPadding = it) {
-            item {
-                Spacer(modifier = Modifier.size(16.dp))
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = { viewModel.showModal(modalType = ModalType.CREATE) } ) {
+                Icon(Icons.Default.Add, contentDescription = "Add expense")
             }
-            groupedExpenses.forEach {
-                stickyHeader {
-                    Text(text =" ${it.key.first} ${it.key.second}" )
-                }
-                items(it.value) { normalExpense ->
-                    ExpenseItem(
-                        expense = normalExpense,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
-                        viewModel = viewModel
-                    )
-                }
-            }
-        }
+        },
+//        floatingActionButtonPosition = FabPosition.End,
+    ) { it ->
+        ExpenseList(it = it, groupedExpenses = uiState.expenses, viewModel = viewModel)
 
     }
 }
@@ -68,21 +47,21 @@ fun ExpenseScreen(viewModel: MainViewModel) {
 /**
  * Composable that displays what the UI of the app looks like in the design tab.
  */
-@Preview(showSystemUi = true)
-@Composable
-fun ExpenseScreenPreview() {
-    ExpenseSageTheme(darkTheme = false) {
-        ExpenseScreen(viewModel = MainViewModel())
-    }
-}
-
-/**
- * Composable that displays what the UI of the app looks like in dark theme in the design tab.
- */
-@Preview
-@Composable
-fun ExpenseScreenDarkThemePreview() {
-    ExpenseSageTheme(darkTheme = true) {
-        ExpenseScreen(viewModel = MainViewModel())
-    }
-}
+//@Preview(showSystemUi = true)
+//@Composable
+//fun ExpenseScreenPreview() {
+//    ExpenseSageTheme(darkTheme = false) {
+//        ExpenseScreen(viewModel = MainViewModel(), onCreateClicked = {})
+//    }
+//}
+//
+///**
+// * Composable that displays what the UI of the app looks like in dark theme in the design tab.
+// */
+//@Preview
+//@Composable
+//fun ExpenseScreenDarkThemePreview() {
+//    ExpenseSageTheme(darkTheme = true) {
+//        ExpenseScreen(viewModel = MainViewModel(), onCreateClicked = {})
+//    }
+//}

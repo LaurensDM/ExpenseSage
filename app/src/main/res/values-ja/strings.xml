@@ -8,4 +8,8 @@
     <string name="paid_btn">払った</string>
     <string name="delete_btn">削除</string>
     <string name="back">戻る</string>
+    <string name="owed">借りている</string>
+    <string name="currencyInfo">通貨</string>
+    <string name="summary">概要</string>
+    <string name="settings">セッティング</string>
 </resources>

@@ -4,15 +4,23 @@ import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
@@ -20,6 +28,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,14 +36,23 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import coil.compose.rememberAsyncImagePainter
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.utils.ModalType
+import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
+import java.time.Month
 
 /**
  * Composable that displays the expense items on the home screen
@@ -82,7 +100,8 @@ fun ExpenseItemHome(
 fun ExpenseItem(
     expense: Expense,
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    dataViewModel: ExpenseDetailsViewModel
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -129,8 +148,11 @@ fun ExpenseItem(
                         bottom = dimensionResource(R.dimen.padding_medium),
                         end = dimensionResource(R.dimen.padding_medium)
                     ),
-                    onDetailClick = { viewModel.onDetailClick(expense) },
-                    owed = expense.owed
+                    onEditClicked = { viewModel.showModal(expense, modalType = ModalType.EDIT) },
+                    onDetailClick = { viewModel.showModal(expense, modalType = ModalType.DETAIL) },
+                    onPayedClick = { dataViewModel.payOwed(expense)},
+                    expense = expense,
+                    dataViewModel = dataViewModel
                 )
             }
         }
@@ -165,11 +187,15 @@ private fun ExpenseItemButton(
 @Composable
 fun ExpenseOptions(
     modifier: Modifier = Modifier,
+    onEditClicked: () -> Unit = {},
     onDetailClick: () -> Unit,
-    owed: Boolean
+    onPayedClick: () -> Unit = {},
+    expense: Expense,
+    dataViewModel: ExpenseDetailsViewModel
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = stringResource(id = R.string.options),
@@ -180,19 +206,28 @@ fun ExpenseOptions(
             modifier = modifier.fillMaxWidth()
         ) {
             Button(
-                onClick = onDetailClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.tertiary)
+                onClick = onEditClicked,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                )
             ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = "Edit")
             }
-            Button(onClick = onDetailClick) {
+            Button(
+                onClick = onDetailClick,
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.inversePrimary)
+            ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = "Details")
             }
             Button(
-                onClick = onDetailClick,
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                onClick = { dataViewModel.deleteExpense(expense) },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                )
             ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
                 Text(text = stringResource(id = R.string.delete_btn))
@@ -200,9 +235,9 @@ fun ExpenseOptions(
 
 
         }
-        if (owed) {
+        if (expense.owed) {
             Button(
-                onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                onClick = onPayedClick, colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                 )
@@ -232,7 +267,7 @@ fun ExpenseInformation(
             modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small))
         )
         Text(
-            text =  "$ $cost",
+            text = "$ $cost",
             style = MaterialTheme.typography.bodyLarge
         )
     }
@@ -260,4 +295,75 @@ fun ExpenseSageIcon(
 
         contentDescription = null
     )
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun ExpenseList(
+    it: PaddingValues,
+    groupedExpenses: Map<Pair<Month, Int>, List<Expense>>,
+    viewModel: MainViewModel,
+    dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
+
+    LazyColumn(contentPadding = it) {
+        item {
+            Spacer(modifier = Modifier.size(16.dp))
+        }
+        if (groupedExpenses.isEmpty()) {
+
+            item {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Nothing to see here",
+                        style = MaterialTheme.typography.headlineSmall,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(dimensionResource(R.dimen.padding_medium)),
+                        textAlign = TextAlign.Center,
+                    )
+                    Spacer(modifier = Modifier.height(64.dp))
+                    Image(
+                        painter = rememberAsyncImagePainter(R.drawable.logo),
+                        contentDescription = null,
+                        modifier = Modifier.size(200.dp)
+                    )
+                }
+
+            }
+        } else {
+            groupedExpenses.forEach {
+                stickyHeader {
+                    Text(
+                        text = " ${it.key.first} ${it.key.second}",
+                        modifier = Modifier
+                            .background(color = MaterialTheme.colorScheme.surface)
+                            .fillMaxWidth()
+                            .padding(vertical = 4.dp)
+                    )
+                }
+                items(it.value) { normalExpense ->
+                    ExpenseItem(
+                        expense = normalExpense,
+                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                        viewModel = viewModel,
+                        dataViewModel = dataViewModel,
+                    )
+                }
+            }
+        }
+
+    }
+}
+
+@Composable
+fun ExpenseSageFloatingActionButton(
+    onAddClicked: () -> Unit = {}
+) {
+    IconButton(onClick = onAddClicked,) {
+        Icon(Icons.Default.Add, contentDescription = "Add expense")
+    }
 }

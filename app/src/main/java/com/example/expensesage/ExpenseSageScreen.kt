@@ -53,16 +53,17 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.components.Create
 import com.example.expensesage.ui.components.Details
+import com.example.expensesage.ui.components.Edit
 import com.example.expensesage.ui.components.NavBarGraph
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.NavigationType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.utils.screens
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
-
 
 /**
  * Top app bar for the app
@@ -79,7 +80,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppBar(
-    currentScreen: String?,
+    currentScreen: Navigations,
     navigationType: NavigationType,
     onNavIconPressed: () -> Unit,
     onBackIconPressed: () -> Unit,
@@ -88,53 +89,50 @@ fun AppBar(
     drawerState: DrawerState,
     scope: CoroutineScope,
 ) {
-
-
-    val currentTitle: String =
-        if (currentScreen.isNullOrEmpty()) "Expense Sage" else currentScreen.replaceFirstChar(
-            Char::uppercase
-        )
     CenterAlignedTopAppBar(
-        title = { Text(text = currentTitle, color = MaterialTheme.colorScheme.onPrimary) },
+        title = {
+            Text(
+                text = stringResource(id = currentScreen.title),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
         modifier = modifier.fillMaxWidth(),
         navigationIcon = {
-            if (navigationType == NavigationType.NAVIGATION_RAIL && currentScreen != Navigations.Settings.route) {
+            if (navigationType == NavigationType.NAVIGATION_RAIL && currentScreen.route != Navigations.Settings.route) {
                 IconButton(onClick = {
                     scope.launch {
                         drawerState.open()
                     }
                 }) {
-
                     Icon(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = stringResource(id = R.string.back),
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
-            } else if (currentScreen == Navigations.Settings.route) {
+            } else if (currentScreen.route == Navigations.Settings.route || currentScreen.route == Navigations.Edit.route) {
                 IconButton(onClick = onBackIconPressed) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
                         contentDescription = stringResource(id = Navigations.Settings.title),
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
         },
         actions = {
-            if (currentScreen != Navigations.Settings.route) {
+            if (currentScreen.route != Navigations.Settings.route) {
                 IconButton(onClick = onNavIconPressed) {
                     Icon(
                         imageVector = Navigations.Settings.icon,
                         contentDescription = stringResource(id = Navigations.Settings.title),
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
-
         },
         scrollBehavior = scrollBehavior,
     )
@@ -152,16 +150,27 @@ fun AppBar(
 fun ExpenseSageApp(
     navController: NavHostController = rememberNavController(),
     windowSize: WindowWidthSizeClass,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
 ) {
-    val currentScreen = navController.currentBackStackEntryAsState()
+    // Get current back stack entry
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    // Get the name of the current screen
+    val currentScreen =
+        if (backStackEntry?.destination?.route?.contains("Edit") == true) {
+            Navigations.Edit
+        } else {
+            Navigations.valueOf(
+                backStackEntry?.destination?.route ?: Navigations.Start.name,
+            )
+        }
+
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
 
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val snackbarHostState = remember{ SnackbarHostState() }
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val navigationType: NavigationType = when (windowSize) {
         WindowWidthSizeClass.Compact -> {
@@ -194,19 +203,22 @@ fun ExpenseSageApp(
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerContent(
-                navController = navController, drawerState = drawerState, scope = scope
+                navController = navController,
+                drawerState = drawerState,
+                scope = scope,
             )
         },
         drawerState = drawerState,
         gesturesEnabled = drawerState.isOpen,
         scrimColor = Color.Transparent,
     ) {
-        Scaffold(modifier = Modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-            .fillMaxWidth(),
+        Scaffold(
+            modifier = Modifier
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+                .fillMaxWidth(),
             topBar = {
                 AppBar(
-                    currentScreen = currentScreen.value?.destination?.route,
+                    currentScreen = currentScreen,
                     navigationType = navigationType,
                     onNavIconPressed = { navController.navigate(Navigations.Settings.route) },
                     onBackIconPressed = { navController.popBackStack() },
@@ -215,35 +227,52 @@ fun ExpenseSageApp(
                     scope = scope,
                 )
             },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState)},
+            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
             bottomBar = {
                 if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
                     BottomBar(navController = navController)
                 }
-            }) { innerPadding ->
+            },
+        ) { innerPadding ->
             Box(modifier = Modifier.padding(innerPadding)) {
                 NavBarGraph(
                     navController = navController,
                     viewModel = viewModel,
                 )
                 if (viewModel.isDialogShown) {
-                    Dialog(onDismissRequest = { viewModel.onDialogDismiss() },
+                    Dialog(
+                        onDismissRequest = { viewModel.onDialogDismiss() },
                         properties = DialogProperties(
-                            dismissOnBackPress = true, dismissOnClickOutside = true
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = true,
                         ),
                         content = {
-                            Details(
-                                viewModel,
-                            )
-                        })
+                            when (viewModel.currentModalType) {
+                                ModalType.DETAIL -> {
+                                    Details(
+                                        viewModel,
+                                    )
+                                }
+
+                                ModalType.EDIT -> {
+                                    Edit(
+                                        viewModel,
+                                    )
+                                }
+
+                                else -> {
+                                    Create(
+                                        viewModel = viewModel,
+                                    )
+                                }
+                            }
+                        },
+                    )
                 }
             }
-
         }
     }
-
 }
-
 
 /**
  * Bottom navigation bar for the app
@@ -252,8 +281,6 @@ fun ExpenseSageApp(
  */
 @Composable
 fun BottomBar(navController: NavController) {
-
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
@@ -264,7 +291,7 @@ fun BottomBar(navController: NavController) {
                 label = {
                     Text(
                         text = stringResource(screen.title),
-                        fontSize = 10.sp,
+                        fontSize = 9.sp,
                     )
                 },
                 alwaysShowLabel = false,
@@ -279,16 +306,15 @@ fun BottomBar(navController: NavController) {
                     Icon(
                         screen.icon,
                         contentDescription = stringResource(screen.title),
-                        tint = if (currentRoute == screen.route) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.onPrimary
+                        tint = if (currentRoute == screen.route) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.onPrimary,
                     )
                 },
                 colors = NavigationBarItemDefaults.colors(
                     unselectedTextColor = Color.Gray,
-                    selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                    selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                 ),
             )
         }
-
     }
 }
 
@@ -301,21 +327,22 @@ fun BottomBar(navController: NavController) {
  */
 @Composable
 fun ModalDrawerContent(
-    navController: NavHostController, drawerState: DrawerState, scope: CoroutineScope
+    navController: NavHostController,
+    drawerState: DrawerState,
+    scope: CoroutineScope,
 ) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
-
-
 
     ModalDrawerSheet(
 //        drawerContainerColor = if (drawerState.isClosed) Color.Transparent else MaterialTheme.colorScheme.surface
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(
-                space = 12.dp, alignment = Alignment.CenterVertically
-            ), modifier = Modifier.fillMaxHeight()
+                space = 12.dp,
+                alignment = Alignment.CenterVertically,
+            ),
+            modifier = Modifier.fillMaxHeight(),
         ) {
             screens.forEach { screen ->
                 NavigationDrawerItem(
@@ -325,7 +352,7 @@ fun ModalDrawerContent(
                             fontSize = 16.sp,
                             lineHeight = 8.sp,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.fillMaxWidth(),
                         )
                     },
                     selected = currentRoute == screen.route,
@@ -340,19 +367,15 @@ fun ModalDrawerContent(
                         Icon(
                             screen.icon,
                             contentDescription = stringResource(screen.title),
-                            tint = if (currentRoute == screen.route) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.secondary
+                            tint = if (currentRoute == screen.route) MaterialTheme.colorScheme.surfaceTint else MaterialTheme.colorScheme.secondary,
                         )
                     },
                     colors = NavigationDrawerItemDefaults.colors(
                         unselectedTextColor = Color.Gray,
-                        selectedTextColor = MaterialTheme.colorScheme.onPrimary
+                        selectedTextColor = MaterialTheme.colorScheme.onPrimary,
                     ),
                 )
-
             }
         }
     }
 }
-
-
-

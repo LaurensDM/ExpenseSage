@@ -16,12 +16,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.expensesage.R
 import com.example.expensesage.ui.MainViewModel
 
 
@@ -29,7 +27,7 @@ import com.example.expensesage.ui.MainViewModel
 /**
  * Composable that displays the details of an expense as a dialog
  *
- * @param expense the expense to display
+ * @param viewModel The viewModel that keeps information about the state of the app
  *
  * */
 @Composable
@@ -73,6 +71,11 @@ fun Details(viewModel: MainViewModel) {
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
+                Text(
+                    text = "Created: ${viewModel.selectedExpense.date}",
+                    style = MaterialTheme.typography.labelLarge,
+                    textAlign = TextAlign.Center,
+                )
             }
 
             Row(
@@ -81,7 +84,7 @@ fun Details(viewModel: MainViewModel) {
                 verticalAlignment = Alignment.Bottom,
             ) {
                 Button(
-                    onClick = { /*TODO*/ }, colors = ButtonDefaults.buttonColors(
+                    onClick = { viewModel.onDialogDismiss() }, colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer
                     )

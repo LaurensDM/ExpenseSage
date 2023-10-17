@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -26,11 +28,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
-import com.example.expensesage.data.expenses
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
+import com.example.expensesage.ui.viewModels.ListViewModel
+import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 /**
  * Composable that displays the start screen of the app
@@ -41,8 +46,14 @@ import com.example.expensesage.ui.theme.ExpenseSageTheme
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel
+    viewModel: MainViewModel,
+    listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+    val listUiState by listViewModel.get5Expenses().collectAsState();
+
+    val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
+
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
@@ -55,7 +66,7 @@ fun StartScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 item {
-                    TopTile(viewModel)
+                    TopTile(viewModel, moneyAvailable)
                 }
                 item {
                     Spacer(modifier = Modifier.size(32.dp))
@@ -68,11 +79,23 @@ fun StartScreen(
                         textAlign = TextAlign.Center,
                     )
                 }
-                items(expenses) {
-                    ExpenseItemHome(
-                        expense = it,
-                    )
+                if (listUiState.expenses.isEmpty()) {
+                    item {
+                        Text(
+                            text = "You have no expenses yet",
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_small)),
+                            textAlign = TextAlign.Center,
+                        )
+                    }
+                } else {
+                    items(listUiState.expenses) {
+                        ExpenseItemHome(
+                            expense = it,
+                        )
+                    }
                 }
+
 
             }
         }
@@ -123,7 +146,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
  *
  */
 @Composable
-fun TopTile(viewModel: MainViewModel) {
+fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -150,7 +173,7 @@ fun TopTile(viewModel: MainViewModel) {
 
                 contentDescription = null
             )
-            Text(text = "You have $ ${viewModel.money}  left", style = MaterialTheme.typography.headlineMedium)
+            Text(text = "You have $ $moneyAvailable  left", style = MaterialTheme.typography.headlineMedium)
         }
     }
 

@@ -8,4 +8,8 @@
     <string name="paid_btn">Betaald</string>
     <string name="delete_btn">Verwijder</string>
     <string name="back">Terug</string>
+    <string name="owed">Verschuldigd</string>
+    <string name="currencyInfo">Valuta</string>
+    <string name="summary">Overzicht</string>
+    <string name="settings">Instellingen</string>
 </resources>
