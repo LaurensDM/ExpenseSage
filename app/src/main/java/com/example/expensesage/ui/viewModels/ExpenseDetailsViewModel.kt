@@ -13,10 +13,9 @@ import com.example.expensesage.data.ExpenseRepository
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 class ExpenseDetailsViewModel(
-    private val savedStateHandle: SavedStateHandle,
     private val expenseRepository: ExpenseRepository,
 ) : ViewModel() {
     var expenseUIState by mutableStateOf(ExpenseUIState())
@@ -81,12 +80,12 @@ class ExpenseDetailsViewModel(
 
     }
 
-    fun updateUIState(expense: ExpenseDetail) {
-        expenseUIState = ExpenseUIState(
-            expenseDetails = expense,
-            isEntryValid = validateInput(expense)
-        )
-    }
+//    fun updateUIState(expense: ExpenseDetail) {
+//        expenseUIState = ExpenseUIState(
+//            expenseDetails = expense,
+//            isEntryValid = validateInput(expense)
+//        )
+//    }
 
     private fun validateInput(expense: ExpenseDetail): Boolean {
         return true
@@ -106,7 +105,7 @@ data class ExpenseUIState(
 
 data class ExpenseDetail(
     var id: Int = 0,
-    var date: String = LocalDate.now().toString(),
+    var date: String = LocalDateTime.now().toString(),
     var expenseName: String = "Unknown",
     var expense: String = "0.00",
     var owed: Boolean = false,
@@ -126,7 +125,7 @@ fun ExpenseDetail.toExpense(): Expense = Expense(
     expense = expense.toDoubleOrNull() ?: 0.0,
     owed = owed,
     imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
-    date = LocalDate.parse(date)
+    date = LocalDateTime.parse(date)
 )
 
 fun Expense.toExpenseUIState(isEntryValid: Boolean): ExpenseUIState {

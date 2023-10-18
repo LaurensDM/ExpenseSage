@@ -1,16 +1,16 @@
 package com.example.expensesage.data.converter
 
 import androidx.room.TypeConverter
-import java.time.LocalDate
+import java.time.LocalDateTime
 
 open class DateConverter {
     @TypeConverter
-    fun toDate(date: String?): LocalDate? {
-        return LocalDate.parse(date)
+    fun toDate(date: String?): LocalDateTime? {
+        return LocalDateTime.parse(date)
     }
 
     @TypeConverter
-    fun fromDate(date: LocalDate?): String? {
+    fun fromDate(date: LocalDateTime?): String? {
         return date?.toString()
     }
 
