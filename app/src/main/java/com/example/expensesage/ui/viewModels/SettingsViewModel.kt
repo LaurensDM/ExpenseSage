@@ -13,7 +13,6 @@ class SettingsViewModel(
 ) : ViewModel() {
 
     fun onMoneyChange(newMoney: Double) {
-
         viewModelScope.launch {
             userSettings.saveMoneyAvailable(newMoney)
         }

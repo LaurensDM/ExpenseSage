@@ -94,5 +94,7 @@ dependencies {
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
 //    implementation("com.himanshoe:charty:2.0.0-alpha01")
+    implementation ("com.github.tehras:charts:0.2.4-alpha")
 
+//    implementation("co.yml:ycharts:2.1.0")
 }

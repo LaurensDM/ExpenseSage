@@ -87,7 +87,7 @@ fun EditForm(
                 owed = expense.owed,
                 date = expense.date.toString()
             )
-            dataViewModel.updateExpense(editedExpense)
+            dataViewModel.updateExpense(editedExpense, expense)
             onDoneClicked()
         }) {
             Text(text = "Done")
