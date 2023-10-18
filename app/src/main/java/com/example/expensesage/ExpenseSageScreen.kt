@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -239,38 +241,73 @@ fun ExpenseSageApp(
                     navController = navController,
                     viewModel = viewModel,
                 )
-                if (viewModel.isDialogShown) {
-                    Dialog(
-                        onDismissRequest = { viewModel.onDialogDismiss() },
-                        properties = DialogProperties(
-                            dismissOnBackPress = true,
-                            dismissOnClickOutside = true,
-                        ),
-                        content = {
-                            when (viewModel.currentModalType) {
-                                ModalType.DETAIL -> {
-                                    Details(
-                                        viewModel,
-                                    )
-                                }
-
-                                ModalType.EDIT -> {
-                                    Edit(
-                                        viewModel,
-                                    )
-                                }
-
-                                else -> {
-                                    Create(
-                                        viewModel = viewModel,
-                                    )
-                                }
-                            }
-                        },
-                    )
-                }
+                ExpenseDialog(viewModel = viewModel)
+                ExpenseAlert(viewModel = viewModel)
             }
         }
+    }
+}
+
+@Composable
+fun ExpenseAlert(viewModel: MainViewModel) {
+    if (viewModel.isAlertShown) {
+        AlertDialog(onDismissRequest = { viewModel.onDialogDismiss() }, confirmButton = {
+            Button(onClick = {
+                viewModel.alertOnConfirm()
+                viewModel.onDialogDismiss()
+            }) {
+                Text(text = "Confirm")
+            }
+
+        }, dismissButton = {
+            Button(onClick = {
+                viewModel.onDialogDismiss()
+            }) {
+                Text(text = "Cancel")
+            }
+        }, title = {
+            Text(text = viewModel.alertTitle)
+        })
+    }
+
+}
+
+/**
+ * Dialog for the app
+ *
+ * @param viewModel the viewModel that holds the data
+ */
+@Composable
+fun ExpenseDialog(viewModel: MainViewModel) {
+    if (viewModel.isDialogShown) {
+        Dialog(
+            onDismissRequest = { viewModel.onDialogDismiss() },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+            ),
+            content = {
+                when (viewModel.currentModalType) {
+                    ModalType.DETAIL -> {
+                        Details(
+                            viewModel,
+                        )
+                    }
+
+                    ModalType.EDIT -> {
+                        Edit(
+                            viewModel,
+                        )
+                    }
+
+                    else -> {
+                        Create(
+                            viewModel = viewModel,
+                        )
+                    }
+                }
+            },
+        )
     }
 }
 

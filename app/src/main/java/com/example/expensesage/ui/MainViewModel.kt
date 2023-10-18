@@ -15,6 +15,14 @@ import com.example.expensesage.ui.utils.ModalType
  */
 class MainViewModel : ViewModel() {
 
+    var isAlertShown by mutableStateOf(false)
+        private set
+
+    var alertOnConfirm by mutableStateOf({})
+        private set
+
+    var alertTitle by mutableStateOf("")
+        private set
 
     var isDialogShown by mutableStateOf(false)
         private set
@@ -51,11 +59,18 @@ class MainViewModel : ViewModel() {
         isDialogShown = true
     }
 
+    fun showAlert(onConfirm : () -> Unit, title: String) {
+        alertOnConfirm = onConfirm
+        isAlertShown = true
+        alertTitle = title
+    }
+
     /**
      * Function that is called when the user dismisses dialog. Hides dialog
      *
      */
     fun onDialogDismiss() {
+        isAlertShown = false
         isDialogShown = false
     }
 

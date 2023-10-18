@@ -150,9 +150,10 @@ fun ExpenseItem(
                     ),
                     onEditClicked = { viewModel.showModal(expense, modalType = ModalType.EDIT) },
                     onDetailClick = { viewModel.showModal(expense, modalType = ModalType.DETAIL) },
-                    onPayedClick = { dataViewModel.payOwed(expense)},
+                    onPayedClick = { dataViewModel.payOwed(expense) },
                     expense = expense,
-                    dataViewModel = dataViewModel
+                    dataViewModel = dataViewModel,
+                    viewModel = viewModel,
                 )
             }
         }
@@ -191,7 +192,8 @@ fun ExpenseOptions(
     onDetailClick: () -> Unit,
     onPayedClick: () -> Unit = {},
     expense: Expense,
-    dataViewModel: ExpenseDetailsViewModel
+    dataViewModel: ExpenseDetailsViewModel,
+    viewModel: MainViewModel
 ) {
     Column(
         modifier = modifier,
@@ -223,7 +225,12 @@ fun ExpenseOptions(
                 Text(text = "Details")
             }
             Button(
-                onClick = { dataViewModel.deleteExpense(expense) },
+                onClick = {
+                    viewModel.showAlert(
+                        { dataViewModel.deleteExpense(expense) },
+                        "Are you sure?"
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
@@ -363,7 +370,7 @@ fun ExpenseList(
 fun ExpenseSageFloatingActionButton(
     onAddClicked: () -> Unit = {}
 ) {
-    IconButton(onClick = onAddClicked,) {
+    IconButton(onClick = onAddClicked) {
         Icon(Icons.Default.Add, contentDescription = "Add expense")
     }
 }
