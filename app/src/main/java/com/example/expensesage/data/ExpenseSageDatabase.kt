@@ -59,17 +59,6 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                     .also { Instance = it }
             }
         }
-
-
     }
-
-
-//    @DeleteTable(tableName = "user_table")
-//    class UserDeleteMigration : AutoMigrationSpec{
-//        @Override
-//        override fun onPostMigrate(db: SupportSQLiteDatabase) {
-//            // Invoked once auto migration is done
-//        }
-//    }
 }
 
