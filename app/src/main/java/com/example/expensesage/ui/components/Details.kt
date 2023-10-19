@@ -72,7 +72,7 @@ fun Details(viewModel: MainViewModel) {
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Created: ${viewModel.selectedExpense.date}",
+                    text = "Created: ${viewModel.selectedExpense.date.toLocalDate()}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
