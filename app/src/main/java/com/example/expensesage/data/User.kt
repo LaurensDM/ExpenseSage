@@ -10,5 +10,5 @@ data class User(
     val date: LocalDate = LocalDate.now(),
     val name: String = "Unknown",
     val monthlyMoney: Double = 0.0,
-    var money : Double = 0.0,
+    var money: Double = 0.0,
 )

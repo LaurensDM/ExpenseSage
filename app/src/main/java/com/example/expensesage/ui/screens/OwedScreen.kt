@@ -16,7 +16,6 @@ import com.example.expensesage.ui.components.ExpenseList
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OwedScreen(
@@ -27,7 +26,7 @@ fun OwedScreen(
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {viewModel.showModal(modalType = ModalType.CREATE, owed = true)} ) {
+            FloatingActionButton(onClick = { viewModel.showModal(modalType = ModalType.CREATE, owed = true) }) {
                 Icon(Icons.Default.Add, contentDescription = "Add expense")
             }
 //                ExpenseSageFloatingActionButton(onAddClicked = onCreateClicked)
@@ -35,7 +34,5 @@ fun OwedScreen(
     ) { it ->
 
         ExpenseList(it = it, groupedExpenses = uiState.expenses, viewModel = viewModel)
-
     }
-
 }

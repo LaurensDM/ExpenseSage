@@ -14,9 +14,9 @@ import java.lang.Integer.max
  * @property numberOfDecimals The number of decimals that the currency value should have.
  */
 class CurrencyVisualTransformation(
-    private val fixedCursorAtTheEnd: Boolean = true, private val numberOfDecimals: Int = 2
+    private val fixedCursorAtTheEnd: Boolean = true,
+    private val numberOfDecimals: Int = 2,
 ) : VisualTransformation {
-
 
     private val symbols = DecimalFormat().decimalFormatSymbols
 
@@ -53,18 +53,19 @@ class CurrencyVisualTransformation(
         val newText = AnnotatedString(
             text = formattedNumber,
             spanStyles = text.spanStyles,
-            paragraphStyles = text.paragraphStyles
+            paragraphStyles = text.paragraphStyles,
         )
 
         val offsetMapping = if (fixedCursorAtTheEnd) {
             FixedCursorOffsetMapping(
-                contentLength = inputText.length, formattedContentLength = formattedNumber.length
+                contentLength = inputText.length,
+                formattedContentLength = formattedNumber.length,
             )
         } else {
             MovableCursorOffsetMapping(
                 unmaskedText = text.toString(),
                 maskedText = newText.toString(),
-                decimalDigits = numberOfDecimals
+                decimalDigits = numberOfDecimals,
             )
         }
 
@@ -95,7 +96,7 @@ class CurrencyVisualTransformation(
     private class MovableCursorOffsetMapping(
         private val unmaskedText: String,
         private val maskedText: String,
-        private val decimalDigits: Int
+        private val decimalDigits: Int,
     ) : OffsetMapping {
         /**
          * Function that is called when the user inputs a value in the text field. Masks the input value as a currency value.

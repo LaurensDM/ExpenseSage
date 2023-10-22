@@ -50,7 +50,7 @@ fun StartScreen(
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-    val listUiState by listViewModel.get5Expenses().collectAsState();
+    val listUiState by listViewModel.get5Expenses().collectAsState()
 
     val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
 
@@ -58,12 +58,11 @@ fun StartScreen(
         ExpenseSageTopAppBar()
     }) { innerPadding ->
         Column() {
-
             Spacer(modifier = Modifier.size(32.dp))
             LazyColumn(
                 contentPadding = innerPadding,
                 modifier = modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
                     TopTile(viewModel, moneyAvailable)
@@ -95,14 +94,10 @@ fun StartScreen(
                         )
                     }
                 }
-
-
             }
         }
-
     }
 }
-
 
 /**
  * Composable that displays the top app bar of the app
@@ -112,11 +107,10 @@ fun StartScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
-
     CenterAlignedTopAppBar(
         title = {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
                     modifier = Modifier
@@ -128,18 +122,17 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
                     // null content description allows accessibility services to skip this element
                     // during navigation.
 
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 Text(
                     text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge
+                    style = MaterialTheme.typography.displayLarge,
                 )
             }
         },
         modifier = modifier,
     )
 }
-
 
 /**
  * Composable that displays the top tile of the start screen. Has information about the amount of money left.
@@ -158,8 +151,9 @@ fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
                 .padding(start = 8.dp, end = 8.dp, top = 24.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(
-                16.dp, alignment = Alignment.CenterVertically
-            )
+                16.dp,
+                alignment = Alignment.CenterVertically,
+            ),
         ) {
             Image(
                 modifier = Modifier
@@ -171,13 +165,11 @@ fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
                 // null content description allows accessibility services to skip this element
                 // during navigation.
 
-                contentDescription = null
+                contentDescription = null,
             )
             Text(text = "You have $ $moneyAvailable  left", style = MaterialTheme.typography.headlineMedium)
         }
     }
-
-
 }
 
 /**

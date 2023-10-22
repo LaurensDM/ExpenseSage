@@ -24,7 +24,7 @@ import com.example.expensesage.ui.viewModels.APIViewModel
  * @param viewModel The viewModel that holds the data
  */
 @Composable
-fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
+fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
     NavHost(
         navController = navController,
         startDestination = Navigations.Start.route,
@@ -53,13 +53,14 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
             )
         }
         composable(Navigations.Owed.route) {
-            OwedScreen(viewModel = viewModel,
+            OwedScreen(
+                viewModel = viewModel,
 //                onCreateClicked = { navController.navigate(Navigations.Currencies.route) }
             )
         }
         composable(Navigations.Currencies.route) {
-           val apiViewModel: APIViewModel = viewModel(factory = AppViewModelProvider.Factory)
-            CurrencyScreen(apiViewModel.currencyUiState, onRetry = {apiViewModel.getCurrencies()})
+            val apiViewModel: APIViewModel = viewModel(factory = AppViewModelProvider.Factory)
+            CurrencyScreen(apiViewModel.currencyUiState, onRetry = { apiViewModel.getCurrencies() })
         }
         composable(Navigations.Summary.route) {
             SummaryScreen()
@@ -73,5 +74,3 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
 //        }
     }
 }
-
-

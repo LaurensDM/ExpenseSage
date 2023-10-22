@@ -13,7 +13,7 @@ private const val BASE_URL =
 
 private val retrofit = Retrofit.Builder()
     .addConverterFactory(
-        Json.asConverterFactory("application/json".toMediaType())
+        Json.asConverterFactory("application/json".toMediaType()),
     )
     .baseUrl(BASE_URL).build()
 

@@ -11,12 +11,11 @@ import com.example.expensesage.data.converter.DateConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 @TypeConverters(value = [DateConverter::class])
 @Database(
     entities = [Expense::class],
     version = 3,
-    exportSchema = false
+    exportSchema = false,
 )
 abstract class ExpenseSageDatabase : RoomDatabase() {
 
@@ -31,7 +30,7 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                 Room.databaseBuilder(
                     context,
                     ExpenseSageDatabase::class.java,
-                    "expensesage_database"
+                    "expensesage_database",
                 ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
@@ -53,7 +52,7 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                                 database.execSQL("DROP TABLE expense_table")
                                 database.execSQL("CREATE TABLE expense_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, date TEXT NOT NULL, imageResourceId INTEGER NOT NULL, expenseName TEXT NOT NULL, expense REAL NOT NULL, owed INTEGER NOT NULL)")
                             }
-                        }
+                        },
                     )
                     .build()
                     .also { Instance = it }
@@ -61,4 +60,3 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
         }
     }
 }
-

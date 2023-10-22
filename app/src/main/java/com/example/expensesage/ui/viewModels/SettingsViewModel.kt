@@ -13,7 +13,6 @@ class SettingsViewModel(
 ) : ViewModel() {
 
     fun onMoneyChange(newMoney: Double) {
-
         viewModelScope.launch {
             userSettings.saveMoneyAvailable(newMoney)
         }
@@ -41,7 +40,7 @@ class SettingsViewModel(
         return userSettings.moneyAvailable.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 60.0
+            initialValue = 0.0,
         )
     }
 
@@ -49,7 +48,7 @@ class SettingsViewModel(
         return userSettings.monthlyBudget.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 0.0
+            initialValue = 0.0,
         )
     }
 
@@ -57,7 +56,7 @@ class SettingsViewModel(
         return userSettings.soundVolume.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 1.0
+            initialValue = 1.0,
         )
     }
 
@@ -65,9 +64,7 @@ class SettingsViewModel(
         return userSettings.playSound.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = true
+            initialValue = true,
         )
     }
-
-
 }

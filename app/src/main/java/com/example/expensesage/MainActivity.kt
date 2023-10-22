@@ -15,7 +15,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 
-
 class MainActivity : ComponentActivity() {
 
     /**
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
             ExpenseSageTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
                 ) {
                     val windowSize = calculateWindowSizeClass(this)
                     ExpenseSageApp(windowSize = windowSize.widthSizeClass, viewModel = viewModel)
@@ -44,8 +43,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-
 
 /**
  * Composable that displays what the UI of the app looks like in light theme in the design tab.

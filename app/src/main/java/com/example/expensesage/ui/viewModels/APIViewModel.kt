@@ -14,7 +14,7 @@ import java.io.IOException
 sealed interface CurrencyUiState {
     data class Success(val data: JsonObject) : CurrencyUiState
     data class Error(val error: String) : CurrencyUiState
-    object Loading : CurrencyUiState
+    data object Loading : CurrencyUiState
 }
 
 class APIViewModel : ViewModel() {
@@ -29,12 +29,12 @@ class APIViewModel : ViewModel() {
     fun getCurrencies() {
         viewModelScope.launch {
             currencyUiState = CurrencyUiState.Loading
-           try {
-               currencyUiState =  CurrencyUiState.Success(CurrencyApi.retrofitService.getEurRate())
-           } catch (e: IOException) {
-               currencyUiState = CurrencyUiState.Error(e.message ?: "An unknown error occured")
+            currencyUiState = try {
+                CurrencyUiState.Success(CurrencyApi.retrofitService.getEurRate())
+            } catch (e: IOException) {
+                CurrencyUiState.Error(e.localizedMessage ?: "An unknown error occured")
             } catch (e: HttpException) {
-               currencyUiState = CurrencyUiState.Error(e.message ?: "An unknown error occured")
+                CurrencyUiState.Error(e.localizedMessage ?: "An unknown error occured")
             }
         }
     }

@@ -6,14 +6,17 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.WarningAmber
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -86,7 +89,6 @@ fun AppBar(
     navigationType: NavigationType,
     onNavIconPressed: () -> Unit,
     onBackIconPressed: () -> Unit,
-    modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
     drawerState: DrawerState,
     scope: CoroutineScope,
@@ -95,13 +97,13 @@ fun AppBar(
         title = {
             Text(
                 text = stringResource(id = currentScreen.title),
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             if (navigationType == NavigationType.NAVIGATION_RAIL && currentScreen.route != Navigations.Settings.route) {
                 IconButton(onClick = {
@@ -251,25 +253,52 @@ fun ExpenseSageApp(
 @Composable
 fun ExpenseAlert(viewModel: MainViewModel) {
     if (viewModel.isAlertShown) {
-        AlertDialog(onDismissRequest = { viewModel.onDialogDismiss() }, confirmButton = {
-            Button(onClick = {
-                viewModel.alertOnConfirm()
-                viewModel.onDialogDismiss()
-            }) {
-                Text(text = "Confirm")
-            }
+        AlertDialog(
+            onDismissRequest = { viewModel.onDialogDismiss() },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.alertOnConfirm()
+                        viewModel.onDialogDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                ) {
+                    Text(text = "Confirm")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        viewModel.onDialogDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                ) {
+                    Text(text = "Cancel")
+                }
+            },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Icon(Icons.Outlined.WarningAmber, contentDescription = "Alert")
+                    Text(
+                        text = viewModel.alertTitle,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            },
+            modifier = Modifier.padding(16.dp),
+            shape = MaterialTheme.shapes.large,
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+            containerColor = MaterialTheme.colorScheme.surface,
 
-        }, dismissButton = {
-            Button(onClick = {
-                viewModel.onDialogDismiss()
-            }) {
-                Text(text = "Cancel")
-            }
-        }, title = {
-            Text(text = viewModel.alertTitle)
-        })
+        )
     }
-
 }
 
 /**

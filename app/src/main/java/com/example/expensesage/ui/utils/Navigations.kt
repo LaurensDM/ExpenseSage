@@ -22,37 +22,37 @@ import com.example.expensesage.R
 enum class Navigations(val route: String, @StringRes val title: Int, val icon: ImageVector) {
     Start(
         route = "Start",
-        title =  R.string.app_name,
-        icon = Icons.Default.AccountBalance
+        title = R.string.app_name,
+        icon = Icons.Default.AccountBalance,
     ),
     Expenses(
         route = "Expenses",
         title = R.string.expense,
-        icon = Icons.Default.Paid
+        icon = Icons.Default.Paid,
     ),
     Owed(
         route = "Owed",
         title = R.string.owed,
-        icon = Icons.Default.AssignmentLate
+        icon = Icons.Default.AssignmentLate,
     ),
     Currencies(
         route = "Currencies",
         title = R.string.currencyInfo,
-        icon = Icons.Default.CurrencyExchange
+        icon = Icons.Default.CurrencyExchange,
     ),
     Summary(
         route = "Summary",
         title = R.string.summary,
-        icon = Icons.Default.InsertChartOutlined
+        icon = Icons.Default.InsertChartOutlined,
     ),
     Settings(
         route = "Settings",
         title = R.string.settings,
-        icon = Icons.Default.Settings
+        icon = Icons.Default.Settings,
     ),
     Edit(
         route = "Edit/{id}",
         title = R.string.settings,
-        icon = Icons.Default.Create
-    )
+        icon = Icons.Default.Create,
+    ),
 }

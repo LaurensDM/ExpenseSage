@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,7 +49,10 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
  *
  */
 @Composable
-fun SettingScreen(viewModel: MainViewModel) {
+fun SettingScreen(
+    viewModel: MainViewModel,
+    settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
     val mContext = LocalContext.current
     val mMediaPlayer = MediaPlayer.create(mContext, R.raw.rockmusic)
     mMediaPlayer.setVolume(50f, 50f)
@@ -60,7 +64,7 @@ fun SettingScreen(viewModel: MainViewModel) {
         verticalArrangement = Arrangement.spacedBy(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        PocketMoney(viewModel = viewModel)
+        PocketMoney(settingsViewModel)
         Row {
             Text(
                 modifier = Modifier.padding(vertical = 12.dp),
@@ -86,14 +90,21 @@ fun SettingScreen(viewModel: MainViewModel) {
  *
  */
 @Composable
-fun PocketMoney(viewModel: MainViewModel, settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+fun PocketMoney(settingsViewModel: SettingsViewModel) {
 //    val keyboardController = LocalSoftwareKeyboardController.current
     val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
     var edit by rememberSaveable { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
-    var text by rememberSaveable { mutableStateOf("$moneyAvailable") }
+    var text: String by remember { mutableStateOf(moneyAvailable.toString()) }
 
-
+    DisposableEffect(moneyAvailable) {
+        text = if (moneyAvailable == 0.0) {
+            ""
+        } else {
+            moneyAvailable.toString()
+        }
+        onDispose { /* Dispose logic if needed */ }
+    }
 
     Row(
         modifier = Modifier.padding(16.dp),
@@ -107,11 +118,7 @@ fun PocketMoney(viewModel: MainViewModel, settingsViewModel: SettingsViewModel =
             placeholder = { Text(text = "Enter your pocket money") },
             value = text,
             onValueChange = {
-                text = if (it.startsWith("0")) {
-                    ""
-                } else {
-                    it
-                }
+                text = it
             },
             singleLine = true,
             readOnly = edit,
@@ -126,15 +133,16 @@ fun PocketMoney(viewModel: MainViewModel, settingsViewModel: SettingsViewModel =
             visualTransformation = CurrencyVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    val money : Double = if (text == "" || text == "0" ) {
+                    val money: Double = if (text == "" || text == "0") {
                         0.0
                     } else {
-                        text.toDouble()/100
+                        text.toDouble() / 100
                     }
                     edit = !edit
                     settingsViewModel.onMoneyChange(money)
-                }
-            ))
+                },
+            ),
+        )
 
         IconButton(onClick = {
             edit = !edit

@@ -177,5 +177,4 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         .map { preferences ->
             preferences[CURRENCY] ?: "USD"
         }
-
 }

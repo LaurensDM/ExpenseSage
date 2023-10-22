@@ -14,15 +14,13 @@ import kotlinx.coroutines.SupervisorJob
 
 private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
-    name = SETTINGS_PREFERENCE_NAME
+    name = SETTINGS_PREFERENCE_NAME,
 )
 
-class ExpenseSageApplication : Application()  {
+class ExpenseSageApplication : Application() {
     lateinit var userSettings: UserSettings
     lateinit var container: AppContainer
     private lateinit var appScope: CoroutineScope
-
-
 
     override fun onCreate() {
         super.onCreate()

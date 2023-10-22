@@ -43,24 +43,23 @@ fun CurrencyScreen(currencyUiState: CurrencyUiState, onRetry: () -> Unit) {
     when (currencyUiState) {
         is CurrencyUiState.Loading -> Loading(modifier = Modifier.fillMaxSize())
         is CurrencyUiState.Success -> CurrenciesList(
-            currencyUiState.data
+            currencyUiState.data,
         )
 
         is CurrencyUiState.Error -> Error(
             onRetry,
             modifier = Modifier.fillMaxSize(),
-            currencyUiState.error
+            currencyUiState.error,
         )
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun CurrenciesList(data: JsonObject) {
     var list: List<Map.Entry<String, JsonElement>> by remember {
         mutableStateOf(
-            data["eur"]?.jsonObject?.entries?.toList() ?: emptyList()
+            data["eur"]?.jsonObject?.entries?.toList() ?: emptyList(),
         )
     }
 
@@ -71,7 +70,7 @@ fun CurrenciesList(data: JsonObject) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         SearchBar(
             modifier = Modifier.padding(16.dp),
@@ -96,18 +95,18 @@ fun CurrenciesList(data: JsonObject) {
                 }) {
                     Icon(Icons.Filled.Search, contentDescription = "Search")
                 }
-            }
+            },
         ) {
         }
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             item {
                 Text(
                     text = "Retrieval date: ${data["date"]}",
                     style = MaterialTheme.typography.labelLarge,
-                    lineHeight = 24.sp
+                    lineHeight = 24.sp,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
@@ -117,14 +116,14 @@ fun CurrenciesList(data: JsonObject) {
                         Text(
                             text = "${it.key.uppercase()}",
                             style = MaterialTheme.typography.labelLarge,
-                            lineHeight = 24.sp
+                            lineHeight = 24.sp,
                         )
                     },
                     supportingContent = {
                         Text(
                             text = "${it.value}",
                             style = MaterialTheme.typography.labelMedium,
-                            lineHeight = 24.sp
+                            lineHeight = 24.sp,
                         )
                     },
                     trailingContent = {
@@ -154,7 +153,7 @@ fun CurrenciesList(data: JsonObject) {
 fun Loading(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier,
-        contentAlignment = Alignment.Center
+        contentAlignment = Alignment.Center,
     ) {
         CircularProgressIndicator()
     }
@@ -165,13 +164,13 @@ fun Error(retryAction: () -> Unit, modifier: Modifier = Modifier, error: String)
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
             text = error,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.error,
-            lineHeight = 24.sp
+            lineHeight = 24.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = retryAction) {
