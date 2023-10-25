@@ -67,4 +67,35 @@ class SettingsViewModel(
             initialValue = true,
         )
     }
+
+    fun changeCurrency(currency: String) {
+        viewModelScope.launch {
+            userSettings.saveCurrency(currency)
+            /*TODO get accurate info from api*/
+            userSettings.saveCurrencyModifier(
+                when (currency) {
+                    "EUR" -> 1.0
+                    "USD" -> 1.068
+                    "JPY" -> 159.798
+                    else -> 1.0
+                },
+            )
+        }
+    }
+
+    fun getCurrency(): StateFlow<String> {
+        return userSettings.currency.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = "EUR",
+        )
+    }
+
+    fun getCurrencyModifier(): StateFlow<Double> {
+        return userSettings.currencyModifier.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = 1.0,
+        )
+    }
 }

@@ -32,6 +32,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.components.CurrencyText
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 import com.example.expensesage.ui.viewModels.ListViewModel
@@ -52,8 +53,6 @@ fun StartScreen(
 ) {
     val listUiState by listViewModel.get5Expenses().collectAsState()
 
-    val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
-
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
@@ -65,7 +64,7 @@ fun StartScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
-                    TopTile(viewModel, moneyAvailable)
+                    TopTile(settingsViewModel)
                 }
                 item {
                     Spacer(modifier = Modifier.size(32.dp))
@@ -139,7 +138,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
  *
  */
 @Composable
-fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
+fun TopTile(settingsViewModel: SettingsViewModel) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -167,7 +166,7 @@ fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
 
                 contentDescription = null,
             )
-            Text(text = "You have $ $moneyAvailable  left", style = MaterialTheme.typography.headlineMedium)
+            CurrencyText(currency = settingsViewModel.getCurrency(), moneyAvailable = settingsViewModel.getMoneyAvailable(), settingsViewModel.getCurrencyModifier())
         }
     }
 }

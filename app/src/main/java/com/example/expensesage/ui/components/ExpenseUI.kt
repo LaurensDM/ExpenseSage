@@ -50,6 +50,7 @@ import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
+import com.example.expensesage.ui.viewModels.SettingsViewModel
 import java.time.Month
 
 /**
@@ -267,6 +268,7 @@ fun ExpenseInformation(
     expenseName: String,
     cost: Double,
     modifier: Modifier = Modifier,
+    settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(modifier = modifier) {
         Text(
@@ -275,7 +277,7 @@ fun ExpenseInformation(
             modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
         )
         Text(
-            text = "$ $cost",
+            text = CurrencyString(currency = settingsViewModel.getCurrency(), money = cost, currencyModifier = settingsViewModel.getCurrencyModifier()),
             style = MaterialTheme.typography.bodyLarge,
         )
     }

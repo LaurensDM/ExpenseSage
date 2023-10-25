@@ -23,6 +23,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         val MONEY_OWED = doublePreferencesKey("money_owed")
         val MONEY_SPENT_MONTH = doublePreferencesKey("money_spent_month")
         val CURRENCY = stringPreferencesKey("currency") // USD, EUR, GBP, YEN ?
+        val CURRENCY_MODIFIER = doublePreferencesKey("currency_modifier")
         const val TAG = "UserSettings"
     }
 
@@ -71,6 +72,12 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
     suspend fun saveCurrency(currency: String) {
         dataStore.edit { preferences ->
             preferences[CURRENCY] = currency
+        }
+    }
+
+    suspend fun saveCurrencyModifier(currencyModifier: Double) {
+        dataStore.edit { preferences ->
+            preferences[CURRENCY_MODIFIER] = currencyModifier
         }
     }
 
@@ -176,5 +183,17 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         }
         .map { preferences ->
             preferences[CURRENCY] ?: "USD"
+        }
+
+    val currencyModifier: Flow<Double> = dataStore.data
+        .catch {
+            if (it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }.map { preferences ->
+            preferences[CURRENCY_MODIFIER] ?: 1.0
         }
 }

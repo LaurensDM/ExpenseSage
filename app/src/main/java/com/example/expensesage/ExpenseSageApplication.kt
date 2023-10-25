@@ -8,6 +8,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.example.expensesage.data.AppContainer
 import com.example.expensesage.data.AppDataContainer
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -21,11 +22,13 @@ class ExpenseSageApplication : Application() {
     lateinit var userSettings: UserSettings
     lateinit var container: AppContainer
     private lateinit var appScope: CoroutineScope
+    lateinit var currencyExecutor: CurrencyApiExecutor
 
     override fun onCreate() {
         super.onCreate()
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         userSettings = UserSettings(dataStore)
         container = AppDataContainer(this, appScope)
+        currencyExecutor = CurrencyApiExecutor(userSettings)
     }
 }

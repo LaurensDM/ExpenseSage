@@ -1,20 +1,28 @@
 package com.example.expensesage.ui.screens
 
 import android.media.MediaPlayer
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -35,14 +43,16 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.components.CurrencyIcon
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 import com.example.expensesage.ui.viewModels.SettingsViewModel
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * Composable that displays the setting screen of the app
@@ -50,13 +60,8 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
  */
 @Composable
 fun SettingScreen(
-    viewModel: MainViewModel,
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-    val mContext = LocalContext.current
-    val mMediaPlayer = MediaPlayer.create(mContext, R.raw.rockmusic)
-    mMediaPlayer.setVolume(50f, 50f)
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -64,22 +69,86 @@ fun SettingScreen(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
         PocketMoney(settingsViewModel)
-        Row {
-            Text(
-                modifier = Modifier.padding(vertical = 12.dp),
-                text = "Music:",
-                style = MaterialTheme.typography.labelLarge,
-                textAlign = TextAlign.Center,
-                lineHeight = 64.sp,
-            )
-            IconButton(onClick = { mMediaPlayer.start() }) {
-                Icon(Icons.Default.PlayArrow, contentDescription = "", Modifier.size(64.dp))
-            }
+        MonthlyBudget(viewModel = settingsViewModel)
+        CurrencySelect(onSelect = { settingsViewModel.changeCurrency(it) }, currentCurrency = settingsViewModel.getCurrency())
+        MusicPlayer()
+    }
+}
 
-            // IconButton for Pause Action
-            IconButton(onClick = { mMediaPlayer.stop() }) {
-                Icon(Icons.Default.Stop, contentDescription = "", Modifier.size(64.dp))
+@Composable
+fun MonthlyBudget(viewModel: SettingsViewModel) {
+    val monthlyMoney by viewModel.getMonthlyBudget().collectAsState()
+    val currentModifier by viewModel.getCurrencyModifier().collectAsState()
+    var text: String by remember { mutableStateOf(monthlyMoney.toString()) }
+
+    DisposableEffect(monthlyMoney) {
+        text = if (monthlyMoney == 0.0) {
+            ""
+        } else {
+            (monthlyMoney * currentModifier).toString()
+        }
+        onDispose { /* Dispose logic if needed */ }
+    }
+
+    Row(
+        modifier = Modifier.padding(16.dp),
+    ) {
+        TextField(
+            modifier = Modifier
+                .width(164.dp),
+            label = { Text(text = "Monthly Budget") },
+            placeholder = { Text(text = "Enter your pocket money") },
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            singleLine = true,
+            leadingIcon = {
+                CurrencyIcon(currency = viewModel.getCurrency())
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            visualTransformation = CurrencyVisualTransformation(),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val money: Double = if (text == "" || text == "0") {
+                        0.0
+                    } else {
+                        text.toDouble() / 100 / currentModifier
+                    }
+                    viewModel.changeMonthlyBudget(money)
+                },
+            ),
+        )
+    }
+}
+
+@Composable
+fun CurrencySelect(onSelect: (String) -> Unit, currentCurrency: StateFlow<String>) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val currency by currentCurrency.collectAsState()
+    val currencyList = listOf(
+        "EUR",
+        "USD",
+        "JPY",
+    )
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
+        Text(text = "Currency", textAlign = TextAlign.Center, modifier = Modifier.padding(top = 16.dp), style = MaterialTheme.typography.labelLarge)
+
+        Box() {
+            Button(onClick = { expanded = !expanded }) {
+                Text(text = "$currency")
+                Icon(Icons.Filled.ExpandMore, contentDescription = "Expand")
+            }
+            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, offset = DpOffset(16.dp, 0.dp)) {
+                currencyList.forEach {
+                    DropdownMenuItem(text = { Text(text = it) }, onClick = {
+                        onSelect(it)
+                        Log.i("Dropdown", "$it selected")
+                        expanded = false
+                    })
+                }
             }
         }
     }
@@ -92,7 +161,9 @@ fun SettingScreen(
 @Composable
 fun PocketMoney(settingsViewModel: SettingsViewModel) {
 //    val keyboardController = LocalSoftwareKeyboardController.current
+
     val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
+    val currentModifier by settingsViewModel.getCurrencyModifier().collectAsState()
     var edit by rememberSaveable { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
     var text: String by remember { mutableStateOf(moneyAvailable.toString()) }
@@ -101,16 +172,21 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
         text = if (moneyAvailable == 0.0) {
             ""
         } else {
-            moneyAvailable.toString()
+            val moneyAfterSecondDecimal = (moneyAvailable * currentModifier) % 0.01
+            Log.i(
+                "PocketMoney",
+                "moneyAvailable: $moneyAfterSecondDecimal",
+            )
+            (((moneyAvailable * currentModifier) - moneyAfterSecondDecimal)).toString()
         }
         onDispose { /* Dispose logic if needed */ }
     }
 
     Row(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(start = 40.dp),
+        horizontalArrangement = Arrangement.End,
     ) {
         TextField(
-//            prefix = { Text(text = "$") },
             modifier = Modifier
                 .focusRequester(focusRequester)
                 .width(164.dp),
@@ -124,10 +200,7 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
             readOnly = edit,
             enabled = !edit,
             leadingIcon = {
-                Icon(
-                    Icons.Filled.AttachMoney,
-                    contentDescription = "Localized description",
-                )
+                CurrencyIcon(currency = settingsViewModel.getCurrency())
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             visualTransformation = CurrencyVisualTransformation(),
@@ -136,7 +209,7 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
                     val money: Double = if (text == "" || text == "0") {
                         0.0
                     } else {
-                        text.toDouble() / 100
+                        text.toDouble() / 100 / currentModifier
                     }
                     edit = !edit
                     settingsViewModel.onMoneyChange(money)
@@ -149,6 +222,31 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
             focusRequester.requestFocus()
         }) {
             Icon(Icons.Default.Edit, contentDescription = "", Modifier.size(20.dp))
+        }
+    }
+}
+
+@Composable
+fun MusicPlayer() {
+    val mContext = LocalContext.current
+    val mMediaPlayer = MediaPlayer.create(mContext, R.raw.rockmusic)
+    mMediaPlayer.setVolume(50f, 50f)
+
+    Row {
+        Text(
+            modifier = Modifier.padding(vertical = 12.dp),
+            text = "Music:",
+            style = MaterialTheme.typography.labelLarge,
+            textAlign = TextAlign.Center,
+            lineHeight = 64.sp,
+        )
+        IconButton(onClick = { mMediaPlayer.start() }) {
+            Icon(Icons.Default.PlayArrow, contentDescription = "", Modifier.size(64.dp))
+        }
+
+        // IconButton for Pause Action
+        IconButton(onClick = { mMediaPlayer.stop() }) {
+            Icon(Icons.Default.Stop, contentDescription = "", Modifier.size(64.dp))
         }
     }
 }

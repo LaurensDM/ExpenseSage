@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.expensesage.network.CurrencyApi
+import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.JsonObject
 import retrofit2.HttpException
@@ -17,7 +17,7 @@ sealed interface CurrencyUiState {
     data object Loading : CurrencyUiState
 }
 
-class APIViewModel : ViewModel() {
+class APIViewModel(private val currencyApiExecutor: CurrencyApiExecutor) : ViewModel() {
 
     var currencyUiState: CurrencyUiState by mutableStateOf(CurrencyUiState.Loading)
         private set
@@ -30,7 +30,7 @@ class APIViewModel : ViewModel() {
         viewModelScope.launch {
             currencyUiState = CurrencyUiState.Loading
             currencyUiState = try {
-                CurrencyUiState.Success(CurrencyApi.retrofitService.getEurRate())
+                CurrencyUiState.Success(currencyApiExecutor.getCurrencyRates())
             } catch (e: IOException) {
                 CurrencyUiState.Error(e.localizedMessage ?: "An unknown error occured")
             } catch (e: HttpException) {

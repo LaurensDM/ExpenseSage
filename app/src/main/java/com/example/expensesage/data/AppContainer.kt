@@ -11,5 +11,4 @@ class AppDataContainer(private val context: Context, private val scope: Coroutin
     override val expenseRepository: ExpenseRepository by lazy {
         OfflineExpenseRepository(ExpenseSageDatabase.getDatabase(context, scope).expenseDao())
     }
-
 }

@@ -66,7 +66,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
             SummaryScreen()
         }
         composable(Navigations.Settings.route) {
-            SettingScreen(viewModel = viewModel)
+            SettingScreen()
         }
 //        composable(Navigations.Edit.route) { navBackStackEntry ->
 //            val id = navBackStackEntry.arguments?.getString("id") ?: ""
