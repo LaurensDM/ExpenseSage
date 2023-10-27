@@ -5,17 +5,17 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
+import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.expensesage.data.converter.DateConverter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-
 @TypeConverters(value = [DateConverter::class])
 @Database(
-    entities = [Expense::class, User::class],
-    version = 2,
-    exportSchema = false
+    entities = [Expense::class],
+    version = 3,
+    exportSchema = false,
 )
 abstract class ExpenseSageDatabase : RoomDatabase() {
 
@@ -30,7 +30,7 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                 Room.databaseBuilder(
                     context,
                     ExpenseSageDatabase::class.java,
-                    "expensesage_database"
+                    "expensesage_database",
                 ).addCallback(object : Callback() {
                     override fun onCreate(db: SupportSQLiteDatabase) {
                         super.onCreate(db)
@@ -41,21 +41,22 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                         }
                     }
                 })
-//                    .fallbackToDestructiveMigration()
+                    .addMigrations(
+                        object : Migration(1, 2) {
+                            override fun migrate(database: SupportSQLiteDatabase) {
+                                database.execSQL("DROP TABLE user_table")
+                            }
+                        },
+                        object : Migration(2, 3) {
+                            override fun migrate(database: SupportSQLiteDatabase) {
+                                database.execSQL("DROP TABLE expense_table")
+                                database.execSQL("CREATE TABLE expense_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, date TEXT NOT NULL, imageResourceId INTEGER NOT NULL, expenseName TEXT NOT NULL, expense REAL NOT NULL, owed INTEGER NOT NULL)")
+                            }
+                        },
+                    )
                     .build()
                     .also { Instance = it }
             }
         }
-
-
     }
-
-//    @DeleteTable(tableName = "user_table")
-//    class UserDeleteMigration : AutoMigrationSpec{
-//        @Override
-//        override fun onPostMigrate(db: SupportSQLiteDatabase) {
-//            // Invoked once auto migration is done
-//        }
-//    }
 }
-

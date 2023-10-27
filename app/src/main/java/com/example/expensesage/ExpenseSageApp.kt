@@ -6,12 +6,17 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.WarningAmber
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
@@ -49,11 +54,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.Create
 import com.example.expensesage.ui.components.Details
 import com.example.expensesage.ui.components.Edit
@@ -62,6 +68,7 @@ import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.NavigationType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.utils.screens
+import com.example.expensesage.ui.viewModels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -84,7 +91,6 @@ fun AppBar(
     navigationType: NavigationType,
     onNavIconPressed: () -> Unit,
     onBackIconPressed: () -> Unit,
-    modifier: Modifier = Modifier,
     scrollBehavior: TopAppBarScrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(),
     drawerState: DrawerState,
     scope: CoroutineScope,
@@ -93,13 +99,13 @@ fun AppBar(
         title = {
             Text(
                 text = stringResource(id = currentScreen.title),
-                color = MaterialTheme.colorScheme.onPrimary
+                color = MaterialTheme.colorScheme.onPrimary,
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = MaterialTheme.colorScheme.primary,
         ),
-        modifier = modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         navigationIcon = {
             if (navigationType == NavigationType.NAVIGATION_RAIL && currentScreen.route != Navigations.Settings.route) {
                 IconButton(onClick = {
@@ -150,7 +156,7 @@ fun AppBar(
 fun ExpenseSageApp(
     navController: NavHostController = rememberNavController(),
     windowSize: WindowWidthSizeClass,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -239,38 +245,100 @@ fun ExpenseSageApp(
                     navController = navController,
                     viewModel = viewModel,
                 )
-                if (viewModel.isDialogShown) {
-                    Dialog(
-                        onDismissRequest = { viewModel.onDialogDismiss() },
-                        properties = DialogProperties(
-                            dismissOnBackPress = true,
-                            dismissOnClickOutside = true,
-                        ),
-                        content = {
-                            when (viewModel.currentModalType) {
-                                ModalType.DETAIL -> {
-                                    Details(
-                                        viewModel,
-                                    )
-                                }
-
-                                ModalType.EDIT -> {
-                                    Edit(
-                                        viewModel,
-                                    )
-                                }
-
-                                else -> {
-                                    Create(
-                                        viewModel = viewModel,
-                                    )
-                                }
-                            }
-                        },
-                    )
-                }
+                ExpenseDialog(viewModel = viewModel)
+                ExpenseAlert(viewModel = viewModel)
             }
         }
+    }
+}
+
+@Composable
+fun ExpenseAlert(viewModel: MainViewModel) {
+    if (viewModel.isAlertShown) {
+        AlertDialog(
+            onDismissRequest = { viewModel.onDialogDismiss() },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.alertOnConfirm()
+                        viewModel.onDialogDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                ) {
+                    Text(text = "Confirm")
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        viewModel.onDialogDismiss()
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        contentColor = MaterialTheme.colorScheme.onSurface,
+                    ),
+                ) {
+                    Text(text = "Cancel")
+                }
+            },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                    Icon(Icons.Outlined.WarningAmber, contentDescription = "Alert")
+                    Text(
+                        text = viewModel.alertTitle,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+            },
+            modifier = Modifier.padding(16.dp),
+            shape = MaterialTheme.shapes.large,
+            properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
+            containerColor = MaterialTheme.colorScheme.surface,
+
+        )
+    }
+}
+
+/**
+ * Dialog for the app
+ *
+ * @param viewModel the viewModel that holds the data
+ */
+@Composable
+fun ExpenseDialog(viewModel: MainViewModel) {
+    if (viewModel.isDialogShown) {
+        Dialog(
+            onDismissRequest = { viewModel.onDialogDismiss() },
+            properties = DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = true,
+            ),
+            content = {
+                when (viewModel.currentModalType) {
+                    ModalType.DETAIL -> {
+                        Details(
+                            viewModel,
+                        )
+                    }
+
+                    ModalType.EDIT -> {
+                        Edit(
+                            viewModel,
+                        )
+                    }
+
+                    else -> {
+                        Create(
+                            viewModel = viewModel,
+                        )
+                    }
+                }
+            },
+        )
     }
 }
 

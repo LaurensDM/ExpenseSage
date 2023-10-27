@@ -31,10 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.components.CurrencyText
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 import com.example.expensesage.ui.viewModels.ListViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 /**
@@ -50,23 +51,20 @@ fun StartScreen(
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-    val listUiState by listViewModel.get5Expenses().collectAsState();
-
-    val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
+    val listUiState by listViewModel.get5Expenses().collectAsState()
 
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
         Column() {
-
             Spacer(modifier = Modifier.size(32.dp))
             LazyColumn(
                 contentPadding = innerPadding,
                 modifier = modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(16.dp),
             ) {
                 item {
-                    TopTile(viewModel, moneyAvailable)
+                    TopTile(settingsViewModel)
                 }
                 item {
                     Spacer(modifier = Modifier.size(32.dp))
@@ -95,14 +93,10 @@ fun StartScreen(
                         )
                     }
                 }
-
-
             }
         }
-
     }
 }
-
 
 /**
  * Composable that displays the top app bar of the app
@@ -112,11 +106,10 @@ fun StartScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
-
     CenterAlignedTopAppBar(
         title = {
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Image(
                     modifier = Modifier
@@ -128,11 +121,11 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
                     // null content description allows accessibility services to skip this element
                     // during navigation.
 
-                    contentDescription = null
+                    contentDescription = null,
                 )
                 Text(
                     text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge
+                    style = MaterialTheme.typography.displayLarge,
                 )
             }
         },
@@ -140,13 +133,12 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
     )
 }
 
-
 /**
  * Composable that displays the top tile of the start screen. Has information about the amount of money left.
  *
  */
 @Composable
-fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
+fun TopTile(settingsViewModel: SettingsViewModel) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -158,8 +150,9 @@ fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
                 .padding(start = 8.dp, end = 8.dp, top = 24.dp, bottom = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(
-                16.dp, alignment = Alignment.CenterVertically
-            )
+                16.dp,
+                alignment = Alignment.CenterVertically,
+            ),
         ) {
             Image(
                 modifier = Modifier
@@ -171,13 +164,11 @@ fun TopTile(viewModel: MainViewModel, moneyAvailable: Double) {
                 // null content description allows accessibility services to skip this element
                 // during navigation.
 
-                contentDescription = null
+                contentDescription = null,
             )
-            Text(text = "You have $ $moneyAvailable  left", style = MaterialTheme.typography.headlineMedium)
+            CurrencyText(currency = settingsViewModel.getCurrency(), moneyAvailable = settingsViewModel.getMoneyAvailable(), settingsViewModel.getCurrencyModifier())
         }
     }
-
-
 }
 
 /**

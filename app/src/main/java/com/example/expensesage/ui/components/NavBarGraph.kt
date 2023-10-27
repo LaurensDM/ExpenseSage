@@ -7,7 +7,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
 import com.example.expensesage.ui.screens.OwedScreen
@@ -16,6 +15,7 @@ import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.viewModels.APIViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 
 /**
  * Composable that displays content based on the current route
@@ -24,7 +24,7 @@ import com.example.expensesage.ui.viewModels.APIViewModel
  * @param viewModel The viewModel that holds the data
  */
 @Composable
-fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
+fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
     NavHost(
         navController = navController,
         startDestination = Navigations.Start.route,
@@ -53,19 +53,20 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
             )
         }
         composable(Navigations.Owed.route) {
-            OwedScreen(viewModel = viewModel,
+            OwedScreen(
+                viewModel = viewModel,
 //                onCreateClicked = { navController.navigate(Navigations.Currencies.route) }
             )
         }
         composable(Navigations.Currencies.route) {
-           val apiViewModel: APIViewModel = viewModel(factory = AppViewModelProvider.Factory)
-            CurrencyScreen(apiViewModel.currencyUiState, onRetry = {apiViewModel.getCurrencies()})
+            val apiViewModel: APIViewModel = viewModel(factory = AppViewModelProvider.Factory)
+            CurrencyScreen(apiViewModel.currencyUiState, onRetry = { apiViewModel.getCurrencies() })
         }
         composable(Navigations.Summary.route) {
             SummaryScreen()
         }
         composable(Navigations.Settings.route) {
-            SettingScreen(viewModel = viewModel)
+            SettingScreen()
         }
 //        composable(Navigations.Edit.route) { navBackStackEntry ->
 //            val id = navBackStackEntry.arguments?.getString("id") ?: ""
@@ -73,5 +74,3 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel, ) {
 //        }
     }
 }
-
-

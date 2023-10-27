@@ -1,4 +1,4 @@
-package com.example.expensesage.ui
+package com.example.expensesage.ui.viewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -15,6 +15,14 @@ import com.example.expensesage.ui.utils.ModalType
  */
 class MainViewModel : ViewModel() {
 
+    var isAlertShown by mutableStateOf(false)
+        private set
+
+    var alertOnConfirm by mutableStateOf({})
+        private set
+
+    var alertTitle by mutableStateOf("")
+        private set
 
     var isDialogShown by mutableStateOf(false)
         private set
@@ -27,9 +35,9 @@ class MainViewModel : ViewModel() {
 
     var selectedExpense: Expense by mutableStateOf(
         value = Expense(
-            imageResourceId =  R.drawable.cost,
-            owed = false
-        )
+            imageResourceId = R.drawable.cost,
+            owed = false,
+        ),
     )
         private set
 
@@ -38,7 +46,6 @@ class MainViewModel : ViewModel() {
 
     var currentModalType: ModalType by mutableStateOf(ModalType.DETAIL)
         private set
-
 
     /**
      * Function that is called when the user clicks on the detail button. Shows dialog
@@ -51,25 +58,22 @@ class MainViewModel : ViewModel() {
         isDialogShown = true
     }
 
+    fun showAlert(onConfirm: () -> Unit, title: String) {
+        alertOnConfirm = onConfirm
+        isAlertShown = true
+        alertTitle = title
+    }
+
     /**
      * Function that is called when the user dismisses dialog. Hides dialog
      *
      */
     fun onDialogDismiss() {
+        isAlertShown = false
         isDialogShown = false
     }
-
-
 
     fun changeCurrencyModifier(modifier: Double) {
         currencyModifier = modifier
     }
-
-
-
-//    private fun getImages() {
-//        viewModelScope.launch {
-//            val result = ImageApi.retrofitService.getImage()
-//        }
-//    }
 }

@@ -14,9 +14,9 @@ import java.lang.Integer.max
  * @property numberOfDecimals The number of decimals that the currency value should have.
  */
 class CurrencyVisualTransformation(
-    private val fixedCursorAtTheEnd: Boolean = true, private val numberOfDecimals: Int = 2
+    private val fixedCursorAtTheEnd: Boolean = true,
+    private val numberOfDecimals: Int = 2,
 ) : VisualTransformation {
-
 
     private val symbols = DecimalFormat().decimalFormatSymbols
 
@@ -27,44 +27,35 @@ class CurrencyVisualTransformation(
      * @return The transformed text
      */
     override fun filter(text: AnnotatedString): TransformedText {
-        val thousandsSeparator = symbols.groupingSeparator
-        val decimalSeparator = symbols.decimalSeparator
-        val zero = symbols.zeroDigit
+//        val thousandsSeparator = symbols.groupingSeparator
+//        val decimalSeparator = symbols.decimalSeparator
+//        val zero = symbols.zeroDigit
 
+        val numberFormat = DecimalFormat("#,##0.00")
         val inputText = text.text
 
-        val intPart = inputText.dropLast(numberOfDecimals).reversed().chunked(3)
-            .joinToString(thousandsSeparator.toString()).reversed().ifEmpty {
-                zero.toString()
-            }
+        val numericInput = inputText.filter { it.isDigit() || it == '.' }
 
-        val fractionPart = inputText.takeLast(numberOfDecimals).let {
-            if (it.length != numberOfDecimals) {
-                List(numberOfDecimals - it.length) {
-                    zero
-                }.joinToString("") + it
-            } else {
-                it
-            }
-        }
+        val numericValue = numericInput.toDoubleOrNull() ?: 0.0
 
-        val formattedNumber = intPart + decimalSeparator + fractionPart
+        val formattedNumber = numberFormat.format(numericValue)
 
         val newText = AnnotatedString(
             text = formattedNumber,
             spanStyles = text.spanStyles,
-            paragraphStyles = text.paragraphStyles
+            paragraphStyles = text.paragraphStyles,
         )
 
         val offsetMapping = if (fixedCursorAtTheEnd) {
             FixedCursorOffsetMapping(
-                contentLength = inputText.length, formattedContentLength = formattedNumber.length
+                contentLength = inputText.length,
+                formattedContentLength = formattedNumber.length,
             )
         } else {
             MovableCursorOffsetMapping(
                 unmaskedText = text.toString(),
                 maskedText = newText.toString(),
-                decimalDigits = numberOfDecimals
+                decimalDigits = numberOfDecimals,
             )
         }
 
@@ -95,7 +86,7 @@ class CurrencyVisualTransformation(
     private class MovableCursorOffsetMapping(
         private val unmaskedText: String,
         private val maskedText: String,
-        private val decimalDigits: Int
+        private val decimalDigits: Int,
     ) : OffsetMapping {
         /**
          * Function that is called when the user inputs a value in the text field. Masks the input value as a currency value.

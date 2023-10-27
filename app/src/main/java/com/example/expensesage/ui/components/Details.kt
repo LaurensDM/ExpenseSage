@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.components
 
-
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -20,9 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
-import com.example.expensesage.ui.MainViewModel
-
-
+import com.example.expensesage.ui.viewModels.MainViewModel
 
 /**
  * Composable that displays the details of an expense as a dialog
@@ -44,7 +41,7 @@ fun Details(viewModel: MainViewModel) {
             lineHeight = 24.sp,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(16.dp),
         )
         Column(
             modifier = Modifier.padding(start = 8.dp, end = 8.dp, bottom = 8.dp),
@@ -58,7 +55,7 @@ fun Details(viewModel: MainViewModel) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(
                     space = 8.dp,
-                    alignment = Alignment.Top
+                    alignment = Alignment.Top,
                 ),
             ) {
                 Text(
@@ -72,7 +69,7 @@ fun Details(viewModel: MainViewModel) {
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Created: ${viewModel.selectedExpense.date}",
+                    text = "Created: ${viewModel.selectedExpense.date.toLocalDate()}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
@@ -84,10 +81,11 @@ fun Details(viewModel: MainViewModel) {
                 verticalAlignment = Alignment.Bottom,
             ) {
                 Button(
-                    onClick = { viewModel.onDialogDismiss() }, colors = ButtonDefaults.buttonColors(
+                    onClick = { viewModel.onDialogDismiss() },
+                    colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    ),
                 ) {
                     Text(text = "Close")
                 }

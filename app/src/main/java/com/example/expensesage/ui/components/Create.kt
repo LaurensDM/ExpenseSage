@@ -2,7 +2,6 @@ package com.example.expensesage.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
@@ -22,9 +21,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.viewModels.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -35,10 +34,9 @@ fun Create(
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
         Card(
             elevation = CardDefaults.cardElevation(5.dp),
@@ -48,7 +46,7 @@ fun Create(
             CreateForm(
                 dataViewModel = dataViewModel,
                 onDoneClicked = { viewModel.onDialogDismiss() },
-                owed = viewModel.isOwed
+                owed = viewModel.isOwed,
             )
         }
     }
@@ -58,7 +56,7 @@ fun Create(
 fun CreateForm(
     dataViewModel: ExpenseDetailsViewModel,
     onDoneClicked: () -> Unit = {},
-    owed: Boolean
+    owed: Boolean,
 ) {
     var name by rememberSaveable { mutableStateOf("") }
     var nameError by rememberSaveable { mutableStateOf(true) }
@@ -73,15 +71,15 @@ fun CreateForm(
             onValueChange = {
                 name = it
                 nameError = name.isEmpty()
-                            },
+            },
             label = { Text(text = "Name") },
-            isError = nameError
+            isError = nameError,
         )
         if (nameError) {
             Text(
                 text = "name is not valid",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
         }
         TextField(
@@ -94,17 +92,16 @@ fun CreateForm(
                     amountError = true
                     amount = 0.00.toString()
                 }
-
-                            },
+            },
             label = { Text(text = "Amount") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            isError = amountError
+            isError = amountError,
         )
         if (amountError) {
             Text(
                 text = "amount is not valid",
                 style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.error
+                color = MaterialTheme.colorScheme.error,
             )
         }
         Button(
@@ -113,12 +110,12 @@ fun CreateForm(
                     ExpenseDetail(
                         expenseName = name,
                         expense = format.parse(amount).toDouble().toString(),
-                        owed = owed
-                    )
+                        owed = owed,
+                    ),
                 )
                 onDoneClicked()
             },
-            enabled = !(nameError || amountError)
+            enabled = !(nameError || amountError),
         ) {
             Text(text = "Done")
         }
