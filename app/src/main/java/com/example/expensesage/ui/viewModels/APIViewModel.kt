@@ -1,6 +1,8 @@
 package com.example.expensesage.ui.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -22,6 +24,8 @@ class APIViewModel(private val currencyApiExecutor: CurrencyApiExecutor) : ViewM
     var currencyUiState: CurrencyUiState by mutableStateOf(CurrencyUiState.Loading)
         private set
 
+    var currencyRate: Double by mutableDoubleStateOf(0.0)
+        private set
     init {
         getCurrencies()
     }
@@ -36,6 +40,18 @@ class APIViewModel(private val currencyApiExecutor: CurrencyApiExecutor) : ViewM
             } catch (e: HttpException) {
                 CurrencyUiState.Error(e.localizedMessage ?: "An unknown error occured")
             }
+        }
+    }
+
+    suspend fun getRate(currency: String): Double {
+        currencyRate = try {
+            return currencyApiExecutor.getRate(currency)
+        } catch (e: IOException) {
+            Log.d("APIViewModel", "getRate: ${e.localizedMessage}")
+            return 1.0
+        } catch (e: HttpException) {
+            Log.d("APIViewModel", "getRate: ${e.localizedMessage}")
+            return 1.0
         }
     }
 }

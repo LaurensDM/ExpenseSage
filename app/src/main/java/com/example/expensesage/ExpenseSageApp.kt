@@ -54,11 +54,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.expensesage.ui.MainViewModel
+import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.Create
 import com.example.expensesage.ui.components.Details
 import com.example.expensesage.ui.components.Edit
@@ -67,6 +68,7 @@ import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.NavigationType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.utils.screens
+import com.example.expensesage.ui.viewModels.MainViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -154,7 +156,7 @@ fun AppBar(
 fun ExpenseSageApp(
     navController: NavHostController = rememberNavController(),
     windowSize: WindowWidthSizeClass,
-    viewModel: MainViewModel,
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()

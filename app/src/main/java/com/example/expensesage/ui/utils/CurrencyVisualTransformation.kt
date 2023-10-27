@@ -27,28 +27,18 @@ class CurrencyVisualTransformation(
      * @return The transformed text
      */
     override fun filter(text: AnnotatedString): TransformedText {
-        val thousandsSeparator = symbols.groupingSeparator
-        val decimalSeparator = symbols.decimalSeparator
-        val zero = symbols.zeroDigit
+//        val thousandsSeparator = symbols.groupingSeparator
+//        val decimalSeparator = symbols.decimalSeparator
+//        val zero = symbols.zeroDigit
 
+        val numberFormat = DecimalFormat("#,##0.00")
         val inputText = text.text
 
-        val intPart = inputText.dropLast(numberOfDecimals).reversed().chunked(3)
-            .joinToString(thousandsSeparator.toString()).reversed().ifEmpty {
-                zero.toString()
-            }
+        val numericInput = inputText.filter { it.isDigit() || it == '.' }
 
-        val fractionPart = inputText.takeLast(numberOfDecimals).let {
-            if (it.length != numberOfDecimals) {
-                List(numberOfDecimals - it.length) {
-                    zero
-                }.joinToString("") + it
-            } else {
-                it
-            }
-        }
+        val numericValue = numericInput.toDoubleOrNull() ?: 0.0
 
-        val formattedNumber = intPart + decimalSeparator + fractionPart
+        val formattedNumber = numberFormat.format(numericValue)
 
         val newText = AnnotatedString(
             text = formattedNumber,

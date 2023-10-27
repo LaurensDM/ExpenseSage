@@ -37,10 +37,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.DpOffset
@@ -48,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
+import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyIcon
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
@@ -72,85 +75,11 @@ fun SettingScreen(
         Spacer(modifier = Modifier.height(16.dp))
         PocketMoney(settingsViewModel)
         MonthlyBudget(viewModel = settingsViewModel)
-        CurrencySelect(onSelect = { settingsViewModel.changeCurrency(it) }, currentCurrency = settingsViewModel.getCurrency())
-        MusicPlayer()
-    }
-}
-
-@Composable
-fun MonthlyBudget(viewModel: SettingsViewModel) {
-    val monthlyMoney by viewModel.getMonthlyBudget().collectAsState()
-    val currentModifier by viewModel.getCurrencyModifier().collectAsState()
-    var text: String by remember { mutableStateOf(monthlyMoney.toString()) }
-
-    DisposableEffect(monthlyMoney) {
-        text = if (monthlyMoney == 0.0) {
-            ""
-        } else {
-            (monthlyMoney * currentModifier).toString()
-        }
-        onDispose { /* Dispose logic if needed */ }
-    }
-
-    Row(
-        modifier = Modifier.padding(16.dp),
-    ) {
-        TextField(
-            modifier = Modifier
-                .width(164.dp),
-            label = { Text(text = "Monthly Budget") },
-            placeholder = { Text(text = "Enter your pocket money") },
-            value = text,
-            onValueChange = {
-                text = it
-            },
-            singleLine = true,
-            leadingIcon = {
-                CurrencyIcon(currency = viewModel.getCurrency())
-            },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-            visualTransformation = CurrencyVisualTransformation(),
-            keyboardActions = KeyboardActions(
-                onDone = {
-                    val money: Double = if (text == "" || text == "0") {
-                        0.0
-                    } else {
-                        text.toDouble() / 100 / currentModifier
-                    }
-                    viewModel.changeMonthlyBudget(money)
-                },
-            ),
+        CurrencySelect(
+            onSelect = { settingsViewModel.changeCurrency(it) },
+            currentCurrency = settingsViewModel.getCurrency(),
         )
-    }
-}
-
-@Composable
-fun CurrencySelect(onSelect: (String) -> Unit, currentCurrency: StateFlow<String>) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    val currency by currentCurrency.collectAsState()
-    val currencyList = listOf(
-        "EUR",
-        "USD",
-        "JPY",
-    )
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally)) {
-        Text(text = "Currency", textAlign = TextAlign.Center, modifier = Modifier.padding(top = 16.dp), style = MaterialTheme.typography.labelLarge)
-
-        Box() {
-            Button(onClick = { expanded = !expanded }) {
-                Text(text = "$currency")
-                Icon(Icons.Filled.ExpandMore, contentDescription = "Expand")
-            }
-            DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }, offset = DpOffset(16.dp, 0.dp)) {
-                currencyList.forEach {
-                    DropdownMenuItem(text = { Text(text = it) }, onClick = {
-                        onSelect(it)
-                        Log.i("Dropdown", "$it selected")
-                        expanded = false
-                    })
-                }
-            }
-        }
+        MusicPlayer()
     }
 }
 
@@ -168,7 +97,7 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
     val focusRequester = remember { FocusRequester() }
     var text: String by remember { mutableStateOf(moneyAvailable.toString()) }
 
-    DisposableEffect(moneyAvailable) {
+    DisposableEffect(moneyAvailable, currentModifier) {
         text = if (moneyAvailable == 0.0) {
             ""
         } else {
@@ -209,7 +138,7 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
                     val money: Double = if (text == "" || text == "0") {
                         0.0
                     } else {
-                        text.toDouble() / 100 / currentModifier
+                        text.toDouble() / currentModifier
                     }
                     edit = !edit
                     settingsViewModel.onMoneyChange(money)
@@ -222,6 +151,103 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
             focusRequester.requestFocus()
         }) {
             Icon(Icons.Default.Edit, contentDescription = "", Modifier.size(20.dp))
+        }
+    }
+}
+
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun MonthlyBudget(viewModel: SettingsViewModel) {
+    val monthlyMoney by viewModel.getMonthlyBudget().collectAsState()
+    val currentModifier by viewModel.getCurrencyModifier().collectAsState()
+    var text: String by remember { mutableStateOf(monthlyMoney.toString()) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    DisposableEffect(monthlyMoney, currentModifier) {
+        text = if (monthlyMoney == 0.0) {
+            ""
+        } else {
+            (monthlyMoney * currentModifier).toString()
+        }
+        onDispose { /* Dispose logic if needed */ }
+    }
+
+    Row(
+        modifier = Modifier.padding(16.dp),
+    ) {
+        TextField(
+            modifier = Modifier
+                .width(164.dp),
+            label = { Text(text = "Monthly Budget") },
+            placeholder = { Text(text = "Enter your pocket money") },
+            value = text,
+            onValueChange = {
+                text = it
+            },
+            singleLine = true,
+            leadingIcon = {
+                CurrencyIcon(currency = viewModel.getCurrency())
+            },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+            visualTransformation = CurrencyVisualTransformation(),
+            keyboardActions = KeyboardActions(
+                onDone = {
+                    val money: Double = if (text == "" || text == "0") {
+                        0.0
+                    } else {
+                        text.toDouble() / currentModifier
+                    }
+                    viewModel.changeMonthlyBudget(money)
+                    keyboardController?.hide()
+                },
+            ),
+        )
+    }
+}
+
+@Composable
+fun CurrencySelect(
+    onSelect: (String) -> Unit,
+    currentCurrency: StateFlow<String>,
+) {
+//    val scope = rememberCoroutineScope()
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val currency by currentCurrency.collectAsState()
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+    ) {
+        Text(
+            text = "Currency",
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(top = 16.dp),
+            style = MaterialTheme.typography.labelLarge,
+        )
+
+        Box() {
+            Button(onClick = { expanded = !expanded }) {
+                Text(text = "$currency")
+                Icon(Icons.Filled.ExpandMore, contentDescription = "Expand")
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                offset = DpOffset(16.dp, 0.dp),
+            ) {
+                currencyList.forEach {
+                    DropdownMenuItem(text = { Text(text = it) }, onClick = {
+                        onSelect(it)
+//                        var double = 0.0
+//                        scope.launch {
+//                            double = apiViewModel.getRate(it)
+//                            Log.d("Dropdown", "CurrencyRate: $double")
+//                        }
+                        Log.i("Dropdown", "$it selected")
+                        expanded = false
+                    })
+                }
+            }
         }
     }
 }

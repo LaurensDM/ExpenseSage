@@ -8,6 +8,7 @@ import com.example.expensesage.ExpenseSageApplication
 import com.example.expensesage.ui.viewModels.APIViewModel
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.ListViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 object AppViewModelProvider {
@@ -21,10 +22,16 @@ object AppViewModelProvider {
             ListViewModel(expenseRepository = expenseSageApplicaton().container.expenseRepository)
         }
         initializer {
-            SettingsViewModel(userSettings = expenseSageApplicaton().userSettings)
+            SettingsViewModel(
+                userSettings = expenseSageApplicaton().userSettings,
+                currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
+            )
         }
         initializer {
             APIViewModel(currencyApiExecutor = expenseSageApplicaton().currencyExecutor)
+        }
+        initializer {
+            MainViewModel()
         }
     }
 }

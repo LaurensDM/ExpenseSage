@@ -10,12 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.expensesage.data.expenses
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.ExpenseList
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 
 /**
  * Composable that displays the expense screen of the app

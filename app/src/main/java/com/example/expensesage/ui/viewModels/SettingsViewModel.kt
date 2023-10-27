@@ -3,6 +3,8 @@ package com.example.expensesage.ui.viewModels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.currencyList
+import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.stateIn
@@ -10,6 +12,7 @@ import kotlinx.coroutines.launch
 
 class SettingsViewModel(
     private val userSettings: UserSettings,
+    private val currencyApiExecutor: CurrencyApiExecutor,
 ) : ViewModel() {
 
     fun onMoneyChange(newMoney: Double) {
@@ -70,16 +73,22 @@ class SettingsViewModel(
 
     fun changeCurrency(currency: String) {
         viewModelScope.launch {
-            userSettings.saveCurrency(currency)
-            /*TODO get accurate info from api*/
-            userSettings.saveCurrencyModifier(
-                when (currency) {
-                    "EUR" -> 1.0
-                    "USD" -> 1.068
-                    "JPY" -> 159.798
-                    else -> 1.0
-                },
-            )
+            try {
+                userSettings.saveCurrencyModifier(currencyApiExecutor.getRate(currency))
+                userSettings.saveCurrency(currency)
+            } catch (e: Exception) {
+                userSettings.saveCurrencyModifier(
+                    when (currency) {
+                        "EUR" -> 1.0
+                        "USD" -> 1.068
+                        "JPY" -> 159.798
+                        else -> 1.0
+                    },
+                )
+                userSettings.saveCurrency(
+                    if (currencyList.contains(currency)) currency else "EUR",
+                )
+            }
         }
     }
 

@@ -31,11 +31,11 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.components.CurrencyText
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 import com.example.expensesage.ui.viewModels.ListViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 /**

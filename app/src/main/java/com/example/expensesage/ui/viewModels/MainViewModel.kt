@@ -1,4 +1,4 @@
-package com.example.expensesage.ui
+package com.example.expensesage.ui.viewModels
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf

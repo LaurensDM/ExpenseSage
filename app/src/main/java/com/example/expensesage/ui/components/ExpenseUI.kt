@@ -47,9 +47,9 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import java.time.Month
 

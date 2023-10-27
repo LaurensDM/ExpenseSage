@@ -21,9 +21,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.viewModels.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 import java.text.NumberFormat
 import java.util.Locale
 

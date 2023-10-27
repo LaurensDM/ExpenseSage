@@ -197,3 +197,9 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[CURRENCY_MODIFIER] ?: 1.0
         }
 }
+
+val currencyList = listOf(
+    "EUR",
+    "USD",
+    "JPY",
+)

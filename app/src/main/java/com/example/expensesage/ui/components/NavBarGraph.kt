@@ -7,7 +7,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.MainViewModel
 import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
 import com.example.expensesage.ui.screens.OwedScreen
@@ -16,6 +15,7 @@ import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.viewModels.APIViewModel
+import com.example.expensesage.ui.viewModels.MainViewModel
 
 /**
  * Composable that displays content based on the current route
