@@ -8,7 +8,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.8.10"
 }
 
-
 android {
     namespace = "com.example.expensesage"
     compileSdk = 34
@@ -31,7 +30,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -55,7 +54,6 @@ android {
         }
     }
 }
-
 
 dependencies {
 
@@ -87,14 +85,10 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.11.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.6.0")
 
-    //Room
+    // Room
     implementation("androidx.room:room-runtime:2.5.2")
     ksp("androidx.room:room-compiler:2.5.2")
     implementation("androidx.room:room-ktx:2.5.2")
 
     implementation("androidx.datastore:datastore-preferences:1.0.0")
-//    implementation("com.himanshoe:charty:2.0.0-alpha01")
-    implementation ("com.github.tehras:charts:0.2.4-alpha")
-
-//    implementation("co.yml:ycharts:2.1.0")
 }

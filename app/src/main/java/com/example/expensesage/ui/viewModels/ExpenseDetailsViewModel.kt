@@ -6,10 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.data.ExpenseRepository
+import com.example.expensesage.data.UserSettings
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class ExpenseDetailsViewModel(
+    private val userPref: UserSettings,
     private val expenseRepository: ExpenseRepository,
 ) : ViewModel() {
 //    var expenseUIState by mutableStateOf(ExpenseUIState())
@@ -40,21 +43,44 @@ class ExpenseDetailsViewModel(
 
     fun saveExpense(expense: ExpenseDetail) {
         viewModelScope.launch {
-            if (validateInput()) {
+            if (expense.owed) {
+                userPref.saveMoneyOwed(moneyOwed = (userPref.moneyOwed.first() + expense.expense.toDouble()))
+            } else {
+                userPref.saveMoneySpent(moneySpent = (userPref.moneySpent.first() + expense.expense.toDouble()))
+            }
+            if (validateInput(expense)) {
                 expenseRepository.insert(expense = expense.toExpense())
             }
         }
     }
 
-    fun updateExpense(expense: ExpenseDetail) {
+    fun updateExpense(expense: ExpenseDetail, originalExpense: Expense) {
         viewModelScope.launch {
-            if (validateInput()) {
-                expenseRepository.update(expense = expense.toExpense())
+            val newExpense = expense.toExpense()
+            val moneyOwed = userPref.moneyOwed.first()
+            val moneySpent = userPref.moneySpent.first()
+            if (originalExpense.owed) {
+                if (expense.owed) {
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.expense + newExpense.expense))
+                } else {
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.expense))
+                    userPref.saveMoneySpent(moneySpent = (moneySpent) + newExpense.expense)
+                }
+            } else {
+                if (expense.owed) {
+                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.expense))
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed + newExpense.expense))
+                } else {
+                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.expense + newExpense.expense))
+                }
             }
+//            if (validateInput(expense)) {
+            expenseRepository.update(expense = newExpense)
+//            }
         }
     }
 
-    private fun validateInput(): Boolean {
+    private fun validateInput(expense: ExpenseDetail): Boolean {
         return true
     }
 
@@ -92,13 +118,6 @@ fun ExpenseDetail.toExpense(): Expense = Expense(
     imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
     date = LocalDateTime.parse(date),
 )
-
-// fun Expense.toExpenseUIState(isEntryValid: Boolean): ExpenseUIState {
-//    return ExpenseUIState(
-//        expenseDetails = this.toExpenseDetails(),
-//        isEntryValid = isEntryValid,
-//    )
-// }
 
 fun Expense.formatedPrice(): String {
     return NumberFormat.getCurrencyInstance().format(expense)

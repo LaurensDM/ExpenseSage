@@ -10,11 +10,13 @@ import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
+import com.example.expensesage.ui.viewModels.StatisticViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
             ExpenseDetailsViewModel(
+                expenseSageApplicaton().userSettings,
                 expenseSageApplicaton().container.expenseRepository,
             )
         }
@@ -26,6 +28,9 @@ object AppViewModelProvider {
                 userSettings = expenseSageApplicaton().userSettings,
                 currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
             )
+        }
+        initializer {
+            StatisticViewModel(userPref = expenseSageApplicaton().userSettings)
         }
         initializer {
             APIViewModel(currencyApiExecutor = expenseSageApplicaton().currencyExecutor)

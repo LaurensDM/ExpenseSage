@@ -63,3 +63,18 @@ val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFF6CDBAC)
 val md_theme_dark_outlineVariant = Color(0xFF404943)
 val md_theme_dark_scrim = Color(0xFF000000)
+
+val OxfordBlue = Color(0xFF01184a)
+val MetallicYellow = Color(0xFFFFCE08)
+val VividOrange = Color(0xFFFD5F00)
+val Sapphire = Color(0xFF1259b8)
+val RobingEggBlue = Color(0xFF0fd4C4)
+
+val PetroleumGray = Color(0xFF37474f)
+val PetroleumLightGray = Color(0xFF455a64)
+
+val Slice1 = Color(0xFF006C4C)
+val Slice2 = Color(0xFF418165)
+val Slice3 = Color(0xFF89F8C7)
+val Slice4 = Color(0XFF4F9D69)
+val Slice5 = Color(0xFF6DA28B)
