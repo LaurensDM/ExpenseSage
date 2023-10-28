@@ -17,9 +17,6 @@ class CurrencyVisualTransformation(
     private val fixedCursorAtTheEnd: Boolean = true,
     private val numberOfDecimals: Int = 2,
 ) : VisualTransformation {
-
-    private val symbols = DecimalFormat().decimalFormatSymbols
-
     /**
      * Function that is called when the user inputs a value in the text field. Masks the input value as a currency value.
      *

@@ -203,3 +203,12 @@ val currencyList = listOf(
     "USD",
     "JPY",
 )
+
+val categories = listOf(
+    "Food & Groceries",
+    "Rent",
+    "Gas",
+    "Online Purchases",
+    "Clothing",
+    "Other",
+)

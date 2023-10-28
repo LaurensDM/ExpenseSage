@@ -59,12 +59,12 @@ fun Details(viewModel: MainViewModel) {
                 ),
             ) {
                 Text(
-                    text = "Topic: ${viewModel.selectedExpense.expenseName}",
+                    text = "Topic: ${viewModel.selectedExpense.name}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Price: € ${viewModel.selectedExpense.expense}",
+                    text = "Price: € ${viewModel.selectedExpense.amount}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )

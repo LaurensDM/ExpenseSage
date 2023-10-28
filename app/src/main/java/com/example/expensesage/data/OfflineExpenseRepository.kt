@@ -1,8 +1,12 @@
 package com.example.expensesage.data
 
+import com.example.expensesage.ui.utils.ExpenseSummaryItem
 import kotlinx.coroutines.flow.Flow
 
 class OfflineExpenseRepository(private val expenseDao: ExpenseDao) : ExpenseRepository {
+    override fun getAllExpenses(): Flow<List<Expense>> {
+        return expenseDao.getAllExpenses()
+    }
 
     override fun getExpenses(owed: Boolean): Flow<List<Expense>> {
         return expenseDao.getExpenses(owed)
@@ -26,5 +30,29 @@ class OfflineExpenseRepository(private val expenseDao: ExpenseDao) : ExpenseRepo
 
     override suspend fun delete(expense: Expense) {
         expenseDao.delete(expense)
+    }
+
+    override fun getSumOfCategory(searchQuery: String): Flow<List<ExpenseSummaryItem>> {
+        return expenseDao.getSumOfCategory(searchQuery)
+    }
+
+    override fun getSumOfOwed(owed: Boolean): Flow<Double> {
+        return expenseDao.getSumOfOwed(owed)
+    }
+
+    override fun getSumOfAll(): Flow<Double> {
+        return expenseDao.getSumOfAll()
+    }
+
+    override fun getMonthlyExpenseSummary(year: String): Flow<List<ExpenseSummaryItem>> {
+        return expenseDao.getMonthlyExpenseSummary(year)
+    }
+
+    override fun getSumOfDate(searchQuery: String): Flow<Double> {
+        return expenseDao.getSumOfDate(searchQuery)
+    }
+
+    override fun getSumOfCategoryAndDate(searchQuery: String, date: String): Flow<Double> {
+        return expenseDao.getSumOfCategoryAndDate(searchQuery, date)
     }
 }

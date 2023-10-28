@@ -129,7 +129,7 @@ fun CurrenciesList(data: JsonObject, settingsViewModel: SettingsViewModel = view
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = "${it.key.uppercase()}",
+                            text = it.key.uppercase(),
                             style = MaterialTheme.typography.labelLarge,
                             lineHeight = 24.sp,
                         )

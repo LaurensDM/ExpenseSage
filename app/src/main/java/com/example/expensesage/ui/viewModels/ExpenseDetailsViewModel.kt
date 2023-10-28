@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.viewModels
 
-import android.icu.text.NumberFormat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
@@ -15,18 +14,6 @@ class ExpenseDetailsViewModel(
     private val userPref: UserSettings,
     private val expenseRepository: ExpenseRepository,
 ) : ViewModel() {
-//    var expenseUIState by mutableStateOf(ExpenseUIState())
-//        private set
-
-//    init {
-//        viewModelScope.launch {
-//            expenseUIState = expenseRepository.getExpense(1)
-//                .filterNotNull()
-//                .first()
-//                .toExpenseUIState(true)
-//        }
-//    }
-
     fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
             expenseRepository.delete(expense = expense)
@@ -34,9 +21,13 @@ class ExpenseDetailsViewModel(
     }
 
     fun payOwed(expense: Expense) {
-        val payedExpense = expense.copy(owed = false, imageResourceId = R.drawable.cost, date = LocalDateTime.now())
-
+        val payedExpense = expense.copy(
+            owed = false,
+            imageResourceId = R.drawable.cost,
+            date = LocalDateTime.now(),
+        )
         viewModelScope.launch {
+            userPref.saveMoneySpent(payedExpense.amount)
             expenseRepository.update(expense = payedExpense)
         }
     }
@@ -44,11 +35,11 @@ class ExpenseDetailsViewModel(
     fun saveExpense(expense: ExpenseDetail) {
         viewModelScope.launch {
             if (expense.owed) {
-                userPref.saveMoneyOwed(moneyOwed = (userPref.moneyOwed.first() + expense.expense.toDouble()))
+                userPref.saveMoneyOwed(moneyOwed = (userPref.moneyOwed.first() + expense.amount.toDouble()))
             } else {
-                userPref.saveMoneySpent(moneySpent = (userPref.moneySpent.first() + expense.expense.toDouble()))
+                userPref.saveMoneySpent(moneySpent = (userPref.moneySpent.first() + expense.amount.toDouble()))
             }
-            if (validateInput(expense)) {
+            if (validateInput()) {
                 expenseRepository.insert(expense = expense.toExpense())
             }
         }
@@ -61,17 +52,17 @@ class ExpenseDetailsViewModel(
             val moneySpent = userPref.moneySpent.first()
             if (originalExpense.owed) {
                 if (expense.owed) {
-                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.expense + newExpense.expense))
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.amount + newExpense.amount))
                 } else {
-                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.expense))
-                    userPref.saveMoneySpent(moneySpent = (moneySpent) + newExpense.expense)
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.amount))
+                    userPref.saveMoneySpent(moneySpent = (moneySpent) + newExpense.amount)
                 }
             } else {
                 if (expense.owed) {
-                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.expense))
-                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed + newExpense.expense))
+                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.amount))
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed + newExpense.amount))
                 } else {
-                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.expense + newExpense.expense))
+                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.amount + newExpense.amount))
                 }
             }
 //            if (validateInput(expense)) {
@@ -80,45 +71,26 @@ class ExpenseDetailsViewModel(
         }
     }
 
-    private fun validateInput(expense: ExpenseDetail): Boolean {
+    private fun validateInput(): Boolean {
         return true
     }
 
-//    companion object {
-//        private const val TIMEOUT_MILLIS = 5_000L
-//    }
-}
+    data class ExpenseDetail(
+        var id: Int = 0,
+        var date: String = LocalDateTime.now().toString(),
+        var name: String = "Unknown",
+        var amount: String = "0.00",
+        var owed: Boolean = false,
+        var category: String = "Other",
+    )
 
-data class ExpenseUIState(
-    val expenseDetails: ExpenseDetail = ExpenseDetail(),
-    val isEntryValid: Boolean = false,
-)
-
-data class ExpenseDetail(
-    var id: Int = 0,
-    var date: String = LocalDateTime.now().toString(),
-    var expenseName: String = "Unknown",
-    var expense: String = "0.00",
-    var owed: Boolean = false,
-)
-
-fun Expense.toExpenseDetails(): ExpenseDetail = ExpenseDetail(
-    id = id,
-    expenseName = expenseName,
-    expense = "$expense",
-    owed = owed,
-    date = date.toString(),
-)
-
-fun ExpenseDetail.toExpense(): Expense = Expense(
-    id = id,
-    expenseName = expenseName,
-    expense = expense.toDoubleOrNull() ?: 0.0,
-    owed = owed,
-    imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
-    date = LocalDateTime.parse(date),
-)
-
-fun Expense.formatedPrice(): String {
-    return NumberFormat.getCurrencyInstance().format(expense)
+    private fun ExpenseDetail.toExpense(): Expense = Expense(
+        id = id,
+        name = name,
+        amount = amount.toDoubleOrNull() ?: 0.0,
+        owed = owed,
+        imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
+        date = LocalDateTime.parse(date),
+        category = category,
+    )
 }

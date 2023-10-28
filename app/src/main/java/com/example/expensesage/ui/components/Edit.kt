@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
-import com.example.expensesage.ui.viewModels.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 
@@ -62,10 +61,13 @@ fun EditForm(
     expense: Expense,
 ) {
     var name by rememberSaveable {
-        mutableStateOf(expense.expenseName)
+        mutableStateOf(expense.name)
     }
     var amount by rememberSaveable {
-        mutableStateOf(expense.expense.toString())
+        mutableStateOf(expense.amount.toString())
+    }
+    var category by rememberSaveable {
+        mutableStateOf(expense.category)
     }
 
     Column(modifier = Modifier.padding(horizontal = 32.dp, vertical = 16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
@@ -81,14 +83,16 @@ fun EditForm(
             onValueChange = { amount = it },
             label = { Text(text = "Amount") },
         )
+        CategoryDropdown(category = category, onSelect = { category = it })
         Button(onClick = {
             println(expense)
-            val editedExpense = ExpenseDetail(
+            val editedExpense = ExpenseDetailsViewModel.ExpenseDetail(
                 id = expense.id,
-                expenseName = name,
-                expense = amount,
+                name = name,
+                amount = amount,
                 owed = expense.owed,
                 date = expense.date.toString(),
+                category = category,
             )
             dataViewModel.updateExpense(editedExpense, expense)
             onDoneClicked()

@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -16,7 +15,6 @@ import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OwedScreen(
     viewModel: MainViewModel,

@@ -2,7 +2,6 @@ package com.example.expensesage.ui.components
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -30,32 +29,16 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         startDestination = Navigations.Start.route,
     ) {
         composable(Navigations.Start.route) {
-            StartScreen(viewModel = viewModel)
+            StartScreen()
         }
         composable(Navigations.Expenses.route) {
             ExpenseScreen(
                 viewModel = viewModel,
-                onCreateClicked = {
-                    navController.navigate("Edit/0") {
-                        // Pop up to the start destination of the graph to
-                        // avoid building up a large stack of destinations
-                        // on the back stack as users select items
-                        popUpTo(navController.graph.findStartDestination().id) {
-                            saveState = true
-                        }
-                        // Avoid multiple copies of the same destination when
-                        // reselecting the same item
-                        launchSingleTop = true
-                        // Restore state when reselecting a previously selected item
-                        restoreState = true
-                    }
-                },
             )
         }
         composable(Navigations.Owed.route) {
             OwedScreen(
                 viewModel = viewModel,
-//                onCreateClicked = { navController.navigate(Navigations.Currencies.route) }
             )
         }
         composable(Navigations.Currencies.route) {
@@ -68,9 +51,5 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         composable(Navigations.Settings.route) {
             SettingScreen()
         }
-//        composable(Navigations.Edit.route) { navBackStackEntry ->
-//            val id = navBackStackEntry.arguments?.getString("id") ?: ""
-//            Edit(id = id, onDoneClicked = { navController.navigate(Navigations.Start.route) })
-//        }
     }
 }

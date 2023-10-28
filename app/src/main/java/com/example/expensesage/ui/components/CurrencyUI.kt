@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import kotlinx.coroutines.flow.StateFlow
@@ -35,11 +36,7 @@ fun CurrencyText(currency: StateFlow<String>, moneyAvailable: StateFlow<Double>,
 
     val formattedMoney = formatMoney(currentMoney * currentModifier, currentCurrency, 2)
 
-    when (currentCurrency) {
-        "EUR" -> return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.headlineMedium)
-        "USD" -> return Text(text = "You have $formattedMoney left", style = MaterialTheme.typography.headlineMedium)
-        "JPY" -> return Text(text = "You have $formattedMoney left", style = MaterialTheme.typography.headlineMedium)
-    }
+    return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.headlineMedium)
 }
 
 @Composable
@@ -49,10 +46,8 @@ fun CurrencyString(money: Double, fractionDigits: Int, viewModel: SettingsViewMo
 
     val currentMoney = formatMoney(money * currentModifier, currentCurrency, fractionDigits)
 
-    when (currentCurrency) {
-        "EUR" -> return "$currentMoney"
-        "USD" -> return "$currentMoney"
-        "JPY" -> return "$currentMoney"
+    if (currencyList.contains(currentCurrency)) {
+        return currentMoney
     }
 
     return "€ $currentMoney"

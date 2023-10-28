@@ -29,7 +29,7 @@ data class DrawingAngles(val start: Float, val end: Float)
 fun DrawingAngles.isInsideAngle(angle: Float) = angle > this.start && angle < this.start + this.end
 
 class DonutChartState(
-    val state: State = State.Unselected,
+    private val state: State = State.Unselected,
 ) {
     val stroke: Dp
         get() = when (state) {

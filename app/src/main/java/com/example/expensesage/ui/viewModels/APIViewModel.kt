@@ -24,8 +24,8 @@ class APIViewModel(private val currencyApiExecutor: CurrencyApiExecutor) : ViewM
     var currencyUiState: CurrencyUiState by mutableStateOf(CurrencyUiState.Loading)
         private set
 
-    var currencyRate: Double by mutableDoubleStateOf(0.0)
-        private set
+    private var currencyRate: Double by mutableDoubleStateOf(0.0)
+
     init {
         getCurrencies()
     }
