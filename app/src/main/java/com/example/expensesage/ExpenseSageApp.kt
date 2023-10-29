@@ -264,7 +264,7 @@ fun ExpenseAlert(viewModel: MainViewModel) {
                         viewModel.onDialogDismiss()
                     },
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSurface,
                     ),
                 ) {

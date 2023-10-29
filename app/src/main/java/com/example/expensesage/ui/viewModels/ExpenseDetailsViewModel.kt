@@ -27,7 +27,6 @@ class ExpenseDetailsViewModel(
             date = LocalDateTime.now(),
         )
         viewModelScope.launch {
-            userPref.saveMoneySpent(payedExpense.amount)
             expenseRepository.update(expense = payedExpense)
         }
     }
@@ -36,8 +35,6 @@ class ExpenseDetailsViewModel(
         viewModelScope.launch {
             if (expense.owed) {
                 userPref.saveMoneyOwed(moneyOwed = (userPref.moneyOwed.first() + expense.amount.toDouble()))
-            } else {
-                userPref.saveMoneySpent(moneySpent = (userPref.moneySpent.first() + expense.amount.toDouble()))
             }
             if (validateInput()) {
                 expenseRepository.insert(expense = expense.toExpense())
@@ -49,20 +46,15 @@ class ExpenseDetailsViewModel(
         viewModelScope.launch {
             val newExpense = expense.toExpense()
             val moneyOwed = userPref.moneyOwed.first()
-            val moneySpent = userPref.moneySpent.first()
             if (originalExpense.owed) {
                 if (expense.owed) {
                     userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.amount + newExpense.amount))
                 } else {
                     userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.amount))
-                    userPref.saveMoneySpent(moneySpent = (moneySpent) + newExpense.amount)
                 }
             } else {
                 if (expense.owed) {
-                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.amount))
                     userPref.saveMoneyOwed(moneyOwed = (moneyOwed + newExpense.amount))
-                } else {
-                    userPref.saveMoneySpent(moneySpent = (moneySpent - originalExpense.amount + newExpense.amount))
                 }
             }
 //            if (validateInput(expense)) {

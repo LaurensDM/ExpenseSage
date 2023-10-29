@@ -30,14 +30,17 @@ class StatisticViewModel(private val expenseRepository: ExpenseRepository) : Vie
         viewModelScope.launch {
             statisticUiState = StatisticUiState.Loading
             statisticUiState = try {
-                val categoryData = expenseRepository.getSumOfCategory(LocalDate.now().year.toString()).first()
-                val monthlyData = expenseRepository.getMonthlyExpenseSummary(LocalDate.now().year.toString()).first()
-                val owedData = expenseRepository.getSumOfOwed(true).first()
+                val categoryData =
+                    expenseRepository.getSumOfCategory(LocalDate.now().year.toString()).first()
+                val monthlyData =
+                    expenseRepository.getMonthlyExpenseSummary(LocalDate.now().year.toString())
+                        .first()
+                val totalSpent = expenseRepository.getSumOfAll().first()
                 val summary = ExpenseSummary()
                 summary.init(
-                    donutChartData = categoryData,
+                    categoryData = categoryData,
                     monthlyData = monthlyData,
-                    owedComparison = owedData,
+                    totalSpent = totalSpent,
                 )
                 StatisticUiState.Success(summary)
             } catch (e: Exception) {
@@ -45,44 +48,4 @@ class StatisticViewModel(private val expenseRepository: ExpenseRepository) : Vie
             }
         }
     }
-
-//    fun getMoneySpent(): StateFlow<Double> {
-//        return userPref.moneySpent.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = 0.0,
-//        )
-//    }
-//
-//    fun getMoneyOwed(): StateFlow<Double> {
-//        return userPref.moneyOwed.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = 0.0,
-//        )
-//    }
-//
-//    fun getMoneyAvailable(): StateFlow<Double> {
-//        return userPref.moneyAvailable.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = 0.0,
-//        )
-//    }
-//
-//    fun getMonthlyMoney(): StateFlow<Double> {
-//        return userPref.monthlyBudget.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = 0.0,
-//        )
-//    }
-//
-//    fun getMoneySpentByCategory(): Map<String, Double> {
-//        return mapOf()
-//    }
-//
-//    fun getMoneySpentByMonth(): Map<String, Double> {
-//        return mapOf()
-//    }
 }

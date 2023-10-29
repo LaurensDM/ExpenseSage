@@ -277,12 +277,12 @@ fun ExpenseInformation(
     Column(modifier = modifier) {
         Text(
             text = expenseName,
-            style = MaterialTheme.typography.displayMedium,
+            style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
         )
         Text(
             text = CurrencyString(money = cost, 2),
-            style = MaterialTheme.typography.bodyLarge,
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }

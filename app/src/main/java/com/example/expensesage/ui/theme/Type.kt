@@ -24,20 +24,40 @@ val Typography = Typography(
 //        fontWeight = FontWeight.Normal,
 //        fontSize = 36.sp,
 //    ),
+    titleMedium = TextStyle(
+        fontFamily = AbrilFatface,
+        fontWeight = FontWeight.Normal,
+        fontSize = 42.sp,
+    ),
     titleSmall = TextStyle(
         fontFamily = AbrilFatface,
         fontWeight = FontWeight.Normal,
-        fontSize = 24.sp,
+        fontSize = 36.sp,
     ),
     displayLarge = TextStyle(
         fontFamily = Montserrat,
-        fontWeight = FontWeight.Bold,
-        fontSize = 36.sp,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 30.sp,
     ),
     displayMedium = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+    ),
+    displaySmall = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
+    ),
+    labelLarge = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
     ),
     labelSmall = TextStyle(
         fontFamily = Montserrat,

@@ -1,7 +1,5 @@
 package com.example.expensesage.ui.components
 
-import android.icu.text.NumberFormat
-import android.icu.util.Currency
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CurrencyYen
@@ -17,6 +15,9 @@ import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import kotlinx.coroutines.flow.StateFlow
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
+import java.util.Currency
 
 @Composable
 fun CurrencyIcon(currency: StateFlow<String>) {
@@ -36,7 +37,7 @@ fun CurrencyText(currency: StateFlow<String>, moneyAvailable: StateFlow<Double>,
 
     val formattedMoney = formatMoney(currentMoney * currentModifier, currentCurrency, 2)
 
-    return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.headlineMedium)
+    return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.displayLarge)
 }
 
 @Composable
@@ -54,12 +55,21 @@ fun CurrencyString(money: Double, fractionDigits: Int, viewModel: SettingsViewMo
 }
 
 fun formatMoney(currentMoney: Double, currency: String, fractionDigits: Int): String {
-    val format: NumberFormat = NumberFormat.getCurrencyInstance()
+    val format = NumberFormat.getCurrencyInstance()
+    val symbols = DecimalFormatSymbols()
+
+    // Set the thousands separator to a period (.)
+    symbols.groupingSeparator = '.'
+
+    // Set the decimal separator to a comma (,)
+    symbols.decimalSeparator = ','
+
+    format.isGroupingUsed = true
     format.maximumFractionDigits = fractionDigits
 
     if (currency.isNotEmpty()) {
         format.currency = Currency.getInstance(currency)
     }
 
-    return format.format(currentMoney).replace(".", ",").replaceFirst(",", ".")
+    return format.format(currentMoney)
 }

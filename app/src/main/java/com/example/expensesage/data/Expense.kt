@@ -27,4 +27,13 @@ fun populateData(): List<Expense> {
     )
 }
 
+val categories = listOf(
+    "Food & Groceries",
+    "Rent",
+    "Gas",
+    "Online Purchases",
+    "Clothing",
+    "Other",
+)
+
 val expenses = populateData()
