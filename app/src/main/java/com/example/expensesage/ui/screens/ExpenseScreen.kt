@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.screens
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
@@ -21,12 +20,10 @@ import com.example.expensesage.ui.viewModels.MainViewModel
  *
  * @param viewModel The view model that is used to store the state of the app
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpenseScreen(
     viewModel: MainViewModel,
     dataViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    onCreateClicked: () -> Unit,
 ) {
     val uiState by dataViewModel.getExpenses(false).collectAsState()
 //    val apiKey = BuildConfig.FILE_API_KEY

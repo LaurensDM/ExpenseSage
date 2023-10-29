@@ -1,7 +1,5 @@
 package com.example.expensesage.ui.components
 
-import android.icu.text.NumberFormat
-import android.icu.util.Currency
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AttachMoney
 import androidx.compose.material.icons.filled.CurrencyYen
@@ -12,7 +10,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.data.currencyList
+import com.example.expensesage.ui.AppViewModelProvider
+import com.example.expensesage.ui.viewModels.SettingsViewModel
 import kotlinx.coroutines.flow.StateFlow
+import java.text.DecimalFormatSymbols
+import java.text.NumberFormat
+import java.util.Currency
 
 @Composable
 fun CurrencyIcon(currency: StateFlow<String>) {
@@ -30,34 +35,38 @@ fun CurrencyText(currency: StateFlow<String>, moneyAvailable: StateFlow<Double>,
     val currentMoney by moneyAvailable.collectAsState()
     val currentModifier by currencyModifier.collectAsState()
 
-    val formattedMoney = formatMoney(currentMoney * currentModifier, currentCurrency)
+    val formattedMoney = formatMoney(currentMoney * currentModifier, currentCurrency, 2)
 
-    when (currentCurrency) {
-        "EUR" -> return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.headlineMedium)
-        "USD" -> return Text(text = "You have $formattedMoney left", style = MaterialTheme.typography.headlineMedium)
-        "JPY" -> return Text(text = "You have $formattedMoney left", style = MaterialTheme.typography.headlineMedium)
-    }
+    return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.displayLarge)
 }
 
 @Composable
-fun CurrencyString(currency: StateFlow<String>, money: Double, currencyModifier: StateFlow<Double>): String {
-    val currentCurrency by currency.collectAsState()
-    val currentModifier by currencyModifier.collectAsState()
+fun CurrencyString(money: Double, fractionDigits: Int, viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)): String {
+    val currentCurrency by viewModel.getCurrency().collectAsState()
+    val currentModifier by viewModel.getCurrencyModifier().collectAsState()
 
-    val currentMoney = formatMoney(money * currentModifier, currentCurrency)
+    val currentMoney = formatMoney(money * currentModifier, currentCurrency, fractionDigits)
 
-    when (currentCurrency) {
-        "EUR" -> return "$currentMoney"
-        "USD" -> return "$currentMoney"
-        "JPY" -> return "$currentMoney"
+    if (currencyList.contains(currentCurrency)) {
+        return currentMoney
     }
 
     return "€ $currentMoney"
 }
 
-fun formatMoney(currentMoney: Double, currency: String): String {
-    val format: NumberFormat = NumberFormat.getCurrencyInstance()
-    format.maximumFractionDigits = 2
+fun formatMoney(currentMoney: Double, currency: String, fractionDigits: Int): String {
+    val format = NumberFormat.getCurrencyInstance()
+    val symbols = DecimalFormatSymbols()
+
+    // Set the thousands separator to a period (.)
+    symbols.groupingSeparator = '.'
+
+    // Set the decimal separator to a comma (,)
+    symbols.decimalSeparator = ','
+
+    format.isGroupingUsed = true
+    format.maximumFractionDigits = fractionDigits
+
     if (currency.isNotEmpty()) {
         format.currency = Currency.getInstance(currency)
     }

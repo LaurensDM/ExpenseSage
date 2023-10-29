@@ -107,4 +107,12 @@ class SettingsViewModel(
             initialValue = 1.0,
         )
     }
+    
+    fun getMoneyOwed(): StateFlow<Double> {
+        return userSettings.moneyOwed.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = 0.0,
+        )
+    }
 }

@@ -35,7 +35,6 @@ import com.example.expensesage.ui.components.CurrencyText
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
 import com.example.expensesage.ui.viewModels.ListViewModel
-import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 /**
@@ -43,11 +42,9 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
  *
  * @param modifier Modifier to apply to this layout node.
  */
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun StartScreen(
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
@@ -56,7 +53,7 @@ fun StartScreen(
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
-        Column() {
+        Column {
             Spacer(modifier = Modifier.size(32.dp))
             LazyColumn(
                 contentPadding = innerPadding,
@@ -72,7 +69,7 @@ fun StartScreen(
                 item {
                     Text(
                         text = "Latest expenses",
-                        style = MaterialTheme.typography.headlineMedium,
+                        style = MaterialTheme.typography.displayLarge,
                         modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                         textAlign = TextAlign.Center,
                     )
@@ -125,7 +122,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
                 )
                 Text(
                     text = stringResource(R.string.app_name),
-                    style = MaterialTheme.typography.displayLarge,
+                    style = MaterialTheme.typography.titleMedium,
                 )
             }
         },
@@ -156,7 +153,7 @@ fun TopTile(settingsViewModel: SettingsViewModel) {
         ) {
             Image(
                 modifier = Modifier
-                    .size(dimensionResource(R.dimen.image_size))
+                    .size(82.dp)
                     .padding(dimensionResource(R.dimen.padding_small)),
                 painter = painterResource(R.drawable.money),
 
@@ -178,7 +175,7 @@ fun TopTile(settingsViewModel: SettingsViewModel) {
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        StartScreen(viewModel = MainViewModel())
+        StartScreen()
     }
 }
 
@@ -189,6 +186,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        StartScreen(viewModel = MainViewModel())
+        StartScreen()
     }
 }

@@ -63,3 +63,32 @@ val md_theme_dark_shadow = Color(0xFF000000)
 val md_theme_dark_surfaceTint = Color(0xFF6CDBAC)
 val md_theme_dark_outlineVariant = Color(0xFF404943)
 val md_theme_dark_scrim = Color(0xFF000000)
+
+val OxfordBlue = Color(0xFF01184a)
+val MetallicYellow = Color(0xFFFFCE08)
+val VividOrange = Color(0xFFFD5F00)
+val Sapphire = Color(0xFF1259b8)
+val RobingEggBlue = Color(0xFF0fd4C4)
+
+val PetroleumGray = Color(0xFF37474f)
+val PetroleumLightGray = Color(0xFF455a64)
+
+val Slice1 = Color(0xFF006C4C)
+val Slice2 = Color(0xFF418165)
+val Slice3 = Color(0xFF89F8C7)
+val Slice4 = Color(0XFF4F9D69)
+val Slice5 = Color(0xFF6DA28B)
+val Slice6 = Color(0xFF003826)
+
+val Bar1 = Color(0xFFCCAA77) // Muted beige-brown
+val Bar2 = Color(0xFFCC8855) // Subdued terracotta
+val Bar3 = Color(0xFF557799) // Soft blue-gray
+val Bar4 = Color(0xFF886655) // Earthy brown
+val Bar5 = Color(0xFF445577) // Calm slate blue
+val Bar6 = Color(0xFF774455) // Warm muted rose
+val Bar7 = Color(0xFF8899CC) // Light periwinkle
+val Bar8 = Color(0xFF005577) // Deep navy
+val Bar9 = Color(0xFFCC5599) // Muted mauve
+val Bar10 = Color(0xFF774488) // Subtle lavender
+val Bar11 = Color(0xFF884422) // Dark sienna
+val Bar12 = Color(0xFFAA7744) // Soft ochre

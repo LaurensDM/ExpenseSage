@@ -19,15 +19,45 @@ val Montserrat = FontFamily(
 )
 
 val Typography = Typography(
-    displayLarge = TextStyle(
+//    displayLarge = TextStyle(
+//        fontFamily = FontFamily.SansSerif,
+//        fontWeight = FontWeight.Normal,
+//        fontSize = 36.sp,
+//    ),
+    titleMedium = TextStyle(
+        fontFamily = AbrilFatface,
+        fontWeight = FontWeight.Normal,
+        fontSize = 42.sp,
+    ),
+    titleSmall = TextStyle(
         fontFamily = AbrilFatface,
         fontWeight = FontWeight.Normal,
         fontSize = 36.sp,
     ),
+    displayLarge = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 30.sp,
+    ),
     displayMedium = TextStyle(
         fontFamily = Montserrat,
         fontWeight = FontWeight.Bold,
+        fontSize = 24.sp,
+    ),
+    displaySmall = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Bold,
         fontSize = 20.sp,
+    ),
+    labelLarge = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+    ),
+    labelMedium = TextStyle(
+        fontFamily = Montserrat,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
     ),
     labelSmall = TextStyle(
         fontFamily = Montserrat,
@@ -39,6 +69,22 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
     ),
+)
+
+val itemTextStyle = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.Bold,
+    fontSize = 24.sp,
+    lineHeight = 28.sp,
+    letterSpacing = 0.sp,
+)
+
+val moneyAmountStyle = TextStyle(
+    fontFamily = FontFamily.SansSerif,
+    fontWeight = FontWeight.Black,
+    fontSize = 48.sp,
+    lineHeight = 24.sp,
+    letterSpacing = 0.sp,
 )
     /* Other default text styles to override
     titleLarge = TextStyle(

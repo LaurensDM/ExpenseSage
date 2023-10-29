@@ -120,7 +120,7 @@ fun CurrenciesList(data: JsonObject, settingsViewModel: SettingsViewModel = view
             item {
                 Text(
                     text = "Retrieval date: ${data["date"]}",
-                    style = MaterialTheme.typography.labelLarge,
+                    style = MaterialTheme.typography.displayMedium,
                     lineHeight = 24.sp,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -129,8 +129,8 @@ fun CurrenciesList(data: JsonObject, settingsViewModel: SettingsViewModel = view
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = "${it.key.uppercase()}",
-                            style = MaterialTheme.typography.labelLarge,
+                            text = it.key.uppercase(),
+                            style = MaterialTheme.typography.displaySmall,
                             lineHeight = 24.sp,
                         )
                     },
@@ -139,10 +139,11 @@ fun CurrenciesList(data: JsonObject, settingsViewModel: SettingsViewModel = view
                             text = "${it.value}",
                             style = MaterialTheme.typography.labelMedium,
                             lineHeight = 24.sp,
+                            fontWeight = FontWeight.Bold,
                         )
                     },
                     trailingContent = {
-                        Text(text = "1 $currency", style = MaterialTheme.typography.labelMedium)
+                        Text(text = "1 $currency", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                     },
                     tonalElevation = 4.dp,
                     shadowElevation = 4.dp,

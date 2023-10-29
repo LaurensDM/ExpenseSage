@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -26,6 +27,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -33,6 +36,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -41,16 +45,17 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
+import com.example.expensesage.data.categories
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
-import com.example.expensesage.ui.viewModels.SettingsViewModel
 import java.time.Month
 
 /**
@@ -79,7 +84,7 @@ fun ExpenseItemHome(
 //                horizontalArrangement = Arrangement.Center
             ) {
                 ExpenseSageIcon(expense.imageResourceId)
-                ExpenseInformation(expense.expenseName, expense.expense)
+                ExpenseInformation(expense.name, expense.amount)
             }
         }
     }
@@ -127,7 +132,7 @@ fun ExpenseItem(
                         .padding(dimensionResource(R.dimen.padding_small)),
                 ) {
                     ExpenseSageIcon(expense.imageResourceId)
-                    ExpenseInformation(expense.expenseName, expense.expense)
+                    ExpenseInformation(expense.name, expense.amount)
                     Spacer(Modifier.weight(1f))
                     ExpenseItemButton(
                         expanded = expanded,
@@ -268,17 +273,16 @@ fun ExpenseInformation(
     expenseName: String,
     cost: Double,
     modifier: Modifier = Modifier,
-    settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(modifier = modifier) {
         Text(
             text = expenseName,
-            style = MaterialTheme.typography.displayMedium,
+            style = MaterialTheme.typography.displaySmall,
             modifier = Modifier.padding(top = dimensionResource(R.dimen.padding_small)),
         )
         Text(
-            text = CurrencyString(currency = settingsViewModel.getCurrency(), money = cost, currencyModifier = settingsViewModel.getCurrencyModifier()),
-            style = MaterialTheme.typography.bodyLarge,
+            text = CurrencyString(money = cost, 2),
+            style = MaterialTheme.typography.labelLarge,
         )
     }
 }
@@ -352,6 +356,7 @@ fun ExpenseList(
                             .background(color = MaterialTheme.colorScheme.surface)
                             .fillMaxWidth()
                             .padding(vertical = 4.dp),
+                        style = MaterialTheme.typography.labelSmall,
                     )
                 }
                 items(it.value) { normalExpense ->
@@ -367,11 +372,35 @@ fun ExpenseList(
     }
 }
 
-// @Composable
-// fun ExpenseSageFloatingActionButton(
-//    onAddClicked: () -> Unit = {},
-// ) {
-//    IconButton(onClick = onAddClicked) {
-//        Icon(Icons.Default.Add, contentDescription = "Add expense")
-//    }
-// }
+@Composable
+fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    Box {
+        Button(onClick = { expanded = !expanded }) {
+            Text(text = category)
+            if (expanded) {
+                Icon(Icons.Filled.ExpandLess, contentDescription = "Expand")
+            } else {
+                Icon(Icons.Filled.ExpandMore, contentDescription = "Expand")
+            }
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            offset = DpOffset(
+                8.dp,
+                0.dp,
+            ),
+        ) {
+            categories.forEach {
+                DropdownMenuItem(
+                    text = { Text(text = it) },
+                    onClick = {
+                        onSelect(it)
+                        expanded = false
+                    },
+                )
+            }
+        }
+    }
+}

@@ -1,29 +1,19 @@
 package com.example.expensesage.ui.viewModels
 
-import android.icu.text.NumberFormat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.data.ExpenseRepository
+import com.example.expensesage.data.UserSettings
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 class ExpenseDetailsViewModel(
+    private val userPref: UserSettings,
     private val expenseRepository: ExpenseRepository,
 ) : ViewModel() {
-//    var expenseUIState by mutableStateOf(ExpenseUIState())
-//        private set
-
-//    init {
-//        viewModelScope.launch {
-//            expenseUIState = expenseRepository.getExpense(1)
-//                .filterNotNull()
-//                .first()
-//                .toExpenseUIState(true)
-//        }
-//    }
-
     fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
             expenseRepository.delete(expense = expense)
@@ -31,8 +21,11 @@ class ExpenseDetailsViewModel(
     }
 
     fun payOwed(expense: Expense) {
-        val payedExpense = expense.copy(owed = false, imageResourceId = R.drawable.cost, date = LocalDateTime.now())
-
+        val payedExpense = expense.copy(
+            owed = false,
+            imageResourceId = R.drawable.cost,
+            date = LocalDateTime.now(),
+        )
         viewModelScope.launch {
             expenseRepository.update(expense = payedExpense)
         }
@@ -40,17 +33,33 @@ class ExpenseDetailsViewModel(
 
     fun saveExpense(expense: ExpenseDetail) {
         viewModelScope.launch {
+            if (expense.owed) {
+                userPref.saveMoneyOwed(moneyOwed = (userPref.moneyOwed.first() + expense.amount.toDouble()))
+            }
             if (validateInput()) {
                 expenseRepository.insert(expense = expense.toExpense())
             }
         }
     }
 
-    fun updateExpense(expense: ExpenseDetail) {
+    fun updateExpense(expense: ExpenseDetail, originalExpense: Expense) {
         viewModelScope.launch {
-            if (validateInput()) {
-                expenseRepository.update(expense = expense.toExpense())
+            val newExpense = expense.toExpense()
+            val moneyOwed = userPref.moneyOwed.first()
+            if (originalExpense.owed) {
+                if (expense.owed) {
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.amount + newExpense.amount))
+                } else {
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed - originalExpense.amount))
+                }
+            } else {
+                if (expense.owed) {
+                    userPref.saveMoneyOwed(moneyOwed = (moneyOwed + newExpense.amount))
+                }
             }
+//            if (validateInput(expense)) {
+            expenseRepository.update(expense = newExpense)
+//            }
         }
     }
 
@@ -58,48 +67,22 @@ class ExpenseDetailsViewModel(
         return true
     }
 
-//    companion object {
-//        private const val TIMEOUT_MILLIS = 5_000L
-//    }
-}
+    data class ExpenseDetail(
+        var id: Int = 0,
+        var date: String = LocalDateTime.now().toString(),
+        var name: String = "Unknown",
+        var amount: String = "0.00",
+        var owed: Boolean = false,
+        var category: String = "Other",
+    )
 
-data class ExpenseUIState(
-    val expenseDetails: ExpenseDetail = ExpenseDetail(),
-    val isEntryValid: Boolean = false,
-)
-
-data class ExpenseDetail(
-    var id: Int = 0,
-    var date: String = LocalDateTime.now().toString(),
-    var expenseName: String = "Unknown",
-    var expense: String = "0.00",
-    var owed: Boolean = false,
-)
-
-fun Expense.toExpenseDetails(): ExpenseDetail = ExpenseDetail(
-    id = id,
-    expenseName = expenseName,
-    expense = "$expense",
-    owed = owed,
-    date = date.toString(),
-)
-
-fun ExpenseDetail.toExpense(): Expense = Expense(
-    id = id,
-    expenseName = expenseName,
-    expense = expense.toDoubleOrNull() ?: 0.0,
-    owed = owed,
-    imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
-    date = LocalDateTime.parse(date),
-)
-
-// fun Expense.toExpenseUIState(isEntryValid: Boolean): ExpenseUIState {
-//    return ExpenseUIState(
-//        expenseDetails = this.toExpenseDetails(),
-//        isEntryValid = isEntryValid,
-//    )
-// }
-
-fun Expense.formatedPrice(): String {
-    return NumberFormat.getCurrencyInstance().format(expense)
+    private fun ExpenseDetail.toExpense(): Expense = Expense(
+        id = id,
+        name = name,
+        amount = amount.toDoubleOrNull() ?: 0.0,
+        owed = owed,
+        imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
+        date = LocalDateTime.parse(date),
+        category = category,
+    )
 }

@@ -2,6 +2,7 @@ package com.example.expensesage.ui.screens
 
 import android.media.MediaPlayer
 import android.util.Log
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.ExpandMore
@@ -68,7 +70,7 @@ fun SettingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(16.dp).verticalScroll(enabled = true, state = ScrollState(0)),
         verticalArrangement = Arrangement.spacedBy(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -112,7 +114,7 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
     }
 
     Row(
-        modifier = Modifier.padding(start = 40.dp),
+        modifier = Modifier.padding(start = 48.dp),
         horizontalArrangement = Arrangement.End,
     ) {
         TextField(
