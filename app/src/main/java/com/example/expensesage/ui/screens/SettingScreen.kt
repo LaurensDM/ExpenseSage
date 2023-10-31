@@ -152,7 +152,7 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
             edit = !edit
             focusRequester.requestFocus()
         }) {
-            Icon(Icons.Default.Edit, contentDescription = "", Modifier.size(20.dp))
+            Icon(Icons.Default.Edit, contentDescription = "Edit", Modifier.size(20.dp))
         }
     }
 }

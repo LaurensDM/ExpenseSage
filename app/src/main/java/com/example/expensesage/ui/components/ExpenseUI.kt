@@ -171,11 +171,11 @@ private fun ExpenseItemButton(
     Icon(
         imageVector = if (expanded) Icons.Filled.ExpandLess else Icons.Filled.ExpandMore,
         contentDescription = if (expanded) {
-            stringResource(id = R.string.expand)
-        } else {
             stringResource(
                 id = R.string.expanded,
             )
+        } else {
+            stringResource(id = R.string.expand)
         },
         tint = MaterialTheme.colorScheme.onSecondaryContainer,
     )

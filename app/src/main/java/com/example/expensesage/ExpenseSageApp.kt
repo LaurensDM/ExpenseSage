@@ -327,13 +327,15 @@ fun ExpenseDialog(viewModel: MainViewModel) {
 
                     ModalType.EDIT -> {
                         Edit(
-                            viewModel,
+                            viewModel.selectedExpense,
+                            { viewModel.onDialogDismiss() },
                         )
                     }
 
                     else -> {
                         Create(
-                            viewModel = viewModel,
+                            onDialogDismiss = { viewModel.onDialogDismiss() },
+                            isOwed = viewModel.isOwed,
                         )
                     }
                 }

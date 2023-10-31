@@ -142,7 +142,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             }
         }
         .map { preferences ->
-            preferences[CURRENCY] ?: "USD"
+            preferences[CURRENCY] ?: "EUR"
         }
 
     val currencyModifier: Flow<Double> = dataStore.data

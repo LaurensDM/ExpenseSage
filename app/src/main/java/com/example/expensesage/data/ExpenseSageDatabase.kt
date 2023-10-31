@@ -50,16 +50,20 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                         }
                     },
                 )
-                    .addCallback(object : Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            // Use a coroutine to insert data
-                            val expenseDao = Instance?.expenseDao()
-                            scope.launch {
-                                expenseDao?.insertAll(populateData())
-                            }
-                        }
-                    })
+
+                    // Populate the database with data
+
+//                    .addCallback(object : Callback() {
+//                        override fun onCreate(db: SupportSQLiteDatabase) {
+//                            super.onCreate(db)
+//                            // Use a coroutine to insert data
+//                            val expenseDao = Instance?.expenseDao()
+//                            scope.launch {
+//                                expenseDao?.insertAll(populateData())
+//                            }
+//                        }
+//                    })
+
                     .build()
                     .also { Instance = it }
             }

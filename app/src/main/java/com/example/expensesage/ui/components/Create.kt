@@ -21,7 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
+import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 import java.text.NumberFormat
@@ -29,7 +31,8 @@ import java.util.Locale
 
 @Composable
 fun Create(
-    viewModel: MainViewModel,
+    onDialogDismiss: () -> Unit,
+    isOwed: Boolean,
     dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(
@@ -43,9 +46,15 @@ fun Create(
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         ) {
             CreateForm(
-                dataViewModel = dataViewModel,
-                onDoneClicked = { viewModel.onDialogDismiss() },
-                owed = viewModel.isOwed,
+                expenseState = dataViewModel.expenseDetailState,
+                updateState = dataViewModel::updateState,
+                onDoneClicked = {
+                    dataViewModel.updateState(dataViewModel.expenseDetailState.copy(owed = isOwed))
+                    onDialogDismiss()
+                    dataViewModel.saveExpense()
+                },
+                nameError = dataViewModel.nameError,
+                amountError = dataViewModel.amountError,
             )
         }
     }
@@ -53,24 +62,19 @@ fun Create(
 
 @Composable
 fun CreateForm(
-    dataViewModel: ExpenseDetailsViewModel,
+    expenseState: ExpenseDetail,
+    updateState: (ExpenseDetail) -> Unit,
     onDoneClicked: () -> Unit = {},
-    owed: Boolean,
+    nameError: Boolean,
+    amountError: Boolean,
 ) {
-    var name by rememberSaveable { mutableStateOf("") }
-    var nameError by rememberSaveable { mutableStateOf(true) }
-    var amount by rememberSaveable { mutableStateOf("") }
-    var amountError by rememberSaveable { mutableStateOf(true) }
-    val format: NumberFormat = NumberFormat.getInstance(Locale.getDefault())
-    var category by rememberSaveable { mutableStateOf("Select a category") }
 
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         Text(text = "Create")
         TextField(
-            value = name,
+            value = expenseState.name,
             onValueChange = {
-                name = it
-                nameError = name.isEmpty()
+                updateState(expenseState.copy(name = it))
             },
             label = { Text(text = "Name") },
             isError = nameError,
@@ -83,15 +87,9 @@ fun CreateForm(
             )
         }
         TextField(
-            value = amount,
+            value = expenseState.amount,
             onValueChange = {
-                amount = it
-                try {
-                    amountError = amount.isEmpty() || format.parse(amount)?.toDouble()?.isNaN() ?: true
-                } catch (e: NumberFormatException) {
-                    amountError = true
-                    amount = 0.00.toString()
-                }
+                updateState(expenseState.copy(amount = it))
             },
             label = { Text(text = "Amount") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
@@ -104,17 +102,12 @@ fun CreateForm(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        CategoryDropdown(onSelect = { category = it }, category = category)
+        CategoryDropdown(
+            onSelect = { updateState(expenseState.copy(category = it)) },
+            category = expenseState.category
+        )
         Button(
             onClick = {
-                dataViewModel.saveExpense(
-                    ExpenseDetailsViewModel.ExpenseDetail(
-                        name = name,
-                        amount = format.parse(amount)?.toDouble().toString(),
-                        owed = owed,
-                        category = if (category == "Select a category") "Other" else category,
-                    ),
-                )
                 onDoneClicked()
             },
             enabled = !(nameError || amountError),

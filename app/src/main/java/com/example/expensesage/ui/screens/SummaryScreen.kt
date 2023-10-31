@@ -82,7 +82,9 @@ fun Summary(
     val owedSpent by moneyOwed.collectAsState()
 
     LazyColumn(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(64.dp),
     ) {
@@ -119,28 +121,37 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
         )
-        DonutChart(
-            modifier = Modifier.padding(8.dp),
-            data = chartData,
-            gapPercentage = if (chartData.items.size <= 1) 0f else 0.04f,
-        ) { selected ->
-            AnimatedContent(targetState = selected, label = "") {
-                val amount = it?.amount ?: chartData.totalAmount
-                val text = it?.title ?: "Total"
+        if (categoryData.isEmpty()) {
+            NoData()
+        } else {
+            DonutChart(
+                modifier = Modifier.padding(8.dp),
+                data = chartData,
+                gapPercentage = if (chartData.items.size <= 1) 0f else 0.04f,
+            ) { selected ->
+                AnimatedContent(targetState = selected, label = "") {
+                    val amount = it?.amount ?: chartData.totalAmount
+                    val text = it?.title ?: "Total"
 
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    Text(
-                        CurrencyString(money = amount.toDouble(), 0),
-                        style = moneyAmountStyle,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                    Text(text, style = itemTextStyle, color = MaterialTheme.colorScheme.onSurface)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            CurrencyString(money = amount.toDouble(), 0),
+                            style = moneyAmountStyle,
+                            color = MaterialTheme.colorScheme.onSurface,
+                        )
+                        Text(
+                            text,
+                            style = itemTextStyle,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
                 }
             }
         }
+
     }
 }
 
@@ -181,28 +192,36 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) 
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
         )
-        BarChart(
-            barChartData = chartData,
-            modifier = Modifier.fillMaxWidth().height(256.dp).padding(bottom = 32.dp),
-            yAxisDrawer = SimpleYAxisDrawer(
-                labelTextColor = MaterialTheme.colorScheme.onSurface,
-                axisLineColor = MaterialTheme.colorScheme.secondary,
-                axisLineThickness = 4.dp,
-                labelValueFormatter = { value ->
-                    value.roundToInt().toString()
-                },
-                labelRatio = 5,
-            ),
-            xAxisDrawer = SimpleXAxisDrawer(
-                axisLineThickness = 4.dp,
-                axisLineColor = MaterialTheme.colorScheme.secondary,
-            ),
-            labelDrawer = SimpleValueDrawer(
-                drawLocation = SimpleValueDrawer.DrawLocation.XAxis,
-                labelTextColor = MaterialTheme.colorScheme.onSurface,
-                labelTextSize = 12.sp,
-            ),
-        )
+        if (monthData.isEmpty()) {
+            NoData()
+        } else {
+            BarChart(
+                barChartData = chartData,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(256.dp)
+                    .padding(bottom = 32.dp),
+                yAxisDrawer = SimpleYAxisDrawer(
+                    labelTextColor = MaterialTheme.colorScheme.onSurface,
+                    axisLineColor = MaterialTheme.colorScheme.secondary,
+                    axisLineThickness = 4.dp,
+                    labelValueFormatter = { value ->
+                        value.roundToInt().toString()
+                    },
+                    labelRatio = 5,
+                ),
+                xAxisDrawer = SimpleXAxisDrawer(
+                    axisLineThickness = 4.dp,
+                    axisLineColor = MaterialTheme.colorScheme.secondary,
+                ),
+                labelDrawer = SimpleValueDrawer(
+                    drawLocation = SimpleValueDrawer.DrawLocation.XAxis,
+                    labelTextColor = MaterialTheme.colorScheme.onSurface,
+                    labelTextSize = 12.sp,
+                ),
+            )
+        }
+
     }
 }
 
@@ -231,57 +250,71 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
         )
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            Text(
-                text = "normal expenses: ${
-                    CurrencyString(
-                        money = nonOwedTotal,
-                        fractionDigits = 2,
-                    )
-                }",
-                style = MaterialTheme.typography.displaySmall,
+        if (totalSpent == 0.0) {
+            NoData()
+        } else {
+            Column(
+                verticalArrangement = Arrangement.SpaceEvenly,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = "normal expenses: ${
+                        CurrencyString(
+                            money = nonOwedTotal,
+                            fractionDigits = 2,
+                        )
+                    }",
+                    style = MaterialTheme.typography.displaySmall,
+                )
+                Text(
+                    text = "owed expenses: ${
+                        CurrencyString(
+                            money = owedSpent,
+                            fractionDigits = 2
+                        )
+                    }",
+                    style = MaterialTheme.typography.displaySmall,
+                )
+            }
+            PieChart(
+                pieChartData = chartData,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(256.dp),
+                sliceDrawer = SimpleSliceDrawer(sliceThickness = 100f),
             )
-            Text(
-                text = "owed expenses: ${CurrencyString(money = owedSpent, fractionDigits = 2)}",
-                style = MaterialTheme.typography.displaySmall,
-            )
-        }
-        PieChart(
-            pieChartData = chartData,
-            modifier = Modifier.fillMaxWidth().height(256.dp),
-            sliceDrawer = SimpleSliceDrawer(sliceThickness = 100f),
-        )
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Card(
-                modifier = Modifier.size(16.dp),
-                shape = MaterialTheme.shapes.extraSmall,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-            ) {}
-            Text(text = "normal expenses", style = MaterialTheme.typography.labelMedium)
-            Spacer(modifier = Modifier.size(16.dp))
-            Card(
-                modifier = Modifier.size(16.dp),
-                shape = MaterialTheme.shapes.extraSmall,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
-            ) {}
-            Text(text = "owed expenses", style = MaterialTheme.typography.labelMedium)
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Card(
+                    modifier = Modifier.size(16.dp),
+                    shape = MaterialTheme.shapes.extraSmall,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                ) {}
+                Text(text = "normal expenses", style = MaterialTheme.typography.labelMedium)
+                Spacer(modifier = Modifier.size(16.dp))
+                Card(
+                    modifier = Modifier.size(16.dp),
+                    shape = MaterialTheme.shapes.extraSmall,
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
+                ) {}
+                Text(text = "owed expenses", style = MaterialTheme.typography.labelMedium)
+            }
         }
+
     }
 }
 
 @Composable
 fun SummaryLoading() {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
     ) {
@@ -293,4 +326,16 @@ fun SummaryLoading() {
             textAlign = TextAlign.Center,
         )
     }
+}
+
+@Composable
+fun NoData() {
+    Text(
+        text = "No data to display", style = MaterialTheme.typography.displaySmall,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 32.dp),
+        textAlign = TextAlign.Center,
+        color = MaterialTheme.colorScheme.error,
+    )
 }
