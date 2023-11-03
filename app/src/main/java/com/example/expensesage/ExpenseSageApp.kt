@@ -59,6 +59,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.Create
 import com.example.expensesage.ui.components.Details
@@ -243,20 +244,35 @@ fun ExpenseSageApp(
             Box(modifier = Modifier.padding(innerPadding)) {
                 NavBarGraph(
                     navController = navController,
-                    viewModel = viewModel,
+                    showModal = { expense, isOwed, modalType ->
+                        viewModel.showModal(expense, isOwed, modalType)
+                    },
+                    showAlert = { onConfirm, title, onCancel ->
+                        viewModel.showAlert(onConfirm, title, onCancel)
+                    },
                 )
-                ExpenseDialog(viewModel = viewModel)
-                ExpenseAlert(viewModel = viewModel)
+                ExpenseDialog()
+                ExpenseAlert()
+
             }
         }
     }
 }
 
+/**
+ * Alert dialog for the app
+ *
+ */
 @Composable
-fun ExpenseAlert(viewModel: MainViewModel) {
+fun ExpenseAlert(
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
     if (viewModel.isAlertShown) {
         AlertDialog(
-            onDismissRequest = { viewModel.onDialogDismiss() },
+            onDismissRequest = {
+                viewModel.alertOnCancel()
+                viewModel.onDialogDismiss()
+                               },
             confirmButton = {
                 Button(
                     onClick = {
@@ -274,6 +290,7 @@ fun ExpenseAlert(viewModel: MainViewModel) {
             dismissButton = {
                 Button(
                     onClick = {
+                        viewModel.alertOnCancel()
                         viewModel.onDialogDismiss()
                     },
                     colors = ButtonDefaults.buttonColors(
@@ -285,7 +302,10 @@ fun ExpenseAlert(viewModel: MainViewModel) {
                 }
             },
             title = {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
                     Icon(Icons.Outlined.WarningAmber, contentDescription = "Alert")
                     Text(
                         text = viewModel.alertTitle,
@@ -299,17 +319,19 @@ fun ExpenseAlert(viewModel: MainViewModel) {
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
             containerColor = MaterialTheme.colorScheme.surface,
 
-        )
+            )
     }
 }
 
 /**
  * Dialog for the app
  *
- * @param viewModel the viewModel that holds the data
+ *
  */
 @Composable
-fun ExpenseDialog(viewModel: MainViewModel) {
+fun ExpenseDialog(
+    viewModel: MainViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
     if (viewModel.isDialogShown) {
         Dialog(
             onDismissRequest = { viewModel.onDialogDismiss() },
@@ -317,30 +339,29 @@ fun ExpenseDialog(viewModel: MainViewModel) {
                 dismissOnBackPress = true,
                 dismissOnClickOutside = true,
             ),
-            content = {
-                when (viewModel.currentModalType) {
-                    ModalType.DETAIL -> {
-                        Details(
-                            viewModel,
-                        )
-                    }
-
-                    ModalType.EDIT -> {
-                        Edit(
-                            viewModel.selectedExpense,
-                            { viewModel.onDialogDismiss() },
-                        )
-                    }
-
-                    else -> {
-                        Create(
-                            onDialogDismiss = { viewModel.onDialogDismiss() },
-                            isOwed = viewModel.isOwed,
-                        )
-                    }
+        ) {
+            when (viewModel.currentModalType) {
+                ModalType.DETAIL -> {
+                    Details(
+                        viewModel.selectedExpense,
+                    ) { viewModel.onDialogDismiss() }
                 }
-            },
-        )
+
+                ModalType.EDIT -> {
+                    Edit(
+                        viewModel.selectedExpense,
+                        { viewModel.onDialogDismiss() },
+                    )
+                }
+
+                else -> {
+                    Create(
+                        onDialogDismiss = { viewModel.onDialogDismiss() },
+                        isOwed = viewModel.isOwed,
+                    )
+                }
+            }
+        }
     }
 }
 

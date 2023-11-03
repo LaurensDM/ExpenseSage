@@ -4,12 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
 import com.example.expensesage.ui.screens.OwedScreen
 import com.example.expensesage.ui.screens.SettingScreen
 import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.viewModels.MainViewModel
 
@@ -20,7 +22,11 @@ import com.example.expensesage.ui.viewModels.MainViewModel
  * @param viewModel The viewModel that holds the data
  */
 @Composable
-fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
+fun NavBarGraph(
+    navController: NavHostController,
+    showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+) {
     NavHost(
         navController = navController,
         startDestination = Navigations.Start.route,
@@ -30,12 +36,14 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
         }
         composable(Navigations.Expenses.route) {
             ExpenseScreen(
-                viewModel = viewModel,
+                showModal = showModal,
+                showAlert = showAlert,
             )
         }
         composable(Navigations.Owed.route) {
             OwedScreen(
-                viewModel = viewModel,
+                showModal = showModal,
+                showAlert = showAlert,
             )
         }
         composable(Navigations.Currencies.route) {

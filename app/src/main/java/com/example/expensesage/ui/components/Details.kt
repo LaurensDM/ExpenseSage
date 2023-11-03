@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.viewModels.MainViewModel
 
 /**
@@ -28,7 +29,7 @@ import com.example.expensesage.ui.viewModels.MainViewModel
  *
  * */
 @Composable
-fun Details(viewModel: MainViewModel) {
+fun Details(selectedExpense: Expense, onDialogDismiss: () -> Unit) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -59,17 +60,17 @@ fun Details(viewModel: MainViewModel) {
                 ),
             ) {
                 Text(
-                    text = "Topic: ${viewModel.selectedExpense.name}",
+                    text = "Topic: ${selectedExpense.name}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Price: € ${viewModel.selectedExpense.amount}",
+                    text = "Price: € ${selectedExpense.amount}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
                 Text(
-                    text = "Created: ${viewModel.selectedExpense.date.toLocalDate()}",
+                    text = "Created: ${selectedExpense.date.toLocalDate()}",
                     style = MaterialTheme.typography.labelLarge,
                     textAlign = TextAlign.Center,
                 )
@@ -81,7 +82,7 @@ fun Details(viewModel: MainViewModel) {
                 verticalAlignment = Alignment.Bottom,
             ) {
                 Button(
-                    onClick = { viewModel.onDialogDismiss() },
+                    onClick = { onDialogDismiss() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primaryContainer,
                         contentColor = MaterialTheme.colorScheme.onPrimaryContainer,

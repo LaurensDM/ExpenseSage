@@ -55,7 +55,6 @@ import com.example.expensesage.data.categories
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
-import com.example.expensesage.ui.viewModels.MainViewModel
 import java.time.Month
 
 /**
@@ -102,7 +101,8 @@ fun ExpenseItemHome(
 fun ExpenseItem(
     expense: Expense,
     modifier: Modifier = Modifier,
-    viewModel: MainViewModel,
+    showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
     dataViewModel: ExpenseDetailsViewModel,
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -148,17 +148,31 @@ fun ExpenseItem(
                         bottom = dimensionResource(R.dimen.padding_medium),
                         end = dimensionResource(R.dimen.padding_medium),
                     ),
-                    onEditClicked = { viewModel.showModal(expense, modalType = ModalType.EDIT) },
-                    onDetailClick = { viewModel.showModal(expense, modalType = ModalType.DETAIL) },
-                    onPayedClick = { dataViewModel.payOwed(expense) },
+                    onEditClicked = { showModal(expense, false, ModalType.EDIT) },
+                    onDetailClick = { showModal(expense, false, ModalType.DETAIL) },
+                    onPayedClick = {
+                        expanded = false
+                        showAlert(
+                            {
+                                dataViewModel.payOwed(expense)
+                            },
+                            "Are you sure you want to pay \n ${expense.name}?"
+                        ) {
+                            expanded = true
+                        }
+                    },
                     onDeleteClick = {
                         expanded = false
-                        viewModel.showAlert({
-                            dataViewModel.deleteExpense(expense)
-                        }, "Are you sure you want to delete ${expense.name}")
+                        showAlert(
+                            {
+                                dataViewModel.deleteExpense(expense)
+                            },
+                            "Are you sure you want to delete \n ${expense.name}?"
+                        ) {
+                            expanded = true
+                        }
                     },
                     expense = expense,
-                    viewModel = viewModel,
                 )
             }
         }
@@ -201,7 +215,6 @@ fun ExpenseOptions(
     onPayedClick: () -> Unit = {},
     onDeleteClick: () -> Unit,
     expense: Expense,
-    viewModel: MainViewModel,
 ) {
     Column(
         modifier = modifier,
@@ -245,12 +258,7 @@ fun ExpenseOptions(
         }
         if (expense.owed) {
             Button(
-                onClick = {
-                    viewModel.showAlert(
-                        { onPayedClick() },
-                        "Are you sure?",
-                    )
-                },
+                onClick = onPayedClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primaryContainer,
                     contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
@@ -319,7 +327,8 @@ fun ExpenseSageIcon(
 fun ExpenseList(
     it: PaddingValues,
     groupedExpenses: Map<Pair<Month, Int>, List<Expense>>,
-    viewModel: MainViewModel,
+    showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
     dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     LazyColumn(
@@ -370,7 +379,8 @@ fun ExpenseList(
                                 stiffness = Spring.StiffnessLow,
                             ),
                         ),
-                        viewModel = viewModel,
+                        showModal = showModal,
+                        showAlert = showAlert,
                         dataViewModel = dataViewModel,
                     )
                 }

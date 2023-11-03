@@ -1,5 +1,6 @@
 package com.example.expensesage.ui.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -18,19 +19,15 @@ class MainViewModel : ViewModel() {
     var isAlertShown by mutableStateOf(false)
         private set
 
-    var alertOnConfirm by mutableStateOf({})
+    var alertOnConfirm: () -> Unit  by mutableStateOf({})
         private set
 
+    var alertOnCancel: () -> Unit by mutableStateOf({})
+        private set
     var alertTitle by mutableStateOf("")
         private set
 
     var isDialogShown by mutableStateOf(false)
-        private set
-
-    var money by mutableDoubleStateOf(500.00)
-        private set
-
-    var currencyModifier by mutableDoubleStateOf(1.0)
         private set
 
     var selectedExpense: Expense by mutableStateOf(
@@ -47,21 +44,29 @@ class MainViewModel : ViewModel() {
     var currentModalType: ModalType by mutableStateOf(ModalType.DETAIL)
         private set
 
+
+    init {
+        Log.d("MainViewModel", "init")
+    }
+
     /**
      * Function that is called when the user clicks on the detail button. Shows dialog
      *
      */
-    fun showModal(expense: Expense = Expense(imageResourceId = R.drawable.cost, owed = false), owed: Boolean = false, modalType: ModalType) {
-        selectedExpense = expense
+    fun showModal(expense: Expense? = Expense(imageResourceId = R.drawable.cost, owed = false), owed: Boolean = false, modalType: ModalType) {
+        if (expense != null) {
+            selectedExpense = expense
+        }
         currentModalType = modalType
         isOwed = owed
         isDialogShown = true
     }
 
-    fun showAlert(onConfirm: () -> Unit, title: String) {
+    fun showAlert(onConfirm: () -> Unit, title: String, onCancel: () -> Unit) {
         alertOnConfirm = onConfirm
         isAlertShown = true
         alertTitle = title
+        alertOnCancel = onCancel
     }
 
     /**
@@ -71,9 +76,5 @@ class MainViewModel : ViewModel() {
     fun onDialogDismiss() {
         isAlertShown = false
         isDialogShown = false
-    }
-
-    fun changeCurrencyModifier(modifier: Double) {
-        currencyModifier = modifier
     }
 }
