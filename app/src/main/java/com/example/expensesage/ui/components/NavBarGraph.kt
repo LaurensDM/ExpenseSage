@@ -1,11 +1,9 @@
 package com.example.expensesage.ui.components
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.ExpenseScreen
 import com.example.expensesage.ui.screens.OwedScreen
@@ -13,7 +11,6 @@ import com.example.expensesage.ui.screens.SettingScreen
 import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.Navigations
-import com.example.expensesage.ui.viewModels.APIViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 
 /**
@@ -42,8 +39,7 @@ fun NavBarGraph(navController: NavHostController, viewModel: MainViewModel) {
             )
         }
         composable(Navigations.Currencies.route) {
-            val apiViewModel: APIViewModel = viewModel(factory = AppViewModelProvider.Factory)
-            CurrencyScreen(apiViewModel.currencyUiState, onRetry = { apiViewModel.getCurrencies() })
+            CurrencyScreen()
         }
         composable(Navigations.Summary.route) {
             SummaryScreen()

@@ -9,28 +9,7 @@ class CurrencyApiExecutor(private val userSettings: UserSettings) {
     suspend fun getCurrencyRates(): JsonObject {
         val currency = userSettings.currency.first()
         return CurrencyApi.retrofitService.getCurrencyRates(currency.lowercase())
-//        when (currency) {
-//            "EUR" -> {
-//                Log.i("CurrencyApiExecutor", "getCurrencyRates: EUR")
-//                val result = CurrencyApi.retrofitService.getEurRate()
-//                Log.i("CurrencyApiExecutor", "getCurrencyRates: $result")
-//                return result
-//            }
-//            "USD" -> {
-//                Log.i("CurrencyApiExecutor", "getCurrencyRates: USD")
-//                val result = CurrencyApi.retrofitService.getUsdRate()
-//                Log.i("CurrencyApiExecutor", "getCurrencyRates: $result")
-//                return result
-//            }
-//            "JPY" -> {
-//                Log.i("CurrencyApiExecutor", "getCurrencyRates: USD")
-//                val result = CurrencyApi.retrofitService.getJpyRate()
-//                Log.i("CurrencyApiExecutor", "getCurrencyRates: $result")
-//                return result
-//            }
-//        }
-        Log.i("CurrencyApiExecutor", "Outside of when: $currency")
-        return CurrencyApi.retrofitService.getEurRate()
+
     }
     suspend fun getRate(currency: String): Double {
         if (currency.equals("EUR", ignoreCase = true)) return 1.0

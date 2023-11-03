@@ -44,7 +44,6 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
  */
 @Composable
 fun StartScreen(
-    modifier: Modifier = Modifier,
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
@@ -53,12 +52,11 @@ fun StartScreen(
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
-        Column {
+        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
             Spacer(modifier = Modifier.size(32.dp))
             LazyColumn(
                 contentPadding = innerPadding,
-                modifier = modifier.padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
                 item {
                     TopTile(settingsViewModel)
@@ -79,12 +77,14 @@ fun StartScreen(
                         Text(
                             text = "You have no expenses yet",
                             style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier.fillMaxWidth().padding(dimensionResource(R.dimen.padding_small)),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(dimensionResource(R.dimen.padding_small)),
                             textAlign = TextAlign.Center,
                         )
                     }
                 } else {
-                    items(listUiState.expenses) {
+                    items(listUiState.expenses, key = { it.id }) {
                         ExpenseItemHome(
                             expense = it,
                         )

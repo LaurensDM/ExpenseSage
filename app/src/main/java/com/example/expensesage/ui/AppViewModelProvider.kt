@@ -5,7 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.expensesage.ExpenseSageApplication
-import com.example.expensesage.ui.viewModels.APIViewModel
+import com.example.expensesage.ui.viewModels.CurrencyViewModel
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
@@ -33,7 +33,10 @@ object AppViewModelProvider {
             StatisticViewModel(expenseSageApplicaton().container.expenseRepository)
         }
         initializer {
-            APIViewModel(currencyApiExecutor = expenseSageApplicaton().currencyExecutor)
+            CurrencyViewModel(
+                userPref = expenseSageApplicaton().userSettings,
+                currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
+            )
         }
         initializer {
             MainViewModel()

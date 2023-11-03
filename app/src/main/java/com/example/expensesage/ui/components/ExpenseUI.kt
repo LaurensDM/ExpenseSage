@@ -75,7 +75,8 @@ fun ExpenseItemHome(
                         dampingRatio = Spring.DampingRatioNoBouncy,
                         stiffness = Spring.StiffnessMedium,
                     ),
-                ),
+                )
+                .fillMaxWidth(),
         ) {
             Row(
                 modifier = Modifier
@@ -108,9 +109,9 @@ fun ExpenseItem(
     Card(
         modifier = modifier,
 
-    ) {
+        ) {
         Column(
-            modifier = Modifier
+            modifier = modifier
                 .animateContentSize(
                     animationSpec = spring(
                         dampingRatio = Spring.DampingRatioNoBouncy,
@@ -150,8 +151,13 @@ fun ExpenseItem(
                     onEditClicked = { viewModel.showModal(expense, modalType = ModalType.EDIT) },
                     onDetailClick = { viewModel.showModal(expense, modalType = ModalType.DETAIL) },
                     onPayedClick = { dataViewModel.payOwed(expense) },
+                    onDeleteClick = {
+                        expanded = false
+                        viewModel.showAlert({
+                            dataViewModel.deleteExpense(expense)
+                        }, "Are you sure you want to delete ${expense.name}")
+                    },
                     expense = expense,
-                    dataViewModel = dataViewModel,
                     viewModel = viewModel,
                 )
             }
@@ -193,8 +199,8 @@ fun ExpenseOptions(
     onEditClicked: () -> Unit = {},
     onDetailClick: () -> Unit,
     onPayedClick: () -> Unit = {},
+    onDeleteClick: () -> Unit,
     expense: Expense,
-    dataViewModel: ExpenseDetailsViewModel,
     viewModel: MainViewModel,
 ) {
     Column(
@@ -227,12 +233,7 @@ fun ExpenseOptions(
                 Text(text = "Details")
             }
             Button(
-                onClick = {
-                    viewModel.showAlert(
-                        { dataViewModel.deleteExpense(expense) },
-                        "Are you sure?",
-                    )
-                },
+                onClick = onDeleteClick,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError,
@@ -321,10 +322,11 @@ fun ExpenseList(
     viewModel: MainViewModel,
     dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-    LazyColumn(contentPadding = it) {
-        item {
-            Spacer(modifier = Modifier.size(16.dp))
-        }
+    LazyColumn(
+        contentPadding = it,
+        modifier = Modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
         if (groupedExpenses.isEmpty()) {
             item {
                 Column(
@@ -348,10 +350,10 @@ fun ExpenseList(
                 }
             }
         } else {
-            groupedExpenses.forEach {
+            groupedExpenses.forEach { entry ->
                 stickyHeader {
                     Text(
-                        text = " ${it.key.first} ${it.key.second}",
+                        text = " ${entry.key.first} ${entry.key.second}",
                         modifier = Modifier
                             .background(color = MaterialTheme.colorScheme.surface)
                             .fillMaxWidth()
@@ -359,10 +361,15 @@ fun ExpenseList(
                         style = MaterialTheme.typography.labelSmall,
                     )
                 }
-                items(it.value) { normalExpense ->
+                items(entry.value, key = { it.id }) { normalExpense ->
                     ExpenseItem(
                         expense = normalExpense,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                        modifier = Modifier.animateItemPlacement(
+                            animationSpec = spring(
+                                dampingRatio = Spring.DampingRatioLowBouncy,
+                                stiffness = Spring.StiffnessLow,
+                            ),
+                        ),
                         viewModel = viewModel,
                         dataViewModel = dataViewModel,
                     )
