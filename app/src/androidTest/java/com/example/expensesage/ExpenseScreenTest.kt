@@ -22,9 +22,20 @@ class ExpenseScreenTest {
     @Test
     fun expenseScreenTest() {
         composeTestRule.setContent {
-            ExpenseScreen(viewModel = MainViewModel())
+            ExpenseScreen(
+                showModal = { expense, owed, modalType ->
+
+                },
+                showAlert = { onConfirm, title, onCancel ->
+
+                },
+            )
         }
-        composeTestRule.onNodeWithContentDescription("Add expense", true, true).assertHasClickAction()
+        // This code is depending on the data in the Room database, if there is no data, this test will fail
+        composeTestRule.onNodeWithContentDescription("Add expense",
+            substring = true,
+            ignoreCase = true
+        ).assertHasClickAction()
         composeTestRule.onAllNodesWithContentDescription("Expand")[0].performClick()
         composeTestRule.onAllNodesWithContentDescription("Expanded")[0].assertHasClickAction()
         composeTestRule.onNodeWithText("Details", substring = true, ignoreCase = true).assertHasClickAction()

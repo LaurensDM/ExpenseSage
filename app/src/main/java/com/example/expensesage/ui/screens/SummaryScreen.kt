@@ -46,6 +46,7 @@ import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
 import com.github.tehras.charts.piechart.renderer.SimpleSliceDrawer
 import kotlinx.coroutines.flow.StateFlow
+import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.roundToInt
 import kotlin.random.Random
@@ -116,12 +117,12 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Money spent per category",
+            text = "Money spent per category \n ${LocalDate.now().year}",
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
         )
-        if (categoryData.isEmpty()) {
+        if (categoryData.isEmpty() || categoryData.stream().max(Comparator.comparingDouble { it.totalExpense }).get().totalExpense == 0.0) {
             NoData()
         } else {
             DonutChart(
@@ -157,8 +158,6 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
 
 @Composable
 fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) {
-//    val barColors =
-//        listOf(Bar1, Bar2, Bar3, Bar4, Bar5, Bar6, Bar7, Bar8, Bar9, Bar10, Bar11, Bar12)
     val chartData = BarChartData(
         bars = monthData.map {
             Bar(
@@ -167,19 +166,7 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) 
                 color = graphColors[Random.nextInt(6)],
             )
         },
-//        bars = listOf(
-//            Bar(1200f, label = "2023-01", color = graphColors[Random.nextInt(6)]),
-//            Bar(1500f, label = "2023-02", color = graphColors[Random.nextInt(6)]),
-//            Bar(300f, label = "2023-03", color = graphColors[Random.nextInt(6)]),
-//            Bar(700f, label = "2023-04", color = graphColors[Random.nextInt(6)]),
-//            Bar(300f, label = "2023-05", color = graphColors[Random.nextInt(6)]),
-//            Bar(600f, label = "2023-06", color = graphColors[Random.nextInt(6)]),
-//            Bar(1200f, label = "2023-07", color = graphColors[Random.nextInt(6)]),
-//            Bar(1500f, label = "08", color = graphColors[Random.nextInt(6)]),
-//            Bar(300f, label = "09", color = graphColors[Random.nextInt(6)]),
-//            Bar(700f, label = "10", color = graphColors[Random.nextInt(6)]),
-//            Bar(300f, label = "11", color = graphColors[Random.nextInt(6)]),
-//            Bar(600f, label = "12", color = graphColors[Random.nextInt(6)]),
+
     )
 
     Column(
@@ -187,12 +174,12 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) 
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Money spent per month",
+            text = "Money spent per month \n ${LocalDate.now().year}",
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
         )
-        if (monthData.isEmpty()) {
+        if (monthData.isEmpty() || monthData.stream().max(Comparator.comparingDouble { it.totalExpense }).get().totalExpense == 0.0) {
             NoData()
         } else {
             BarChart(

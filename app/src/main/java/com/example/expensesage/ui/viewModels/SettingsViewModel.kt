@@ -1,5 +1,10 @@
 package com.example.expensesage.ui.viewModels
 
+import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
@@ -7,6 +12,7 @@ import com.example.expensesage.data.currencyList
 import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -15,27 +21,32 @@ class SettingsViewModel(
     private val currencyApiExecutor: CurrencyApiExecutor,
 ) : ViewModel() {
 
-    fun onMoneyChange(newMoney: Double) {
+     var moneyAvailable by mutableStateOf("0.0")
+        private set
+
+
+     var monthlyBudget by mutableStateOf("0.0")
+        private set
+
+    private var modifier by mutableDoubleStateOf(1.0)
+
+    init {
         viewModelScope.launch {
-            userSettings.saveMoneyAvailable(newMoney)
+            modifier = userSettings.currencyModifier.first()
+            moneyAvailable = (userSettings.moneyAvailable.first() * modifier).toString()
+            monthlyBudget = (userSettings.monthlyBudget.first() * modifier).toString()
         }
     }
 
-    fun changeMonthlyBudget(newBudget: Double) {
+    fun updateMoneyAvailable(money: String) {
         viewModelScope.launch {
-            userSettings.saveMonthlyBudget(newBudget)
+            moneyAvailable = money
         }
     }
 
-    fun turnOffSound() {
+    fun updateMonthlyBudget(budget: String) {
         viewModelScope.launch {
-            userSettings.saveSoundPreference(false)
-        }
-    }
-
-    fun changeSoundVolume(newVolume: Double) {
-        viewModelScope.launch {
-            userSettings.saveSoundVolume(newVolume)
+            monthlyBudget = budget
         }
     }
 
@@ -47,12 +58,38 @@ class SettingsViewModel(
         )
     }
 
-    fun getMonthlyBudget(): StateFlow<Double> {
-        return userSettings.monthlyBudget.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 0.0,
-        )
+//    fun getMonthlyBudget(): Double {
+//        return userSettings.moneyAvailable.stateIn(
+//            scope = viewModelScope,
+//            started = SharingStarted.WhileSubscribed(5_000),
+//            initialValue = 0.0,
+//        )
+//    }
+
+    fun changeMoneyAvailable() {
+        viewModelScope.launch {
+            userSettings.saveMoneyAvailable(moneyAvailable.toDouble()/modifier)
+        }
+    }
+
+    fun changeMonthlyBudget() {
+        viewModelScope.launch {
+            userSettings.saveMonthlyBudget(monthlyBudget.toDouble()/modifier)
+        }
+    }
+
+
+
+    fun turnOffSound() {
+        viewModelScope.launch {
+            userSettings.saveSoundPreference(false)
+        }
+    }
+
+    fun changeSoundVolume(newVolume: Double) {
+        viewModelScope.launch {
+            userSettings.saveSoundVolume(newVolume)
+        }
     }
 
     fun getSoundVolume(): StateFlow<Double> {
@@ -89,6 +126,13 @@ class SettingsViewModel(
                     if (currencyList.contains(currency)) currency else "EUR",
                 )
             }
+
+            val newModifier = userSettings.currencyModifier.first()
+
+             moneyAvailable = (moneyAvailable.toDouble() / modifier * newModifier).toString()
+            monthlyBudget = (monthlyBudget.toDouble() / modifier * newModifier).toString()
+
+            modifier = newModifier
         }
     }
 

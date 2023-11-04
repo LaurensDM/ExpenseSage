@@ -57,6 +57,7 @@ import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyIcon
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 import com.example.expensesage.ui.viewModels.SettingsViewModel
+import com.example.expensesage.ui.viewModels.SnackBarType
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -65,21 +66,36 @@ import kotlinx.coroutines.flow.StateFlow
  */
 @Composable
 fun SettingScreen(
+    showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp).verticalScroll(enabled = true, state = ScrollState(0)),
+            .padding(16.dp)
+            .verticalScroll(enabled = true, state = ScrollState(0)),
         verticalArrangement = Arrangement.spacedBy(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        PocketMoney(settingsViewModel)
-        MonthlyBudget(viewModel = settingsViewModel)
+        PocketMoney(
+            showSnackBar,
+            moneyAvailable = settingsViewModel.moneyAvailable,
+            updateMoneyAvailable = { settingsViewModel.updateMoneyAvailable(it) },
+            changeMoneyAvailable = { settingsViewModel.changeMoneyAvailable() },
+        )
+        MonthlyBudget(
+            showSnackBar = showSnackBar,
+            monthlyBudget = settingsViewModel.monthlyBudget,
+            updateMonthlyBudget = { settingsViewModel.updateMonthlyBudget(it) },
+            changeMonthlyBudget = { settingsViewModel.changeMonthlyBudget() },
+        )
         CurrencySelect(
-            onSelect = { settingsViewModel.changeCurrency(it) },
+            onSelect = {
+                settingsViewModel.changeCurrency(it)
+            },
             currentCurrency = settingsViewModel.getCurrency(),
+            showSnackBar = showSnackBar,
         )
         MusicPlayer()
     }
@@ -90,28 +106,16 @@ fun SettingScreen(
  *
  */
 @Composable
-fun PocketMoney(settingsViewModel: SettingsViewModel) {
+fun PocketMoney(
+    showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
+    moneyAvailable: String,
+    updateMoneyAvailable: (String) -> Unit,
+    changeMoneyAvailable: () -> Unit,
+) {
 //    val keyboardController = LocalSoftwareKeyboardController.current
 
-    val moneyAvailable by settingsViewModel.getMoneyAvailable().collectAsState()
-    val currentModifier by settingsViewModel.getCurrencyModifier().collectAsState()
     var edit by rememberSaveable { mutableStateOf(true) }
     val focusRequester = remember { FocusRequester() }
-    var text: String by remember { mutableStateOf(moneyAvailable.toString()) }
-
-    DisposableEffect(moneyAvailable, currentModifier) {
-        text = if (moneyAvailable == 0.0) {
-            ""
-        } else {
-            val moneyAfterSecondDecimal = (moneyAvailable * currentModifier) % 0.01
-            Log.i(
-                "PocketMoney",
-                "moneyAvailable: $moneyAfterSecondDecimal",
-            )
-            (((moneyAvailable * currentModifier) - moneyAfterSecondDecimal)).toString()
-        }
-        onDispose { /* Dispose logic if needed */ }
-    }
 
     Row(
         modifier = Modifier.padding(start = 48.dp),
@@ -123,27 +127,23 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
                 .width(164.dp),
             label = { Text(text = "Pocket Money") },
             placeholder = { Text(text = "Enter your pocket money") },
-            value = text,
+            value = moneyAvailable,
             onValueChange = {
-                text = it
+                updateMoneyAvailable(it)
             },
             singleLine = true,
             readOnly = edit,
             enabled = !edit,
             leadingIcon = {
-                CurrencyIcon(currency = settingsViewModel.getCurrency())
+                CurrencyIcon()
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             visualTransformation = CurrencyVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    val money: Double = if (text == "" || text == "0") {
-                        0.0
-                    } else {
-                        text.toDouble() / currentModifier
-                    }
                     edit = !edit
-                    settingsViewModel.onMoneyChange(money)
+                    changeMoneyAvailable()
+                    showSnackBar("Changed money to $moneyAvailable", SnackBarType.SUCCESS)
                 },
             ),
         )
@@ -159,20 +159,14 @@ fun PocketMoney(settingsViewModel: SettingsViewModel) {
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun MonthlyBudget(viewModel: SettingsViewModel) {
-    val monthlyMoney by viewModel.getMonthlyBudget().collectAsState()
-    val currentModifier by viewModel.getCurrencyModifier().collectAsState()
-    var text: String by remember { mutableStateOf(monthlyMoney.toString()) }
-    val keyboardController = LocalSoftwareKeyboardController.current
+fun MonthlyBudget(
+    showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
+    monthlyBudget: String,
+    updateMonthlyBudget: (String) -> Unit,
+    changeMonthlyBudget: () -> Unit,
+) {
 
-    DisposableEffect(monthlyMoney, currentModifier) {
-        text = if (monthlyMoney == 0.0) {
-            ""
-        } else {
-            (monthlyMoney * currentModifier).toString()
-        }
-        onDispose { /* Dispose logic if needed */ }
-    }
+    val keyboardController = LocalSoftwareKeyboardController.current
 
     Row(
         modifier = Modifier.padding(16.dp),
@@ -182,24 +176,20 @@ fun MonthlyBudget(viewModel: SettingsViewModel) {
                 .width(164.dp),
             label = { Text(text = "Monthly Budget") },
             placeholder = { Text(text = "Enter your pocket money") },
-            value = text,
+            value = monthlyBudget,
             onValueChange = {
-                text = it
+                updateMonthlyBudget(it)
             },
             singleLine = true,
             leadingIcon = {
-                CurrencyIcon(currency = viewModel.getCurrency())
+                CurrencyIcon()
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
             visualTransformation = CurrencyVisualTransformation(),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    val money: Double = if (text == "" || text == "0") {
-                        0.0
-                    } else {
-                        text.toDouble() / currentModifier
-                    }
-                    viewModel.changeMonthlyBudget(money)
+                    changeMonthlyBudget()
+                    showSnackBar("Changed monthly budget to $monthlyBudget", SnackBarType.SUCCESS)
                     keyboardController?.hide()
                 },
             ),
@@ -211,6 +201,7 @@ fun MonthlyBudget(viewModel: SettingsViewModel) {
 fun CurrencySelect(
     onSelect: (String) -> Unit,
     currentCurrency: StateFlow<String>,
+    showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit
 ) {
 //    val scope = rememberCoroutineScope()
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -229,7 +220,7 @@ fun CurrencySelect(
 
         Box() {
             Button(onClick = { expanded = !expanded }) {
-                Text(text = "$currency")
+                Text(text = currency)
                 Icon(Icons.Filled.ExpandMore, contentDescription = "Expand")
             }
             DropdownMenu(
@@ -247,6 +238,7 @@ fun CurrencySelect(
 //                        }
                         Log.i("Dropdown", "$it selected")
                         expanded = false
+                        showSnackBar("Changed currency to $it", SnackBarType.SUCCESS)
                     })
                 }
             }

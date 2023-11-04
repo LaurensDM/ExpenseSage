@@ -32,6 +32,8 @@ import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -70,6 +72,7 @@ import com.example.expensesage.ui.utils.NavigationType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.utils.screens
 import com.example.expensesage.ui.viewModels.MainViewModel
+import com.example.expensesage.ui.viewModels.SnackBarType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -120,7 +123,7 @@ fun AppBar(
                         tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
-            } else if (currentScreen.route == Navigations.Settings.route || currentScreen.route == Navigations.Edit.route) {
+            } else if (currentScreen.route == Navigations.Settings.route) {
                 IconButton(onClick = onBackIconPressed) {
                     Icon(
                         imageVector = Icons.Filled.ArrowBack,
@@ -162,14 +165,9 @@ fun ExpenseSageApp(
     // Get current back stack entry
     val backStackEntry by navController.currentBackStackEntryAsState()
     // Get the name of the current screen
-    val currentScreen =
-        if (backStackEntry?.destination?.route?.contains("Edit") == true) {
-            Navigations.Edit
-        } else {
-            Navigations.valueOf(
-                backStackEntry?.destination?.route ?: Navigations.Start.name,
-            )
-        }
+    val currentScreen = Navigations.valueOf(
+        backStackEntry?.destination?.route ?: Navigations.Start.name,
+    )
 
     val scrollBehavior =
         TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
@@ -177,7 +175,6 @@ fun ExpenseSageApp(
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val snackbarHostState = remember { SnackbarHostState() }
 
     val navigationType: NavigationType = when (windowSize) {
         WindowWidthSizeClass.Compact -> {
@@ -234,7 +231,17 @@ fun ExpenseSageApp(
                     scope = scope,
                 )
             },
-            snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+            snackbarHost = {
+                SnackbarHost(hostState = viewModel.snackbarHostState) {
+                    Snackbar(
+                        snackbarData = it,
+                        shape = MaterialTheme.shapes.medium,
+                        modifier = Modifier.padding(16.dp),
+                        containerColor = if (viewModel.snackbarType == SnackBarType.SUCCESS) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.error,
+                        contentColor = if (viewModel.snackbarType == SnackBarType.SUCCESS) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onError,
+                        )
+                }
+            },
             bottomBar = {
                 if (navigationType == NavigationType.BOTTOM_NAVIGATION) {
                     BottomBar(navController = navController)
@@ -249,6 +256,9 @@ fun ExpenseSageApp(
                     },
                     showAlert = { onConfirm, title, onCancel ->
                         viewModel.showAlert(onConfirm, title, onCancel)
+                    },
+                    showSnackbar = { message, snackBarType ->
+                        viewModel.showSnackBar( message, snackBarType)
                     },
                 )
                 ExpenseDialog()
@@ -272,7 +282,7 @@ fun ExpenseAlert(
             onDismissRequest = {
                 viewModel.alertOnCancel()
                 viewModel.onDialogDismiss()
-                               },
+            },
             confirmButton = {
                 Button(
                     onClick = {

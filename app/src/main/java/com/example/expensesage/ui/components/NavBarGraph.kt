@@ -14,6 +14,7 @@ import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.viewModels.MainViewModel
+import com.example.expensesage.ui.viewModels.SnackBarType
 
 /**
  * Composable that displays content based on the current route
@@ -26,7 +27,8 @@ fun NavBarGraph(
     navController: NavHostController,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
-) {
+    showSnackbar: (message: String, snackBarType: SnackBarType) -> Unit,
+    ) {
     NavHost(
         navController = navController,
         startDestination = Navigations.Start.route,
@@ -53,7 +55,7 @@ fun NavBarGraph(
             SummaryScreen()
         }
         composable(Navigations.Settings.route) {
-            SettingScreen()
+            SettingScreen(showSnackBar = showSnackbar)
         }
     }
 }

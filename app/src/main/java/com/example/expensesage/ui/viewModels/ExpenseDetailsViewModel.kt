@@ -42,7 +42,7 @@ class ExpenseDetailsViewModel(
     fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
             val moneyOwed = userPref.moneyOwed.first()
-            if (expense.owed && moneyOwed > moneyOwed - expense.amount) {
+            if (expense.owed && moneyOwed - expense.amount >= 0) {
                 userPref.saveMoneyOwed((moneyOwed - expense.amount))
             }
             expenseRepository.delete(expense = expense)

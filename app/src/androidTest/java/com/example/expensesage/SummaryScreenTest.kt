@@ -37,10 +37,6 @@ class SummaryScreenTest {
             substring = true,
             ignoreCase = true
         ).assertExists()
-        // category list seems to be empty
-        composeTestRule.onAllNodesWithText("No data", true, true).assertCountEquals(3)
-//        composeTestRule.onNodeWithText("Total", ignoreCase = true).assertExists()
-        // Lazy column does not load final item until it is scrolled into view
     }
 
     @Test

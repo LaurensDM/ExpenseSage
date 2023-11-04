@@ -25,8 +25,8 @@ class StartScreenTest {
         composeTestRule.onNodeWithText("left", substring = true, ignoreCase = true).assertExists()
         composeTestRule.onNodeWithText("Latest Expenses", substring = true, ignoreCase = true).assertExists()
         // May not always work, depends on user preferences, € could be $ or JPY instead, € should be default
-//        composeTestRule.onAllNodesWithText("€", substring = true, ignoreCase = true)[0].assertExists()
-        composeTestRule.onAllNodesWithText("$", substring = true, ignoreCase = true)[0].assertExists()
+        composeTestRule.onAllNodesWithText("€", substring = true, ignoreCase = true)[0].assertExists()
+//        composeTestRule.onAllNodesWithText("$", substring = true, ignoreCase = true)[0].assertExists()
 
     }
 }

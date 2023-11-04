@@ -50,9 +50,4 @@ enum class Navigations(val route: String, @StringRes val title: Int, val icon: I
         title = R.string.settings,
         icon = Icons.Default.Settings,
     ),
-    Edit(
-        route = "Edit/{id}",
-        title = R.string.settings,
-        icon = Icons.Default.Create,
-    ),
 }

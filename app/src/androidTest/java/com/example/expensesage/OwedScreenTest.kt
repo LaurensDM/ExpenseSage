@@ -19,14 +19,21 @@ class OwedScreenTest {
     @Test
     fun testOwedScreen() {
         composeTestRule.setContent {
-            OwedScreen(viewModel = MainViewModel())
-        }
+            OwedScreen(showModal = { expense, owed, modalType ->
 
-        composeTestRule.onNodeWithContentDescription("Add expense", true, true).assertHasClickAction()
+            },
+                showAlert = { onConfirm, title, onCancel ->
+
+                },)
+        }
+        // This code is depending on the data in the Room database, if there is no data, this test will fail
+        composeTestRule.onNodeWithContentDescription("Add expense",
+            substring = true,
+            ignoreCase = true
+        ).assertHasClickAction()
         composeTestRule.onAllNodesWithContentDescription("Expand")[0].performClick()
         composeTestRule.onNodeWithText("Paid", substring = true, ignoreCase = true).assertHasClickAction()
         composeTestRule.onNodeWithText("Paid", substring = true, ignoreCase = true).performClick()
-        composeTestRule.onAllNodesWithContentDescription("Expanded")[0].performClick()
 //        composeTestRule.onNodeWithText("Are you sure", substring = true, ignoreCase = true).assertExists("Alert does not show")
     }
 }

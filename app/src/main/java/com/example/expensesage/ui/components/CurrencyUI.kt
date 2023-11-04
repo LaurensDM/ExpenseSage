@@ -20,8 +20,8 @@ import java.text.NumberFormat
 import java.util.Currency
 
 @Composable
-fun CurrencyIcon(currency: StateFlow<String>) {
-    val currentCurrency by currency.collectAsState()
+fun CurrencyIcon(viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
+    val currentCurrency by viewModel.getCurrency().collectAsState()
     when (currentCurrency) {
         "EUR" -> Icon(Icons.Filled.Euro, contentDescription = "Euro")
         "USD" -> Icon(Icons.Filled.AttachMoney, contentDescription = "US Dollar")

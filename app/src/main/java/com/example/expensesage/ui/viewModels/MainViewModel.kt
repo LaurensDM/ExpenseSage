@@ -1,20 +1,28 @@
 package com.example.expensesage.ui.viewModels
 
 import android.util.Log
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.utils.ModalType
+import kotlinx.coroutines.launch
 
 /**
  * Main ViewModel class that is used to store the state of the app
  *
  */
 class MainViewModel : ViewModel() {
+
+    val snackbarHostState = SnackbarHostState()
+
+    var snackbarType by mutableStateOf(SnackBarType.SUCCESS)
+        private set
 
     var isAlertShown by mutableStateOf(false)
         private set
@@ -46,7 +54,7 @@ class MainViewModel : ViewModel() {
 
 
     init {
-        Log.d("MainViewModel", "init")
+//        Log.d("MainViewModel", "init")
     }
 
     /**
@@ -69,6 +77,14 @@ class MainViewModel : ViewModel() {
         alertOnCancel = onCancel
     }
 
+    fun showSnackBar(message: String, type: SnackBarType) {
+        viewModelScope.launch {
+            snackbarType = type
+            snackbarHostState.showSnackbar(message)
+        }
+
+    }
+
     /**
      * Function that is called when the user dismisses dialog. Hides dialog
      *
@@ -77,4 +93,8 @@ class MainViewModel : ViewModel() {
         isAlertShown = false
         isDialogShown = false
     }
+}
+
+enum class SnackBarType {
+    SUCCESS, ERROR
 }

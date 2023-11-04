@@ -5,7 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -30,10 +32,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
+import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyText
 import com.example.expensesage.ui.components.ExpenseItemHome
 import com.example.expensesage.ui.theme.ExpenseSageTheme
+import com.example.expensesage.ui.viewModels.ListUiState
 import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 
@@ -45,54 +49,26 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
 @Composable
 fun StartScreen(
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
-    val listUiState by listViewModel.get5Expenses().collectAsState()
+    listViewModel.get5Expenses()
 
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            Spacer(modifier = Modifier.size(32.dp))
-            LazyColumn(
-                contentPadding = innerPadding,
-                verticalArrangement = Arrangement.spacedBy(8.dp),
+        Column(modifier = Modifier
+            .padding(innerPadding)
+            .padding(horizontal = 16.dp)
+            .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                item {
-                    TopTile(settingsViewModel)
-                }
-                item {
-                    Spacer(modifier = Modifier.size(32.dp))
-                }
-                item {
-                    Text(
-                        text = "Latest expenses",
-                        style = MaterialTheme.typography.displayLarge,
-                        modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
-                        textAlign = TextAlign.Center,
-                    )
-                }
-                if (listUiState.expenses.isEmpty()) {
-                    item {
-                        Text(
-                            text = "You have no expenses yet",
-                            style = MaterialTheme.typography.headlineSmall,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(dimensionResource(R.dimen.padding_small)),
-                            textAlign = TextAlign.Center,
-                        )
-                    }
-                } else {
-                    items(listUiState.expenses, key = { it.id }) {
-                        ExpenseItemHome(
-                            expense = it,
-                        )
-                    }
-                }
-            }
+            Spacer(modifier = Modifier.size(32.dp))
+            TopTile()
+            BottomTile(listViewModel.listUiState, retry = { listViewModel.get5Expenses() })
         }
+
     }
+
 }
 
 /**
@@ -135,7 +111,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
  *
  */
 @Composable
-fun TopTile(settingsViewModel: SettingsViewModel) {
+fun TopTile(settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     Card(
         elevation = CardDefaults.cardElevation(5.dp),
         shape = MaterialTheme.shapes.large,
@@ -163,8 +139,71 @@ fun TopTile(settingsViewModel: SettingsViewModel) {
 
                 contentDescription = null,
             )
-            CurrencyText(currency = settingsViewModel.getCurrency(), moneyAvailable = settingsViewModel.getMoneyAvailable(), settingsViewModel.getCurrencyModifier())
+            CurrencyText(
+                currency = settingsViewModel.getCurrency(),
+                moneyAvailable = settingsViewModel.getMoneyAvailable(),
+                settingsViewModel.getCurrencyModifier()
+            )
         }
+    }
+}
+
+@Composable
+fun BottomTile(listUiState: ListUiState, retry: () -> Unit = {}) {
+    when (listUiState) {
+        is ListUiState.Success -> {
+            TopExpensesList(listUiState.expenses)
+        }
+
+        is ListUiState.Error -> {
+            Error(retryAction = retry, error = listUiState.message)
+        }
+
+        is ListUiState.Loading -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
+            ) {
+                Loading()
+            }
+
+        }
+    }
+}
+
+@Composable
+fun TopExpensesList(expenses: List<Expense>) {
+    LazyColumn(
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        item { Spacer(modifier = Modifier.size(24.dp)) }
+        item {
+            Text(
+                text = "Latest expenses",
+                style = MaterialTheme.typography.displayLarge,
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                textAlign = TextAlign.Center,
+            )
+        }
+        if (expenses.isEmpty()) {
+            item {
+                Text(
+                    text = "No expenses yet",
+                    style = MaterialTheme.typography.displaySmall,
+                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    textAlign = TextAlign.Center,
+                )
+            }
+        } else {
+            items(expenses, key = { it.id }) { expense ->
+                ExpenseItemHome(expense)
+            }
+        }
+        item { Spacer(modifier = Modifier.size(8.dp)) }
     }
 }
 

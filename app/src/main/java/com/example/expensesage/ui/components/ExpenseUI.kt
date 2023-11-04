@@ -115,7 +115,7 @@ fun ExpenseItem(
                 .animateContentSize(
                     animationSpec = spring(
                         dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium,
+                        stiffness = Spring.StiffnessVeryLow,
                     ),
                 ),
         ) {
@@ -325,14 +325,12 @@ fun ExpenseSageIcon(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpenseList(
-    it: PaddingValues,
     groupedExpenses: Map<Pair<Month, Int>, List<Expense>>,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
     dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     LazyColumn(
-        contentPadding = it,
         modifier = Modifier.padding(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -376,7 +374,7 @@ fun ExpenseList(
                         modifier = Modifier.animateItemPlacement(
                             animationSpec = spring(
                                 dampingRatio = Spring.DampingRatioLowBouncy,
-                                stiffness = Spring.StiffnessLow,
+                                stiffness = Spring.StiffnessMedium,
                             ),
                         ),
                         showModal = showModal,

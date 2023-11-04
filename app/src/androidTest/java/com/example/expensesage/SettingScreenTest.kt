@@ -18,7 +18,7 @@ class SettingScreenTest {
     @Test
     fun settingScreenTest() {
         composeTestRule.setContent {
-            SettingScreen()
+            SettingScreen(showSnackBar = {message, snackBarType ->  })
         }
 
         composeTestRule.onNodeWithText("Pocket Money", substring = true, ignoreCase = true)
@@ -33,7 +33,6 @@ class SettingScreenTest {
         // May not always work, depends on user preferences, EUR could be USD or JPY instead, EUR should be default
         Thread.sleep(500)
         composeTestRule.onNodeWithText("EUR", substring = true, ignoreCase = true).performClick()
-//        Thread.sleep(500)
         composeTestRule.onNodeWithText("USD", substring = true, ignoreCase = true).assertExists().performClick()
         Thread.sleep(500)
         composeTestRule.onNodeWithText("EUR", substring = true, ignoreCase = true).assertDoesNotExist()
