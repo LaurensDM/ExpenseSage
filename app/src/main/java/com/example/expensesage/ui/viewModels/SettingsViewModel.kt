@@ -1,5 +1,6 @@
 package com.example.expensesage.ui.viewModels
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -7,7 +8,6 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
-import com.example.expensesage.data.currencyList
 import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,22 +27,35 @@ class SettingsViewModel(
 
     private var modifier by mutableDoubleStateOf(1.0)
 
+    var currency by mutableStateOf("EUR")
+        private set
+
     init {
         viewModelScope.launch {
+            currency = userSettings.currency.first()
             modifier = userSettings.currencyModifier.first()
             budget = (userSettings.budget.first() * modifier).toString()
+            budgetFrequencyState = userSettings.budgetFrequency.first()
         }
     }
 
-    fun updateMonthlyBudget(budget: String) {
-        viewModelScope.launch {
-            this@SettingsViewModel.budget = budget
+    fun updateMonthlyBudget(newBudget: String) {
+        try {
+            // If the new budget is not a valid double, this will throw
+            newBudget.toDouble()
+            budget = newBudget
+        } catch (e: NumberFormatException) {
+            Log.d("SettingsViewModel", "updateMonthlyBudget: $e")
         }
+
     }
 
     fun updateBudgetFrequency(budgetFrequency: String) {
         viewModelScope.launch {
-            budgetFrequencyState = budgetFrequency
+            if (budgetFrequencyList.contains(budgetFrequency)) {
+                budgetFrequencyState = budgetFrequency
+                userSettings.saveBudgetFrequency(budgetFrequencyState)
+            }
         }
     }
 
@@ -54,9 +67,10 @@ class SettingsViewModel(
         )
     }
 
-    fun changeMonthlyBudget() {
+    fun changeBudget() {
         viewModelScope.launch {
             val moneyAvailable = userSettings.moneyAvailable.first()
+            Log.d("SettingsViewModel", "budget: $budget")
             userSettings.saveBudget(budget.toDouble() / modifier)
             if (moneyAvailable == 0.0) {
                 userSettings.saveMoneyAvailable(budget.toDouble() / modifier)
@@ -94,29 +108,32 @@ class SettingsViewModel(
         )
     }
 
-    fun changeCurrency(currency: String) {
+    fun changeCurrency(newCurrency: String) {
         viewModelScope.launch {
             try {
-                userSettings.saveCurrencyModifier(currencyApiExecutor.getRate(currency))
-                userSettings.saveCurrency(currency)
+                userSettings.saveCurrencyModifier(currencyApiExecutor.getRate(newCurrency))
+                userSettings.saveCurrency(newCurrency)
+                val newModifier = userSettings.currencyModifier.first()
+                budget = (budget.toDouble() / modifier * newModifier).toString()
+                modifier = newModifier
+                currency = newCurrency
             } catch (e: Exception) {
                 userSettings.saveCurrencyModifier(
-                    when (currency) {
-                        "EUR" -> 1.0
-                        "USD" -> 1.068
-                        "JPY" -> 159.798
-                        else -> 1.0
-                    },
+//                    when (newCurrency) {
+//                        "EUR" -> 1.0
+//                        "USD" -> 1.068
+//                        "JPY" -> 159.798
+//                        else -> 1.0
+//                    },
+                    1.0
                 )
                 userSettings.saveCurrency(
-                    if (currencyList.contains(currency)) currency else "EUR",
+//                    if (currencyList.contains(newCurrency)) newCurrency else "EUR",
+                    "EUR"
                 )
             }
 
-            val newModifier = userSettings.currencyModifier.first()
-            budget = (budget.toDouble() / modifier * newModifier).toString()
 
-            modifier = newModifier
         }
     }
 
@@ -136,3 +153,5 @@ class SettingsViewModel(
         )
     }
 }
+
+val budgetFrequencyList = listOf("Weekly", "Monthly", "Yearly")

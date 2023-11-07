@@ -35,14 +35,12 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
@@ -55,11 +53,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyIcon
-import com.example.expensesage.ui.components.CurrencyString
+import com.example.expensesage.ui.components.formatMoney
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.SnackBarType
-import kotlinx.coroutines.flow.StateFlow
+import com.example.expensesage.ui.viewModels.budgetFrequencyList
 
 /**
  * Composable that displays the setting screen of the app
@@ -103,18 +101,19 @@ fun CurrencySettings(
             settingsViewModel.budgetFrequencyState,
             settingsViewModel::updateBudgetFrequency
         )
-        MonthlyBudget(
+        Budget(
             showSnackBar = showSnackBar,
             budget = settingsViewModel.budget,
             budgetFrequency = settingsViewModel.budgetFrequencyState,
             updateMonthlyBudget = { settingsViewModel.updateMonthlyBudget(it) },
-            changeMonthlyBudget = { settingsViewModel.changeMonthlyBudget() },
+            changeMonthlyBudget = { settingsViewModel.changeBudget() },
+            currency = settingsViewModel.currency
         )
         CurrencySelect(
             onSelect = {
                 settingsViewModel.changeCurrency(it)
             },
-            currentCurrency = settingsViewModel.getCurrency(),
+            currency = settingsViewModel.currency,
             showSnackBar = showSnackBar,
         )
     }
@@ -122,7 +121,7 @@ fun CurrencySettings(
 
 @Composable
 fun BudgetFrequencySelect(budgetFrequencyState: String, updateBudgetFrequency: (String) -> Unit) {
-    val budgetFrequency = listOf("Weekly", "Monthly", "Yearly")
+
 
     Column {
         Text(
@@ -131,7 +130,7 @@ fun BudgetFrequencySelect(budgetFrequencyState: String, updateBudgetFrequency: (
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
-        budgetFrequency.forEach {
+        budgetFrequencyList.forEach {
             Row(
                 Modifier.selectable(
                     selected = (it == budgetFrequencyState),
@@ -164,7 +163,7 @@ fun BudgetFrequencySelect(budgetFrequencyState: String, updateBudgetFrequency: (
  *
  */
 @Composable
-fun PocketMoney(
+fun BudgetTextField(
     moneyAvailable: String,
     updateMoneyAvailable: (String) -> Unit,
     onDone: () -> Unit,
@@ -191,14 +190,15 @@ fun PocketMoney(
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
+
 @Composable
-fun MonthlyBudget(
+fun Budget(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
     budget: String,
     budgetFrequency: String,
     updateMonthlyBudget: (String) -> Unit,
     changeMonthlyBudget: () -> Unit,
+    currency: String
 ) {
 
     var edit by rememberSaveable { mutableStateOf(false) }
@@ -220,7 +220,7 @@ fun MonthlyBudget(
         },
         supportingContent = {
             if (edit) {
-                PocketMoney(
+                BudgetTextField(
                     moneyAvailable = budget,
                     updateMoneyAvailable = updateMonthlyBudget,
                     onDone = {
@@ -233,7 +233,7 @@ fun MonthlyBudget(
                     },
                 )
             } else {
-                Text(text = CurrencyString(money = budget.toDouble(), fractionDigits = 2))
+                Text(text = formatMoney(budget.toDouble(), currency, 2))
             }
 
         },
@@ -273,12 +273,10 @@ fun MonthlyBudget(
 @Composable
 fun CurrencySelect(
     onSelect: (String) -> Unit,
-    currentCurrency: StateFlow<String>,
+    currency: String,
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit
 ) {
-//    val scope = rememberCoroutineScope()
     var expanded by rememberSaveable { mutableStateOf(false) }
-    val currency by currentCurrency.collectAsState()
 
     Box(modifier = Modifier.fillMaxWidth()) {
         ListItem(

@@ -1,11 +1,8 @@
 package com.example.expensesage
 
 import androidx.compose.ui.test.junit4.createComposeRule
-import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onAllNodesWithText
-import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performClick
 import com.example.expensesage.ui.screens.StartScreen
 import org.junit.Rule
 import org.junit.Test
@@ -18,7 +15,7 @@ class StartScreenTest {
     @Test
     fun startScreenTest() {
         composeTestRule.setContent {
-            StartScreen()
+            StartScreen(showModal = {_,_,_ -> }, showAlert = {_,_,_ -> })
         }
 
         composeTestRule.onNodeWithText("ExpenseSage", substring = true, ignoreCase = true).assertExists()
