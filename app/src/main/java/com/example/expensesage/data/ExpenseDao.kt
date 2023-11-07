@@ -36,7 +36,7 @@ interface ExpenseDao {
     @Query("SELECT * FROM expense_table WHERE id = :id")
     fun getExpense(id: Int): Flow<Expense>
 
-    @Query("SELECT category as subject, SUM(amount) AS totalExpense FROM expense_table WHERE SUBSTR(date, 1, 4) = :searchQuery GROUP BY category")
+    @Query("SELECT category as subject, SUM(amount) AS totalExpense FROM expense_table WHERE SUBSTR(date, 1, 4) = :searchQuery AND owed = 0 GROUP BY category")
     fun getSumOfCategory(searchQuery: String): Flow<List<ExpenseSummaryItem>>
 
     @Query("SELECT SUM(amount) FROM expense_table WHERE owed = :owed")
@@ -45,12 +45,20 @@ interface ExpenseDao {
     @Query("SELECT SUM(amount) FROM expense_table")
     fun getSumOfAll(): Flow<Double>
 
-    @Query("SELECT SUM(amount) FROM expense_table WHERE SUBSTR(date, 1, 7) = :searchQuery")
+    @Query("SELECT SUM(amount) FROM expense_table WHERE SUBSTR(date, 1, 7) = :searchQuery AND owed = 0")
     fun getSumOfDate(searchQuery: String): Flow<Double>
 
-    @Query("SELECT SUBSTR(date, 1, 7) AS subject, SUM(amount) AS totalExpense FROM expense_table WHERE SUBSTR(date, 1, 4) = :year GROUP BY subject")
+    @Query("SELECT SUBSTR(date, 1, 7) AS subject, SUM(amount) AS totalExpense FROM expense_table WHERE SUBSTR(date, 1, 4) = :year AND owed = 0 GROUP BY subject")
     fun getMonthlyExpenseSummary(year: String): Flow<List<ExpenseSummaryItem>>
 
-    @Query("SELECT SUM(amount) FROM expense_table WHERE category LIKE :searchQuery AND SUBSTR(date, 1, 7) = :date")
+    @Query("SELECT SUM(amount) FROM expense_table WHERE category LIKE :searchQuery AND SUBSTR(date, 1, 7) = :date AND owed = 0")
     fun getSumOfCategoryAndDate(searchQuery: String, date: String): Flow<Double>
+
+    @Query(
+        "SELECT strftime('%W', date) AS subject, SUM(amount) AS totalExpense " +
+                "FROM expense_table " +
+                "WHERE strftime('%Y-%m', date) = :yearMonth AND owed = 0 " +
+                "GROUP BY subject"
+    )
+    fun getWeeklyExpensesForCurrentMonth(yearMonth: String): Flow<List<ExpenseSummaryItem>>
 }

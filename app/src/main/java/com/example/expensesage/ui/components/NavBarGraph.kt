@@ -13,7 +13,6 @@ import com.example.expensesage.ui.screens.StartScreen
 import com.example.expensesage.ui.screens.SummaryScreen
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.utils.Navigations
-import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SnackBarType
 
 /**
@@ -28,13 +27,16 @@ fun NavBarGraph(
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
     showSnackbar: (message: String, snackBarType: SnackBarType) -> Unit,
-    ) {
+) {
     NavHost(
         navController = navController,
         startDestination = Navigations.Start.route,
     ) {
         composable(Navigations.Start.route) {
-            StartScreen()
+            StartScreen(
+                showModal = showModal,
+                showAlert = showAlert,
+            )
         }
         composable(Navigations.Expenses.route) {
             ExpenseScreen(

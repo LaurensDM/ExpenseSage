@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,8 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -35,8 +32,9 @@ import com.example.expensesage.R
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyText
-import com.example.expensesage.ui.components.ExpenseItemHome
+import com.example.expensesage.ui.components.ExpenseItem
 import com.example.expensesage.ui.theme.ExpenseSageTheme
+import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListUiState
 import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
@@ -49,22 +47,29 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
 @Composable
 fun StartScreen(
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
 ) {
     listViewModel.get5Expenses()
 
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
-        Column(modifier = Modifier
-            .padding(innerPadding)
-            .padding(horizontal = 16.dp)
-            .fillMaxSize(),
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .padding(horizontal = 16.dp)
+                .fillMaxSize(),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
+        ) {
             Spacer(modifier = Modifier.size(32.dp))
             TopTile()
-            BottomTile(listViewModel.listUiState, retry = { listViewModel.get5Expenses() })
+            BottomTile(
+                listViewModel.listUiState, retry = { listViewModel.get5Expenses() },
+                showModal = showModal,
+                showAlert = showAlert,
+            )
         }
 
     }
@@ -149,10 +154,15 @@ fun TopTile(settingsViewModel: SettingsViewModel = viewModel(factory = AppViewMo
 }
 
 @Composable
-fun BottomTile(listUiState: ListUiState, retry: () -> Unit = {}) {
+fun BottomTile(
+    listUiState: ListUiState,
+    retry: () -> Unit = {},
+    showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+) {
     when (listUiState) {
         is ListUiState.Success -> {
-            TopExpensesList(listUiState.expenses)
+            TopExpensesList(listUiState.expenses, showModal, showAlert)
         }
 
         is ListUiState.Error -> {
@@ -175,7 +185,11 @@ fun BottomTile(listUiState: ListUiState, retry: () -> Unit = {}) {
 }
 
 @Composable
-fun TopExpensesList(expenses: List<Expense>) {
+fun TopExpensesList(
+    expenses: List<Expense>,
+    showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+) {
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth(),
@@ -194,13 +208,15 @@ fun TopExpensesList(expenses: List<Expense>) {
                 Text(
                     text = "No expenses yet",
                     style = MaterialTheme.typography.displaySmall,
-                    modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
+                    modifier = Modifier
+                        .padding(dimensionResource(R.dimen.padding_small))
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )
             }
         } else {
             items(expenses, key = { it.id }) { expense ->
-                ExpenseItemHome(expense)
+                ExpenseItem(expense, showModal = showModal, showAlert = showAlert)
             }
         }
         item { Spacer(modifier = Modifier.size(8.dp)) }
@@ -214,7 +230,7 @@ fun TopExpensesList(expenses: List<Expense>) {
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        StartScreen()
+        StartScreen(showModal = { _, _, _ -> }, showAlert = { _, _, _ -> })
     }
 }
 
@@ -225,6 +241,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        StartScreen()
+        StartScreen(showModal = { _, _, _ -> }, showAlert = { _, _, _ -> })
     }
 }

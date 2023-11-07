@@ -30,7 +30,10 @@ object AppViewModelProvider {
             )
         }
         initializer {
-            StatisticViewModel(expenseSageApplicaton().container.expenseRepository)
+            StatisticViewModel(
+                expenseSageApplicaton().container.expenseRepository,
+                expenseSageApplicaton().userSettings
+            )
         }
         initializer {
             CurrencyViewModel(

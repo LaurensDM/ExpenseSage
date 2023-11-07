@@ -17,11 +17,12 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
     private companion object {
         val PLAY_SOUND = booleanPreferencesKey("play_sound")
         val SOUND_VOLUME = doublePreferencesKey("sound_volume")
-        val MONTHLY_BUDGET = doublePreferencesKey("monthly_budget")
-        val MONEY_AVAILABLE = doublePreferencesKey("money_available")
-        val MONEY_OWED = doublePreferencesKey("money_owed")
+        val BUDGET = doublePreferencesKey("budget") // weekly budget
+        val MONEY_AVAILABLE = doublePreferencesKey("money_available") // money available to spend, gets reset every week
+    val MONEY_SAVED = doublePreferencesKey("money_saved") // money saved from last week, gets changed after every week
+        val MONEY_OWED = doublePreferencesKey("money_owed") // How much money you spend on debts
         val CURRENCY = stringPreferencesKey("currency") // USD, EUR, GBP, YEN ?
-        val CURRENCY_MODIFIER = doublePreferencesKey("currency_modifier")
+        val CURRENCY_MODIFIER = doublePreferencesKey("currency_modifier") //TODO save in Room database
         const val TAG = "UserSettings"
     }
 
@@ -37,15 +38,21 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         }
     }
 
-    suspend fun saveMonthlyBudget(monthlyBudget: Double) {
+    suspend fun saveBudget(budget: Double) {
         dataStore.edit { preferences ->
-            preferences[MONTHLY_BUDGET] = monthlyBudget
+            preferences[BUDGET] = budget
         }
     }
 
     suspend fun saveMoneyAvailable(moneyAvailable: Double) {
         dataStore.edit { preferences ->
             preferences[MONEY_AVAILABLE] = moneyAvailable
+        }
+    }
+
+    suspend fun saveMoneySaved(moneySaved: Double) {
+        dataStore.edit { preferences ->
+            preferences[MONEY_SAVED] = moneySaved
         }
     }
 
@@ -93,7 +100,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[SOUND_VOLUME] ?: 0.5
         }
 
-    val monthlyBudget: Flow<Double> = dataStore.data
+    val budget: Flow<Double> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -103,7 +110,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             }
         }
         .map { preferences ->
-            preferences[MONTHLY_BUDGET] ?: 0.0
+            preferences[BUDGET] ?: 0.0
         }
 
     val moneyAvailable: Flow<Double> = dataStore.data
@@ -117,6 +124,19 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         }
         .map { preferences ->
             preferences[MONEY_AVAILABLE] ?: 0.0
+        }
+
+    val moneySaved: Flow<Double> = dataStore.data
+        .catch {
+            if (it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }
+        .map { preferences ->
+            preferences[MONEY_SAVED] ?: 0.0
         }
 
     val moneyOwed: Flow<Double> = dataStore.data

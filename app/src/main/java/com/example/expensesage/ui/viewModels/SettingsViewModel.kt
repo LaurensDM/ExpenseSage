@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.viewModels
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,12 +19,10 @@ class SettingsViewModel(
     private val userSettings: UserSettings,
     private val currencyApiExecutor: CurrencyApiExecutor,
 ) : ViewModel() {
-
-     var moneyAvailable by mutableStateOf("0.0")
+    var budget by mutableStateOf("0.0")
         private set
 
-
-     var monthlyBudget by mutableStateOf("0.0")
+    var budgetFrequencyState by mutableStateOf("Weekly")
         private set
 
     private var modifier by mutableDoubleStateOf(1.0)
@@ -33,20 +30,19 @@ class SettingsViewModel(
     init {
         viewModelScope.launch {
             modifier = userSettings.currencyModifier.first()
-            moneyAvailable = (userSettings.moneyAvailable.first() * modifier).toString()
-            monthlyBudget = (userSettings.monthlyBudget.first() * modifier).toString()
-        }
-    }
-
-    fun updateMoneyAvailable(money: String) {
-        viewModelScope.launch {
-            moneyAvailable = money
+            budget = (userSettings.budget.first() * modifier).toString()
         }
     }
 
     fun updateMonthlyBudget(budget: String) {
         viewModelScope.launch {
-            monthlyBudget = budget
+            this@SettingsViewModel.budget = budget
+        }
+    }
+
+    fun updateBudgetFrequency(budgetFrequency: String) {
+        viewModelScope.launch {
+            budgetFrequencyState = budgetFrequency
         }
     }
 
@@ -58,26 +54,16 @@ class SettingsViewModel(
         )
     }
 
-//    fun getMonthlyBudget(): Double {
-//        return userSettings.moneyAvailable.stateIn(
-//            scope = viewModelScope,
-//            started = SharingStarted.WhileSubscribed(5_000),
-//            initialValue = 0.0,
-//        )
-//    }
-
-    fun changeMoneyAvailable() {
-        viewModelScope.launch {
-            userSettings.saveMoneyAvailable(moneyAvailable.toDouble()/modifier)
-        }
-    }
-
     fun changeMonthlyBudget() {
         viewModelScope.launch {
-            userSettings.saveMonthlyBudget(monthlyBudget.toDouble()/modifier)
+            val moneyAvailable = userSettings.moneyAvailable.first()
+            userSettings.saveBudget(budget.toDouble() / modifier)
+            if (moneyAvailable == 0.0) {
+                userSettings.saveMoneyAvailable(budget.toDouble() / modifier)
+            }
+
         }
     }
-
 
 
     fun turnOffSound() {
@@ -128,9 +114,7 @@ class SettingsViewModel(
             }
 
             val newModifier = userSettings.currencyModifier.first()
-
-             moneyAvailable = (moneyAvailable.toDouble() / modifier * newModifier).toString()
-            monthlyBudget = (monthlyBudget.toDouble() / modifier * newModifier).toString()
+            budget = (budget.toDouble() / modifier * newModifier).toString()
 
             modifier = newModifier
         }
@@ -149,14 +133,6 @@ class SettingsViewModel(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5_000),
             initialValue = 1.0,
-        )
-    }
-    
-    fun getMoneyOwed(): StateFlow<Double> {
-        return userSettings.moneyOwed.stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = 0.0,
         )
     }
 }

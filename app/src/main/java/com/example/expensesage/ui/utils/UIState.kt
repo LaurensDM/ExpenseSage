@@ -14,20 +14,20 @@ data class ExpenseDetail(
     var category: String = "Other",
 )
 
-fun ExpenseDetail.toExpense(): Expense = Expense(
+fun ExpenseDetail.toExpense(currencyRate: Double): Expense = Expense(
     id = id,
     name = name,
-    amount = amount.toDoubleOrNull() ?: 0.0,
+    amount = (amount.replace(",", ".").toDouble() / currencyRate),
     owed = owed,
     imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
     date = LocalDateTime.parse(date),
     category = category,
 )
 
-fun Expense.toExpenseDetail(): ExpenseDetail = ExpenseDetail(
+fun Expense.toExpenseDetail(currencyRate: Double): ExpenseDetail = ExpenseDetail(
     id = id,
     name = name,
-    amount = amount.toString(),
+    amount = (amount * currencyRate).formatToCurrency(),
     owed = owed,
     date = date.toString(),
     category = category,

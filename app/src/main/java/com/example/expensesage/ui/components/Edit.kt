@@ -22,7 +22,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.ExpenseDetail
-import com.example.expensesage.ui.utils.toExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 
 @Composable
@@ -33,7 +32,7 @@ fun Edit(
 ) {
 
     LaunchedEffect(selectedExpense) {
-        dataViewModel.updateState((selectedExpense.toExpenseDetail()))
+        dataViewModel.initializeState(selectedExpense)
     }
 
     Column(

@@ -55,4 +55,8 @@ class OfflineExpenseRepository(private val expenseDao: ExpenseDao) : ExpenseRepo
     override fun getSumOfCategoryAndDate(searchQuery: String, date: String): Flow<Double> {
         return expenseDao.getSumOfCategoryAndDate(searchQuery, date)
     }
+
+    override fun getWeeklyExpenseSummary(yearMonth: String): Flow<List<ExpenseSummaryItem>> {
+        return expenseDao.getWeeklyExpensesForCurrentMonth(yearMonth)
+    }
 }

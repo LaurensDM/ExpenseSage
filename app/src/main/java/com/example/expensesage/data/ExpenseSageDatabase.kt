@@ -9,7 +9,6 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.expensesage.data.converter.DateConverter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @TypeConverters(value = [DateConverter::class])
 @Database(
@@ -53,16 +52,16 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
 
                     // Populate the database with data
 
-                    .addCallback(object : Callback() {
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            // Use a coroutine to insert data
-                            val expenseDao = Instance?.expenseDao()
-                            scope.launch {
-                                expenseDao?.insertAll(populateData())
-                            }
-                        }
-                    })
+//                    .addCallback(object : Callback() {
+//                        override fun onCreate(db: SupportSQLiteDatabase) {
+//                            super.onCreate(db)
+//                            // Use a coroutine to insert data
+//                            val expenseDao = Instance?.expenseDao()
+//                            scope.launch {
+//                                expenseDao?.insertAll(populateData())
+//                            }
+//                        }
+//                    })
 
                     .build()
                     .also { Instance = it }

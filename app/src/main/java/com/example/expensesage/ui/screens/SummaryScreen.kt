@@ -1,5 +1,6 @@
 package com.example.expensesage.ui.screens
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -17,8 +18,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -28,12 +27,18 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyString
 import com.example.expensesage.ui.components.DonutChart
-import com.example.expensesage.ui.theme.* // ktlint-disable no-wildcard-imports
+import com.example.expensesage.ui.theme.Slice1
+import com.example.expensesage.ui.theme.Slice2
+import com.example.expensesage.ui.theme.Slice3
+import com.example.expensesage.ui.theme.Slice4
+import com.example.expensesage.ui.theme.Slice5
+import com.example.expensesage.ui.theme.Slice6
+import com.example.expensesage.ui.theme.itemTextStyle
+import com.example.expensesage.ui.theme.moneyAmountStyle
 import com.example.expensesage.ui.utils.DonutChartData
 import com.example.expensesage.ui.utils.DonutChartDataCollection
 import com.example.expensesage.ui.utils.ExpenseSummary
 import com.example.expensesage.ui.utils.ExpenseSummaryItem
-import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.StatisticUiState
 import com.example.expensesage.ui.viewModels.StatisticViewModel
 import com.github.tehras.charts.bar.BarChart
@@ -45,7 +50,6 @@ import com.github.tehras.charts.bar.renderer.yaxis.SimpleYAxisDrawer
 import com.github.tehras.charts.piechart.PieChart
 import com.github.tehras.charts.piechart.PieChartData
 import com.github.tehras.charts.piechart.renderer.SimpleSliceDrawer
-import kotlinx.coroutines.flow.StateFlow
 import java.time.LocalDate
 import kotlin.math.abs
 import kotlin.math.roundToInt
@@ -56,14 +60,11 @@ val graphColors = listOf(Slice1, Slice2, Slice3, Slice4, Slice5, Slice6)
 @Composable
 fun SummaryScreen(
     viewModel: StatisticViewModel = viewModel(factory = AppViewModelProvider.Factory),
-    settings: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     when (viewModel.statisticUiState) {
         is StatisticUiState.Loading -> SummaryLoading()
         is StatisticUiState.Success -> Summary(
             (viewModel.statisticUiState as StatisticUiState.Success).summary,
-            settings.getCurrencyModifier(),
-            settings.getMoneyOwed(),
         )
 
         else -> Error(
@@ -76,11 +77,7 @@ fun SummaryScreen(
 @Composable
 fun Summary(
     summaryData: ExpenseSummary = ExpenseSummary(),
-    currencyModifier: StateFlow<Double>,
-    moneyOwed: StateFlow<Double>,
 ) {
-    val currencyRate by currencyModifier.collectAsState()
-    val owedSpent by moneyOwed.collectAsState()
 
     LazyColumn(
         modifier = Modifier
@@ -90,15 +87,77 @@ fun Summary(
         verticalArrangement = Arrangement.spacedBy(64.dp),
     ) {
         item {
-            PrimaryChart(totalSpent = summaryData.totalSpent, owedSpent = owedSpent)
+            PrimaryChart(totalSpent = summaryData.totalSpent, owedSpent = summaryData.owedTotal)
+        }
+        item {
+            WeeklyComparison(summaryData.moneySaved)
         }
         item {
             CategoryChart(summaryData.categoryData)
         }
         item {
-            MonthChart(summaryData.monthlyData, currencyRate)
+            MonthChart(summaryData.monthlyData)
         }
     }
+}
+
+@Composable
+fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
+    val chartData = BarChartData(
+        bars =
+        if (moneySaved.isEmpty()) emptyList()
+        else if (moneySaved.size == 1) listOf(
+            Bar(
+                value = moneySaved[0].totalExpense.toFloat(),
+                label = "This week",
+                color = graphColors[4],
+            ),
+        ) else listOf(
+            Bar(
+                value = moneySaved[0].totalExpense.toFloat(),
+                label = "Last week",
+                color = graphColors[0],
+            ),
+            Bar(
+                value = moneySaved[1].totalExpense.toFloat(),
+                label = "This week",
+                color = graphColors[1],
+            ),
+        ),
+    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+//            .padding(4.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        if (moneySaved.isEmpty()) {
+            NoData()
+        } else {
+            Text(
+                text = "You have spent 20% more than last week",
+                style = MaterialTheme.typography.displayMedium,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.size(8.dp))
+            BarChart(
+                barChartData = chartData,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(256.dp)
+                    .padding(start = 32.dp),
+                labelDrawer = SimpleValueDrawer(
+                    labelTextColor = MaterialTheme.colorScheme.onPrimary,
+                    labelTextSize = 12.sp,
+                ),
+            )
+        }
+
+    }
+
+
 }
 
 @Composable
@@ -122,7 +181,9 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
         )
-        if (categoryData.isEmpty() || categoryData.stream().max(Comparator.comparingDouble { it.totalExpense }).get().totalExpense == 0.0) {
+        if (categoryData.isEmpty() || categoryData.stream()
+                .max(Comparator.comparingDouble { it.totalExpense }).get().totalExpense == 0.0
+        ) {
             NoData()
         } else {
             DonutChart(
@@ -157,17 +218,17 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
 }
 
 @Composable
-fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) {
+fun MonthChart(monthData: List<ExpenseSummaryItem>) {
     val chartData = BarChartData(
         bars = monthData.map {
             Bar(
-                value = (it.totalExpense * currencyRate).toFloat(),
+                value = it.totalExpense.toFloat(),
                 label = it.subject.substring(5, 7),
                 color = graphColors[Random.nextInt(6)],
             )
         },
 
-    )
+        )
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -179,7 +240,9 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) 
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
         )
-        if (monthData.isEmpty() || monthData.stream().max(Comparator.comparingDouble { it.totalExpense }).get().totalExpense == 0.0) {
+        if (monthData.isEmpty() || monthData.stream()
+                .max(Comparator.comparingDouble { it.totalExpense }).get().totalExpense == 0.0
+        ) {
             NoData()
         } else {
             BarChart(
@@ -187,7 +250,7 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) 
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(256.dp)
-                    .padding(bottom = 32.dp),
+                    .padding(bottom = 32.dp, start = 8.dp),
                 yAxisDrawer = SimpleYAxisDrawer(
                     labelTextColor = MaterialTheme.colorScheme.onSurface,
                     axisLineColor = MaterialTheme.colorScheme.secondary,
@@ -214,11 +277,12 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>, currencyRate: Double = 1.0) 
 
 @Composable
 fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
-    val nonOwedTotal = totalSpent - owedSpent
+    val paidExpenses = totalSpent - owedSpent
+    Log.i("SummaryScreen", "paidExpenses: $paidExpenses, owedExpenses: $owedSpent")
     val chartData = PieChartData(
         slices = listOf(
             PieChartData.Slice(
-                value = nonOwedTotal.toFloat(),
+                value = paidExpenses.toFloat(),
                 color = MaterialTheme.colorScheme.primaryContainer,
             ),
             PieChartData.Slice(
@@ -232,7 +296,7 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
         modifier = Modifier.padding(top = 16.dp),
     ) {
         Text(
-            text = "Total money spent: ${CurrencyString(money = totalSpent, fractionDigits = 2)}",
+            text = "Expenditures: \n ${CurrencyString(money = totalSpent, fractionDigits = 2)}",
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
@@ -248,7 +312,7 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
                 Text(
                     text = "normal expenses: ${
                         CurrencyString(
-                            money = nonOwedTotal,
+                            money = paidExpenses,
                             fractionDigits = 2,
                         )
                     }",

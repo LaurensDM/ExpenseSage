@@ -10,7 +10,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -103,7 +102,7 @@ fun ExpenseItem(
     modifier: Modifier = Modifier,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
-    dataViewModel: ExpenseDetailsViewModel,
+    dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     var expanded by remember { mutableStateOf(false) }
     Card(
@@ -142,12 +141,6 @@ fun ExpenseItem(
             }
             if (expanded) {
                 ExpenseOptions(
-                    modifier = Modifier.padding(
-                        start = dimensionResource(R.dimen.padding_medium),
-                        top = dimensionResource(R.dimen.padding_small),
-                        bottom = dimensionResource(R.dimen.padding_medium),
-                        end = dimensionResource(R.dimen.padding_medium),
-                    ),
                     onEditClicked = { showModal(expense, false, ModalType.EDIT) },
                     onDetailClick = { showModal(expense, false, ModalType.DETAIL) },
                     onPayedClick = {
@@ -209,7 +202,6 @@ private fun ExpenseItemButton(
  */
 @Composable
 fun ExpenseOptions(
-    modifier: Modifier = Modifier,
     onEditClicked: () -> Unit = {},
     onDetailClick: () -> Unit,
     onPayedClick: () -> Unit = {},
@@ -217,7 +209,8 @@ fun ExpenseOptions(
     expense: Expense,
 ) {
     Column(
-        modifier = modifier,
+        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
@@ -226,7 +219,7 @@ fun ExpenseOptions(
         )
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
-            modifier = modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth(),
         ) {
             Button(
                 onClick = onEditClicked,
@@ -328,7 +321,6 @@ fun ExpenseList(
     groupedExpenses: Map<Pair<Month, Int>, List<Expense>>,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
-    dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     LazyColumn(
         modifier = Modifier.padding(8.dp),
@@ -379,7 +371,6 @@ fun ExpenseList(
                         ),
                         showModal = showModal,
                         showAlert = showAlert,
-                        dataViewModel = dataViewModel,
                     )
                 }
             }

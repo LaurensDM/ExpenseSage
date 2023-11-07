@@ -12,22 +12,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
-import com.example.expensesage.ui.viewModels.MainViewModel
-import java.text.NumberFormat
-import java.util.Locale
 
 @Composable
 fun Create(
@@ -35,6 +28,10 @@ fun Create(
     isOwed: Boolean,
     dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
+    LaunchedEffect(isOwed) {
+        dataViewModel.resetState()
+    }
+
     Column(
         modifier = Modifier.offset(y = ((-32).dp)),
         horizontalAlignment = Alignment.CenterHorizontally,

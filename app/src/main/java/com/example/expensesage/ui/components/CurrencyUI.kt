@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
@@ -30,18 +31,37 @@ fun CurrencyIcon(viewModel: SettingsViewModel = viewModel(factory = AppViewModel
 }
 
 @Composable
-fun CurrencyText(currency: StateFlow<String>, moneyAvailable: StateFlow<Double>, currencyModifier: StateFlow<Double>) {
+fun CurrencyText(
+    currency: StateFlow<String>,
+    moneyAvailable: StateFlow<Double>,
+    currencyModifier: StateFlow<Double>
+) {
     val currentCurrency by currency.collectAsState()
     val currentMoney by moneyAvailable.collectAsState()
     val currentModifier by currencyModifier.collectAsState()
 
     val formattedMoney = formatMoney(currentMoney * currentModifier, currentCurrency, 2)
 
-    return Text(text = "You have $formattedMoney  left", style = MaterialTheme.typography.displayLarge)
+    val color = if (currentMoney > 0) {
+        MaterialTheme.colorScheme.onSecondaryContainer
+    } else {
+        MaterialTheme.colorScheme.error
+    }
+
+    return Text(
+        text = "You have $formattedMoney  left",
+        style = MaterialTheme.typography.displayLarge,
+        color = color,
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
-fun CurrencyString(money: Double, fractionDigits: Int, viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)): String {
+fun CurrencyString(
+    money: Double,
+    fractionDigits: Int,
+    viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
+): String {
     val currentCurrency by viewModel.getCurrency().collectAsState()
     val currentModifier by viewModel.getCurrencyModifier().collectAsState()
 
