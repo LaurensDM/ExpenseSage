@@ -1,14 +1,19 @@
 package com.example.expensesage.ui.screens
 
 import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.selection.selectable
@@ -70,11 +75,12 @@ fun SettingScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(horizontal = 16.dp)
             .verticalScroll(enabled = true, state = ScrollState(0)),
         verticalArrangement = Arrangement.spacedBy(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
         CurrencySettings(showSnackBar = showSnackBar)
         Divider()
         SoundPreferences()
@@ -404,15 +410,23 @@ fun FeedbackHelp() {
 
 @Composable
 fun About() {
+    var aboutClicked by remember { mutableStateOf(false) }
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp)
+            .animateContentSize(
+                animationSpec = spring(
+                    dampingRatio = Spring.DampingRatioNoBouncy,
+                    stiffness = Spring.StiffnessVeryLow
+                )
+            ),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
         ListItem(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { },
+                .clickable { aboutClicked = !aboutClicked },
             leadingContent = {
                 Icon(Icons.Default.Info, contentDescription = "Info")
             },
@@ -420,6 +434,28 @@ fun About() {
                 Text(text = "About", style = MaterialTheme.typography.labelLarge)
             }, supportingContent = {
                 Text(text = "About the app")
-            })
+            },
+            trailingContent = {
+                Icon(
+                    if (aboutClicked)
+                        Icons.Default.ExpandLess
+                    else
+                        Icons.Default.ExpandMore,
+
+                    contentDescription = null,
+                )
+            }
+            )
+        if (aboutClicked) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp),
+                text = "ExpenseSage is an app that helps you manage your expenses." +
+                        " It was developed by nen paljas from HOGent. " +
+                        "\n\n The app was developed as part of the course 'Mobile application development: Android'.",
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
     }
 }
