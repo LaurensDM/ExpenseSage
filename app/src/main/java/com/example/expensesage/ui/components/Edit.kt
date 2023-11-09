@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.expensesage.data.Expense
+import com.example.expensesage.data.expenses.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 import com.example.expensesage.ui.utils.DecimalFormatter

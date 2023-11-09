@@ -8,17 +8,22 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.expensesage.data.converter.DateConverter
+import com.example.expensesage.data.currencies.Currency
+import com.example.expensesage.data.currencies.CurrencyDao
+import com.example.expensesage.data.expenses.Expense
+import com.example.expensesage.data.expenses.ExpenseDao
 import kotlinx.coroutines.CoroutineScope
 
 @TypeConverters(value = [DateConverter::class])
 @Database(
-    entities = [Expense::class],
-    version = 4,
+    entities = [Expense::class, Currency::class],
+    version = 5,
     exportSchema = false,
 )
 abstract class ExpenseSageDatabase : RoomDatabase() {
 
     abstract fun expenseDao(): ExpenseDao
+    abstract fun currencyDao(): CurrencyDao
 
     companion object {
         @Volatile
@@ -46,6 +51,17 @@ abstract class ExpenseSageDatabase : RoomDatabase() {
                         override fun migrate(database: SupportSQLiteDatabase) {
                             database.execSQL("DROP TABLE expense_table")
                             database.execSQL("CREATE TABLE expense_table (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, date TEXT NOT NULL, imageResourceId INTEGER NOT NULL, name TEXT NOT NULL, amount REAL NOT NULL, owed INTEGER NOT NULL, category TEXT NOT NULL)")
+                        }
+                    },
+                    object : Migration(4, 5) {
+                        override fun migrate(database: SupportSQLiteDatabase) {
+                            database.execSQL("CREATE TABLE IF NOT EXISTS currency_table (" +
+                                    "currencyCode TEXT NOT NULL, " +
+                                    "date TEXT NOT NULL, " +
+                                    "rate REAL NOT NULL, " +
+                                    "comparedCurrency TEXT NOT NULL, " +
+                                    "PRIMARY KEY(currencyCode)" +
+                                    ")")
                         }
                     },
                 )

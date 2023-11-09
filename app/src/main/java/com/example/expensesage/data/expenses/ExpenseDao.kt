@@ -1,4 +1,4 @@
-package com.example.expensesage.data
+package com.example.expensesage.data.expenses
 
 import androidx.room.Dao
 import androidx.room.Delete

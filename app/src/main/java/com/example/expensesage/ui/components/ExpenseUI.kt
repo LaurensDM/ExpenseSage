@@ -55,8 +55,8 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.expensesage.R
-import com.example.expensesage.data.Expense
-import com.example.expensesage.data.categories
+import com.example.expensesage.data.expenses.Expense
+import com.example.expensesage.data.expenses.categories
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel

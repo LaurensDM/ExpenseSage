@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.expensesage.data.ExpenseRepository
+import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.data.UserSettings
 import com.example.expensesage.ui.utils.ExpenseSummary
 import com.example.expensesage.ui.utils.ExpenseSummaryItem

@@ -8,8 +8,8 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
-import com.example.expensesage.data.Expense
-import com.example.expensesage.data.ExpenseRepository
+import com.example.expensesage.data.expenses.Expense
+import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.data.UserSettings
 import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.utils.formatToCurrency

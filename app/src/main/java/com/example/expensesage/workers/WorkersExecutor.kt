@@ -3,6 +3,7 @@ package com.example.expensesage.workers
 import android.content.Context
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -17,8 +18,9 @@ suspend fun executeWorkers(ctx: Context) {
     val userSettings = UserSettings(DataStoreSingleton.getInstance(ctx))
 
     val workRequest = createBudgetWorker(userSettings.budgetFrequency.first())
-
     val reminderWorkRequest = createOwedReminderWorker()
+    val syncWorkRequest = createSyncWorker()
+
 
     val workManager = WorkManager.getInstance(ctx)
     workManager.enqueueUniquePeriodicWork(
@@ -31,11 +33,11 @@ suspend fun executeWorkers(ctx: Context) {
         ExistingPeriodicWorkPolicy.KEEP,
         reminderWorkRequest
     )
-}
-
-fun cancelWorkers(ctx: Context) {
-    val workManager = WorkManager.getInstance(ctx)
-    workManager.cancelUniqueWork("BudgetUpdateWorker")
+    workManager.enqueueUniquePeriodicWork(
+        "SyncWorker",
+        ExistingPeriodicWorkPolicy.KEEP,
+        syncWorkRequest
+    )
 }
 
 fun createBudgetWorker(interval: String): PeriodicWorkRequest {
@@ -91,6 +93,19 @@ fun createOwedReminderWorker(): PeriodicWorkRequest {
         Constraints.Builder()
             .setRequiresBatteryNotLow(true)
             .setRequiresDeviceIdle(true)
+            .build()
+    )
+        .build()
+}
+
+fun createSyncWorker(): PeriodicWorkRequest {
+    return PeriodicWorkRequestBuilder<SyncWorker>(
+        repeatInterval = 2L,
+        repeatIntervalTimeUnit = TimeUnit.DAYS
+    ).setConstraints(
+        Constraints.Builder()
+            .setRequiresBatteryNotLow(true)
+            .setRequiredNetworkType(NetworkType.NOT_ROAMING)
             .build()
     )
         .build()

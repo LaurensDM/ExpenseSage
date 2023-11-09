@@ -1,6 +1,6 @@
 package com.example.expensesage
 
-import com.example.expensesage.data.Expense
+import com.example.expensesage.data.expenses.Expense
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.MainViewModel
 import org.junit.Test

@@ -1,18 +1,16 @@
 package com.example.expensesage
 
 import android.app.Application
-import android.content.Context
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.example.expensesage.data.AppContainer
 import com.example.expensesage.data.AppDataContainer
 import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
 import com.example.expensesage.network.CurrencyApiExecutor
+import com.example.expensesage.workers.executeWorkers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
 
@@ -24,6 +22,11 @@ class ExpenseSageApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
+
+        CoroutineScope(Dispatchers.IO).launch {
+            executeWorkers(this@ExpenseSageApplication)
+        }
+
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         userSettings = UserSettings(DataStoreSingleton.getInstance(context = this))
         container = AppDataContainer(this, appScope)

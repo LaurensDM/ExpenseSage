@@ -41,6 +41,7 @@ object AppViewModelProvider {
             CurrencyViewModel(
                 userPref = expenseSageApplicaton().userSettings,
                 currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
+                currencyRepository = expenseSageApplicaton().container.currencyRepository,
             )
         }
         initializer {

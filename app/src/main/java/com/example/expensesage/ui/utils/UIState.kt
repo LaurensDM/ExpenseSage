@@ -1,7 +1,7 @@
 package com.example.expensesage.ui.utils
 
 import com.example.expensesage.R
-import com.example.expensesage.data.Expense
+import com.example.expensesage.data.expenses.Expense
 import java.time.LocalDateTime
 
 

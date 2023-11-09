@@ -24,41 +24,33 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.viewModels.CurrencyUIState
 import com.example.expensesage.ui.viewModels.CurrencyViewModel
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonObject
 
 @Composable
 fun CurrencyScreen(currencyViewModel: CurrencyViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     when (currencyViewModel.currencyUIState) {
         is CurrencyUIState.Loading -> Loading(modifier = Modifier.fillMaxSize())
         is CurrencyUIState.Success -> CurrenciesList(
-            date = (currencyViewModel.currencyUIState as CurrencyUIState.Success).data["date"].toString(),
-            currencyViewModel = currencyViewModel,
+            date = (currencyViewModel.currencyUIState as CurrencyUIState.Success).date,
         )
 
         is CurrencyUIState.Error -> Error(
@@ -124,18 +116,18 @@ fun CurrenciesList(
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-            items(currencyViewModel.list, key = { it.key }) {
+            items(currencyViewModel.list, key = { it.currencyCode }) {
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = it.key.uppercase(),
+                            text = it.currencyCode.uppercase(),
                             style = MaterialTheme.typography.displaySmall,
                             lineHeight = 24.sp,
                         )
                     },
                     supportingContent = {
                         Text(
-                            text = "${it.value}",
+                            text = "${it.rate}",
                             style = MaterialTheme.typography.labelMedium,
                             lineHeight = 24.sp,
                             fontWeight = FontWeight.Bold,
@@ -143,7 +135,7 @@ fun CurrenciesList(
                     },
                     trailingContent = {
                         Text(
-                            text = "1 ${currencyViewModel.currency}",
+                            text = "1 ${it.comparedCurrency.uppercase()}",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Bold
                         )

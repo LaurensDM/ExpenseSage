@@ -7,23 +7,26 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.currencies.Currency
+import com.example.expensesage.data.currencies.CurrencyRepository
 import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.JsonElement
-import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
+import java.time.LocalDate
 
 class CurrencyViewModel(
     private val userPref: UserSettings,
     private val currencyApiExecutor: CurrencyApiExecutor,
+    private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
 
     var currencyUIState: CurrencyUIState by mutableStateOf(CurrencyUIState.Loading)
         private set
 
-    private var originalData : List<Map.Entry<String, JsonElement>> by mutableStateOf( emptyList() )
-    var list: List<Map.Entry<String, JsonElement>> by mutableStateOf( emptyList() )
+    private var originalData : List<Currency> by mutableStateOf( emptyList() )
+    var list: List<Currency> by mutableStateOf( emptyList() )
         private set
 
     var queryState by mutableStateOf("")
@@ -35,19 +38,38 @@ class CurrencyViewModel(
 
     init {
         Log.d("CurrencyViewModel", "init")
-        getData()
+
+            getData()
+
+
     }
 
     fun getData() {
         viewModelScope.launch {
             currencyUIState = CurrencyUIState.Loading
             currencyUIState = try {
-                val data  = currencyApiExecutor.getCurrencyRates()
                 currency = userPref.currency.first()
-                originalData  = data[currency.lowercase()]?.jsonObject?.entries?.toList() ?: emptyList()
-                list = originalData
+                var date: String
+                if (currencyRepository.getAllCurrencies().first().isEmpty()){
+                    val data  = currencyApiExecutor.getCurrencyRates()
+                    originalData  = data[currency.lowercase()]?.jsonObject?.entries?.toList()?.map {
+                        Currency(
+                            currencyCode = it.key,
+                            date = data["date"]?.jsonObject?.entries?.first()?.value?.jsonPrimitive?.content ?: "",
+                            rate = it.value.jsonPrimitive.content.toDouble(),
+                            comparedCurrency = currency.lowercase()
+                        )
+                    } ?: emptyList()
+                    list = originalData
+                    date = data["date"]?.jsonPrimitive?.content ?: LocalDate.now().toString()
+                } else {
+                    originalData = currencyRepository.getAllCurrencies().first()
+                    list = originalData
+                    date = originalData.first().date
+                }
+
                 CurrencyUIState.Success(
-                    data
+                    date
                 )
             } catch (e: Exception) {
                 CurrencyUIState.Error(e.localizedMessage ?: "An unknown error occured")
@@ -57,7 +79,7 @@ class CurrencyViewModel(
 
     fun search() {
         list = originalData
-        list = list.filter { it.key.contains(queryState.lowercase()) }
+        list = list.filter { it.currencyCode.contains(queryState.lowercase()) }
     }
 
     fun updateQuery(searchQuery: String){
@@ -68,7 +90,7 @@ class CurrencyViewModel(
 
 sealed interface CurrencyUIState {
     data object Loading : CurrencyUIState
-    data class Success(val data: JsonObject) : CurrencyUIState
+    data class Success(val date: String) : CurrencyUIState
     data class Error(val error: String) : CurrencyUIState
 
 }

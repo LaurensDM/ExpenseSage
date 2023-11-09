@@ -29,7 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.R
-import com.example.expensesage.data.Expense
+import com.example.expensesage.data.expenses.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyText
 import com.example.expensesage.ui.components.ExpenseItem

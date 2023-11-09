@@ -1,4 +1,4 @@
-package com.example.expensesage.data
+package com.example.expensesage.data.expenses
 
 import com.example.expensesage.ui.utils.ExpenseSummaryItem
 import kotlinx.coroutines.flow.Flow

@@ -1,4 +1,4 @@
-package com.example.expensesage.data
+package com.example.expensesage.data.expenses
 
 import androidx.annotation.DrawableRes
 import androidx.room.Entity

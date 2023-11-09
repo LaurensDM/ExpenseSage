@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
-import com.example.expensesage.data.Expense
+import com.example.expensesage.data.expenses.Expense
 import com.example.expensesage.ui.utils.ModalType
 import kotlinx.coroutines.launch
 
