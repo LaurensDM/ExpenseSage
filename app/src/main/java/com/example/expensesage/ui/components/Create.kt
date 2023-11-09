@@ -1,24 +1,35 @@
 package com.example.expensesage.ui.components
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddCircle
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.ui.AppViewModelProvider
+import com.example.expensesage.ui.utils.CurrencyVisualTransformation
+import com.example.expensesage.ui.utils.DecimalFormatter
 import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 
@@ -32,16 +43,29 @@ fun Create(
         dataViewModel.resetState()
     }
 
-    Column(
-        modifier = Modifier.offset(y = ((-32).dp)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
-    ) {
-        Card(
+
+        OutlinedCard(
             elevation = CardDefaults.cardElevation(5.dp),
-            shape = MaterialTheme.shapes.large,
+            shape = RoundedCornerShape(32.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.onSurface),
         ) {
+            Spacer(modifier = Modifier.size(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+//                Icon(Icons.Outlined., contentDescription = null)
+                Text(
+                    text = "Add Expense",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.displaySmall
+                )
+            }
+
             CreateForm(
                 expenseState = dataViewModel.expenseDetailState,
                 updateState = dataViewModel::updateState,
@@ -54,7 +78,6 @@ fun Create(
                 amountError = dataViewModel.amountError,
             )
         }
-    }
 }
 
 @Composable
@@ -64,11 +87,11 @@ fun CreateForm(
     onDoneClicked: () -> Unit = {},
     nameError: Boolean,
     amountError: Boolean,
+    decimalFormatter: DecimalFormatter = DecimalFormatter()
 ) {
 
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Text(text = "Create")
-        TextField(
+        OutlinedTextField(
             value = expenseState.name,
             onValueChange = {
                 updateState(expenseState.copy(name = it))
@@ -83,14 +106,15 @@ fun CreateForm(
                 color = MaterialTheme.colorScheme.error,
             )
         }
-        TextField(
+        OutlinedTextField(
             value = expenseState.amount,
             onValueChange = {
-                updateState(expenseState.copy(amount = it))
+                updateState(expenseState.copy(amount = decimalFormatter.cleanup(it)))
             },
             label = { Text(text = "Amount") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             isError = amountError,
+            visualTransformation = CurrencyVisualTransformation(decimalFormatter),
         )
         if (amountError) {
             Text(
@@ -103,13 +127,22 @@ fun CreateForm(
             onSelect = { updateState(expenseState.copy(category = it)) },
             category = expenseState.category
         )
-        Button(
-            onClick = {
-                onDoneClicked()
-            },
-            enabled = !(nameError || amountError),
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.End,
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Text(text = "Done")
+            Button(
+                onClick = {
+                    onDoneClicked()
+                },
+                enabled = !(nameError || amountError),
+            ) {
+                Text(text = "Add", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 8.dp))
+                    Icon(Icons.Rounded.AddCircle, contentDescription = "Add", tint = MaterialTheme.colorScheme.secondary,)
+
+            }
         }
+
     }
 }

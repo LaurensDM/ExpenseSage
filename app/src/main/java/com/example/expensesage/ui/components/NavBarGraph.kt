@@ -57,7 +57,7 @@ fun NavBarGraph(
             SummaryScreen()
         }
         composable(Navigations.Settings.route) {
-            SettingScreen(showSnackBar = showSnackbar)
+            SettingScreen(showSnackBar = showSnackbar, showAlert = showAlert)
         }
     }
 }

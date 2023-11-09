@@ -18,7 +18,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         val PLAY_SOUND = booleanPreferencesKey("play_sound")
         val SOUND_VOLUME = doublePreferencesKey("sound_volume")
         val BUDGET = doublePreferencesKey("budget") // weekly budget
-
+        val FIRST_BUDGET_CHANGE = booleanPreferencesKey("first_budget_change") // if it's the first time the user changes the settings
         val MONEY_AVAILABLE = doublePreferencesKey("money_available") // money available to spend, gets reset every week
         val BUDGET_FREQUENCY = stringPreferencesKey("budget_frequency") // money saved from last week, gets changed after every week
         val MONEY_OWED = doublePreferencesKey("money_owed") // How much money you spend on debts
@@ -72,6 +72,12 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
     suspend fun saveCurrencyModifier(currencyModifier: Double) {
         dataStore.edit { preferences ->
             preferences[CURRENCY_MODIFIER] = currencyModifier
+        }
+    }
+
+    suspend fun saveFirstBudgetChange(firstSettingChange: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[FIRST_BUDGET_CHANGE] = firstSettingChange
         }
     }
 
@@ -176,6 +182,18 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             }
         }.map { preferences ->
             preferences[CURRENCY_MODIFIER] ?: 1.0
+        }
+
+    val firstBudgetChange: Flow<Boolean> = dataStore.data
+        .catch {
+            if (it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }.map { preferences ->
+            preferences[FIRST_BUDGET_CHANGE] ?: true
         }
 }
 

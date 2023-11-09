@@ -25,8 +25,10 @@ object AppViewModelProvider {
         }
         initializer {
             SettingsViewModel(
+                context = expenseSageApplicaton().applicationContext,
                 userSettings = expenseSageApplicaton().userSettings,
                 currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
+                expenseRepository = expenseSageApplicaton().container.expenseRepository,
             )
         }
         initializer {

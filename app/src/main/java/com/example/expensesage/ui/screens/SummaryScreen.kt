@@ -109,18 +109,18 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
         else if (moneySaved.size == 1) listOf(
             Bar(
                 value = moneySaved[0].totalExpense.toFloat(),
-                label = "This week",
+                label = "This week \n ${CurrencyString(money = moneySaved[0].totalExpense, fractionDigits = 2)}",
                 color = graphColors[4],
             ),
         ) else listOf(
             Bar(
                 value = moneySaved[0].totalExpense.toFloat(),
-                label = "Last week",
+                label = "Last week: ${CurrencyString(money = moneySaved[0].totalExpense, fractionDigits = 2)}",
                 color = graphColors[0],
             ),
             Bar(
                 value = moneySaved[1].totalExpense.toFloat(),
-                label = "This week",
+                label = "This week: ${CurrencyString(money = moneySaved[1].totalExpense, fractionDigits = 2)}",
                 color = graphColors[1],
             ),
         ),
@@ -136,7 +136,7 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
             NoData()
         } else {
             Text(
-                text = "You have spent 20% more than last week",
+                text = if (moneySaved.size == 1) "Money spent this week" else "Money spent last week vs this week",
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
@@ -150,7 +150,19 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
                     .padding(start = 32.dp),
                 labelDrawer = SimpleValueDrawer(
                     labelTextColor = MaterialTheme.colorScheme.onPrimary,
-                    labelTextSize = 12.sp,
+                ),
+                xAxisDrawer = SimpleXAxisDrawer(
+                    axisLineThickness = 4.dp,
+                    axisLineColor = MaterialTheme.colorScheme.secondary,
+                ),
+                yAxisDrawer = SimpleYAxisDrawer(
+                    labelTextColor = MaterialTheme.colorScheme.onSurface,
+                    axisLineColor = MaterialTheme.colorScheme.secondary,
+                    axisLineThickness = 4.dp,
+                    labelValueFormatter = { value ->
+                        value.roundToInt().toString()
+                    },
+                    labelRatio = 5,
                 ),
             )
         }

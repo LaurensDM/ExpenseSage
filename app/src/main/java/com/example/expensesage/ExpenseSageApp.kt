@@ -33,9 +33,7 @@ import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -44,7 +42,6 @@ import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -61,7 +58,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.Create
 import com.example.expensesage.ui.components.Details
@@ -316,19 +312,27 @@ fun ExpenseAlert(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Icon(Icons.Outlined.WarningAmber, contentDescription = "Alert")
+                    Icon(Icons.Outlined.WarningAmber, contentDescription = "Alert", tint = MaterialTheme.colorScheme.error)
                     Text(
-                        text = viewModel.alertTitle,
+                        text = "Dangerous Action",
                         textAlign = TextAlign.Center,
+                        color =  MaterialTheme.colorScheme.error,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
+            },
+            text = {
+                Text(
+                    text = viewModel.alertText,
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                )
             },
             modifier = Modifier.padding(16.dp),
             shape = MaterialTheme.shapes.large,
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
             containerColor = MaterialTheme.colorScheme.surface,
-
+            tonalElevation = 0.dp,
             )
     }
 }

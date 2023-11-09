@@ -9,7 +9,7 @@ data class ExpenseDetail(
     var id: Int = 0,
     var date: String = LocalDateTime.now().toString(),
     var name: String = "Unknown",
-    var amount: String = "0.00",
+    var amount: String = "1",
     var owed: Boolean = false,
     var category: String = "Other",
 )

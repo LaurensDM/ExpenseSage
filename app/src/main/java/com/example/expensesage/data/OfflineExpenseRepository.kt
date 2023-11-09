@@ -59,4 +59,16 @@ class OfflineExpenseRepository(private val expenseDao: ExpenseDao) : ExpenseRepo
     override fun getWeeklyExpenseSummary(yearMonth: String): Flow<List<ExpenseSummaryItem>> {
         return expenseDao.getWeeklyExpensesForCurrentMonth(yearMonth)
     }
+
+    override fun getSumOfWeek(): Flow<Double> {
+        return expenseDao.getSumOfWeek()
+    }
+
+    override fun getSumOfMonth(): Flow<Double> {
+        return expenseDao.getSumOfMonth()
+    }
+
+    override fun getSumOfYear(): Flow<Double> {
+        return expenseDao.getSumOfYear()
+    }
 }

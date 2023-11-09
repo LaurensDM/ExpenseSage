@@ -3,7 +3,9 @@ package com.example.expensesage.ui.components
 import androidx.annotation.DrawableRes
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
@@ -28,6 +31,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,11 +43,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -209,7 +215,9 @@ fun ExpenseOptions(
     expense: Expense,
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -381,7 +389,12 @@ fun ExpenseList(
 @Composable
 fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        contentAlignment = Alignment.Center,
+    ) {
         Button(onClick = { expanded = !expanded }) {
             Text(text = category)
             if (expanded) {
@@ -394,7 +407,7 @@ fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
             expanded = expanded,
             onDismissRequest = { expanded = false },
             offset = DpOffset(
-                8.dp,
+                Dp.Infinity,
                 0.dp,
             ),
         ) {
@@ -409,4 +422,29 @@ fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
             }
         }
     }
+}
+
+@Composable
+fun ExpenseFloatingActionButton(
+    onClick: () -> Unit,
+) {
+    var multiFloatingState by remember { mutableStateOf(MultiFloatingState.Collapsed) }
+    val transition = updateTransition(targetState = multiFloatingState, label = "transition")
+    val rotate by transition.animateFloat(label = "rotate") {
+        if (it == MultiFloatingState.Expanded) 360f else 0f
+    }
+    FloatingActionButton(onClick = {
+        multiFloatingState = if (transition.currentState == MultiFloatingState.Expanded) {
+            MultiFloatingState.Collapsed
+        } else {
+            MultiFloatingState.Expanded
+        }
+        onClick()
+    }) {
+        Icon(Icons.Default.Add, contentDescription = "Add expense", modifier = Modifier.rotate(rotate))
+    }
+}
+
+enum class MultiFloatingState {
+    Expanded, Collapsed
 }

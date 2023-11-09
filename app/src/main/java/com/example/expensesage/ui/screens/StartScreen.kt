@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -19,6 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -50,12 +50,16 @@ fun StartScreen(
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
 ) {
-    listViewModel.get5Expenses()
+
+    LaunchedEffect(listViewModel ){
+        listViewModel.get5Expenses()
+    }
+
 
     Scaffold(topBar = {
         ExpenseSageTopAppBar()
     }) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp)
@@ -63,13 +67,21 @@ fun StartScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.size(32.dp))
-            TopTile()
-            BottomTile(
-                listViewModel.listUiState, retry = { listViewModel.get5Expenses() },
-                showModal = showModal,
-                showAlert = showAlert,
-            )
+            item {
+                Spacer(modifier = Modifier.size(32.dp))
+            }
+            item {
+                TopTile()
+            }
+            item {
+                BottomTile(
+                    listViewModel.listUiState,
+                    retry = { listViewModel.get5Expenses() },
+                    showModal = showModal,
+                    showAlert = showAlert,
+                )
+            }
+
         }
 
     }
@@ -190,21 +202,21 @@ fun TopExpensesList(
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
     showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
 ) {
-    LazyColumn(
+    Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         modifier = Modifier.fillMaxWidth(),
     ) {
-        item { Spacer(modifier = Modifier.size(24.dp)) }
-        item {
+        Spacer(modifier = Modifier.size(24.dp))
+
             Text(
                 text = "Latest expenses",
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 textAlign = TextAlign.Center,
             )
-        }
+
         if (expenses.isEmpty()) {
-            item {
+
                 Text(
                     text = "No expenses yet",
                     style = MaterialTheme.typography.displaySmall,
@@ -213,13 +225,13 @@ fun TopExpensesList(
                         .fillMaxWidth(),
                     textAlign = TextAlign.Center,
                 )
-            }
+
         } else {
-            items(expenses, key = { it.id }) { expense ->
+            expenses.forEach{ expense ->
                 ExpenseItem(expense, showModal = showModal, showAlert = showAlert)
             }
         }
-        item { Spacer(modifier = Modifier.size(8.dp)) }
+         Spacer(modifier = Modifier.size(8.dp))
     }
 }
 

@@ -60,6 +60,7 @@ import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyIcon
 import com.example.expensesage.ui.components.formatMoney
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
+import com.example.expensesage.ui.utils.DecimalFormatter
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.SnackBarType
 import com.example.expensesage.ui.viewModels.budgetFrequencyList
@@ -71,6 +72,7 @@ import com.example.expensesage.ui.viewModels.budgetFrequencyList
 @Composable
 fun SettingScreen(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -81,7 +83,7 @@ fun SettingScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.height(16.dp))
-        CurrencySettings(showSnackBar = showSnackBar)
+        CurrencySettings(showSnackBar = showSnackBar, showAlert = showAlert)
         Divider()
         SoundPreferences()
         Divider()
@@ -94,6 +96,7 @@ fun SettingScreen(
 @Composable
 fun CurrencySettings(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
@@ -105,13 +108,14 @@ fun CurrencySettings(
         Text(text = "Currency Settings", style = MaterialTheme.typography.displaySmall)
         BudgetFrequencySelect(
             settingsViewModel.budgetFrequencyState,
-            settingsViewModel::updateBudgetFrequency
+            settingsViewModel::updateBudgetFrequency,
+            showAlert = showAlert,
         )
         Budget(
             showSnackBar = showSnackBar,
             budget = settingsViewModel.budget,
             budgetFrequency = settingsViewModel.budgetFrequencyState,
-            updateMonthlyBudget = { settingsViewModel.updateMonthlyBudget(it) },
+            updateMonthlyBudget = { settingsViewModel.updateBudget(it) },
             changeMonthlyBudget = { settingsViewModel.changeBudget() },
             currency = settingsViewModel.currency
         )
@@ -126,7 +130,11 @@ fun CurrencySettings(
 }
 
 @Composable
-fun BudgetFrequencySelect(budgetFrequencyState: String, updateBudgetFrequency: (String) -> Unit) {
+fun BudgetFrequencySelect(
+    budgetFrequencyState: String,
+    updateBudgetFrequency: (String) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+) {
 
 
     Column {
@@ -140,7 +148,13 @@ fun BudgetFrequencySelect(budgetFrequencyState: String, updateBudgetFrequency: (
             Row(
                 Modifier.selectable(
                     selected = (it == budgetFrequencyState),
-                    onClick = { updateBudgetFrequency(it) },
+                    onClick = {
+                        showAlert(
+                            { updateBudgetFrequency(it) },
+                            "Are you certain you want to change your budget frequency? This will reset your current budget.",
+                            {}
+                        )
+                    },
                     role = Role.RadioButton
                 )
             ) {
@@ -173,20 +187,21 @@ fun BudgetTextField(
     moneyAvailable: String,
     updateMoneyAvailable: (String) -> Unit,
     onDone: () -> Unit,
+    decimalFormatter: DecimalFormatter = DecimalFormatter()
 ) {
     OutlinedTextField(
         modifier = Modifier
             .width(128.dp),
         label = { Text(text = "Budget") },
         placeholder = { Text(text = "Enter your budget") },
-        value = moneyAvailable,
+        value = decimalFormatter.cleanup(moneyAvailable),
         onValueChange = {
-            updateMoneyAvailable(it)
+            updateMoneyAvailable(decimalFormatter.cleanup(it))
         },
 
         singleLine = true,
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-        visualTransformation = CurrencyVisualTransformation(),
+        visualTransformation = CurrencyVisualTransformation(decimalFormatter),
         keyboardActions = KeyboardActions(
             onDone = {
                 this.defaultKeyboardAction(ImeAction.Done)
@@ -445,7 +460,7 @@ fun About() {
                     contentDescription = null,
                 )
             }
-            )
+        )
         if (aboutClicked) {
             Text(
                 modifier = Modifier

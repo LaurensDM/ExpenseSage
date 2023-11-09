@@ -143,10 +143,13 @@ class ExpenseDetailsViewModel(
             val amount = expense.amount.replace(",", ".").toDouble()
             // If no error is thrown, then the amount is valid
             Log.i("ExpenseDetailsViewModel", "validateInput: amount is valid: $amount")
+            if (amount <= 0) {
+                throw Exception("Amount is negative")
+            }
             amountError = false
         } catch (e: Exception) {
             Log.d("ExpenseDetailsViewModel", "validateInput: ${e.localizedMessage}")
-            expense.amount = "0.00"
+            expense.amount = "0"
             amountError = true
         }
 

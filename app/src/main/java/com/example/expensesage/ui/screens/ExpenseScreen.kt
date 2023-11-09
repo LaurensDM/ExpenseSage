@@ -1,15 +1,11 @@
 package com.example.expensesage.ui.screens
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -17,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.expensesage.data.Expense
 import com.example.expensesage.ui.AppViewModelProvider
+import com.example.expensesage.ui.components.ExpenseFloatingActionButton
 import com.example.expensesage.ui.components.ExpenseList
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
@@ -34,13 +31,16 @@ fun ExpenseScreen(
     viewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
 
-    viewModel.getExpenses(false)
+    LaunchedEffect(viewModel ){
+        viewModel.getExpenses(false)
+    }
+
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = { showModal(null, false, ModalType.CREATE) }) {
-                Icon(Icons.Default.Add, contentDescription = "Add expense")
-            }
+            ExpenseFloatingActionButton(
+                onClick = { showModal(null, false, ModalType.CREATE) }
+            )
         },
     ) {
         Column(
@@ -68,7 +68,8 @@ fun ExpensesView(
 ) {
     when (mapUiState) {
         is MapUiState.Loading ->
-    Loading(modifier = Modifier.fillMaxSize())
+            Loading(modifier = Modifier.fillMaxSize())
+
         is MapUiState.Success -> {
             val expenses by mapUiState.expenses.collectAsState()
             ExpenseList(expenses, showModal, showAlert)

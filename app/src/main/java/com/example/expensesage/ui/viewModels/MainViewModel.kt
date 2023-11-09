@@ -1,9 +1,7 @@
 package com.example.expensesage.ui.viewModels
 
-import android.util.Log
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -32,7 +30,7 @@ class MainViewModel : ViewModel() {
 
     var alertOnCancel: () -> Unit by mutableStateOf({})
         private set
-    var alertTitle by mutableStateOf("")
+    var alertText by mutableStateOf("")
         private set
 
     var isDialogShown by mutableStateOf(false)
@@ -70,10 +68,10 @@ class MainViewModel : ViewModel() {
         isDialogShown = true
     }
 
-    fun showAlert(onConfirm: () -> Unit, title: String, onCancel: () -> Unit) {
+    fun showAlert(onConfirm: () -> Unit, text: String, onCancel: () -> Unit) {
         alertOnConfirm = onConfirm
         isAlertShown = true
-        alertTitle = title
+        alertText = text
         alertOnCancel = onCancel
     }
 

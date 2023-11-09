@@ -59,9 +59,9 @@ class MainViewModelTest {
     @Test
     fun `showAlert sets alertTitle to title`() {
         val title = "title"
-        assert(viewModel.alertTitle != title)
+        assert(viewModel.alertText != title)
         viewModel.showAlert({}, title, {})
-        assert(viewModel.alertTitle == title)
+        assert(viewModel.alertText == title)
     }
 
     @Test

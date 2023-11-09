@@ -61,4 +61,14 @@ interface ExpenseDao {
                 "GROUP BY subject"
     )
     fun getWeeklyExpensesForCurrentMonth(yearMonth: String): Flow<List<ExpenseSummaryItem>>
+
+
+    @Query("SELECT SUM(amount) FROM expense_table WHERE strftime('%Y-%W', datetime(date)) = strftime('%Y-%W', 'now') AND owed = 0;")
+    fun getSumOfWeek(): Flow<Double>
+
+    @Query("SELECT SUM(amount) FROM expense_table WHERE strftime('%Y-%m', datetime(date)) = strftime('%Y-%m', 'now') AND owed = 0;")
+    fun getSumOfMonth(): Flow<Double>
+
+    @Query("SELECT SUM(amount) FROM expense_table WHERE strftime('%Y', datetime(date)) = strftime('%Y', 'now') AND owed = 0;")
+    fun getSumOfYear(): Flow<Double>
 }

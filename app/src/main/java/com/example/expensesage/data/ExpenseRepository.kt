@@ -25,4 +25,10 @@ interface ExpenseRepository {
     fun getSumOfCategoryAndDate(searchQuery: String, date: String): Flow<Double>
 
     fun getWeeklyExpenseSummary(yearMonth: String): Flow<List<ExpenseSummaryItem>>
+
+    fun getSumOfWeek() : Flow<Double>
+
+    fun getSumOfMonth() : Flow<Double>
+
+    fun getSumOfYear() : Flow<Double>
 }
