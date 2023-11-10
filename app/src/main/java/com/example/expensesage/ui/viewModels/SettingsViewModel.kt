@@ -9,6 +9,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.currencies.CurrencyRepository
 import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.network.CurrencyApiExecutor
 import com.example.expensesage.ui.utils.formatToCurrency
@@ -18,12 +19,14 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.io.IOException
 
 class SettingsViewModel(
     private val context: Context,
     private val userSettings: UserSettings,
     private val currencyApiExecutor: CurrencyApiExecutor,
-    private val expenseRepository: ExpenseRepository
+    private val expenseRepository: ExpenseRepository,
+    private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
     var budget by mutableStateOf("0.0")
         private set
@@ -40,7 +43,7 @@ class SettingsViewModel(
         viewModelScope.launch {
             currency = userSettings.currency.first()
             modifier = userSettings.currencyModifier.first()
-            budget =  (userSettings.budget.first() * modifier).formatToCurrency()
+            budget = (userSettings.budget.first() * modifier).formatToCurrency()
             budgetFrequencyState = userSettings.budgetFrequency.first()
         }
     }
@@ -61,8 +64,8 @@ class SettingsViewModel(
             if (budgetFrequencyList.contains(budgetFrequency) && budgetFrequency != budgetFrequencyState) {
                 budgetFrequencyState = budgetFrequency
                 userSettings.saveBudgetFrequency(budgetFrequencyState)
-                    userSettings.saveFirstBudgetChange(true)
-                    budget = "0"
+                userSettings.saveFirstBudgetChange(true)
+                budget = "0"
                 userSettings.saveBudget(0.0)
                 calculateMoneyAvailable()
                 changeInterval(context)
@@ -97,7 +100,7 @@ class SettingsViewModel(
             "Yearly" -> expenseRepository.getSumOfYear().first()
             else -> 0.0
         }
-            userSettings.saveMoneyAvailable(budget.toDouble() / modifier - sumExpenses)
+        userSettings.saveMoneyAvailable(budget.toDouble() / modifier - sumExpenses)
     }
 
 
@@ -132,30 +135,30 @@ class SettingsViewModel(
     fun changeCurrency(newCurrency: String) {
         viewModelScope.launch {
             try {
-                userSettings.saveCurrencyModifier(currencyApiExecutor.getRate(newCurrency))
-                userSettings.saveCurrency(newCurrency)
-                val newModifier = userSettings.currencyModifier.first()
-                budget = (budget.toDouble() / modifier * newModifier).toString()
-                modifier = newModifier
-                currency = newCurrency
-            } catch (e: Exception) {
+                if (currencyRepository.getAllCurrencies().first().isEmpty()) {
+                    userSettings.saveCurrencyModifier(currencyApiExecutor.getRate(newCurrency))
+                } else {
+                    userSettings.saveCurrencyModifier(
+                        currencyRepository.getCurrency(newCurrency.lowercase()).first().rate
+                    )
+                }
+            } catch (e: IOException) {
+                // This only occurs if a sync hasn't occurred yet,
+                // and the user has no internet when calling this function
                 userSettings.saveCurrencyModifier(
-                    //TODO get from local database
-//                    when (newCurrency) {
-//                        "EUR" -> 1.0
-//                        "USD" -> 1.068
-//                        "JPY" -> 159.798
-//                        else -> 1.0
-//                    },
-                    1.0
-                )
-                userSettings.saveCurrency(
-//                    if (currencyList.contains(newCurrency)) newCurrency else "EUR",
-                    "EUR"
+                    when (newCurrency) {
+                        "EUR" -> 1.0
+                        "USD" -> 1.068
+                        "JPY" -> 159.798
+                        else -> 1.0
+                    },
                 )
             }
-
-
+            userSettings.saveCurrency(newCurrency)
+            val newModifier = userSettings.currencyModifier.first()
+            budget = (budget.toDouble() / modifier * newModifier).toString()
+            modifier = newModifier
+            currency = newCurrency
         }
     }
 

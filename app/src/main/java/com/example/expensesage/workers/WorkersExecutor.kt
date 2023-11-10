@@ -2,8 +2,12 @@ package com.example.expensesage.workers
 
 import android.content.Context
 import androidx.work.Constraints
+import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
@@ -20,7 +24,7 @@ suspend fun executeWorkers(ctx: Context) {
     val workRequest = createBudgetWorker(userSettings.budgetFrequency.first())
     val reminderWorkRequest = createOwedReminderWorker()
     val syncWorkRequest = createSyncWorker()
-
+    val onetimeSyncWorkRequest = createOneTimeSyncWorker()
 
     val workManager = WorkManager.getInstance(ctx)
     workManager.enqueueUniquePeriodicWork(
@@ -37,6 +41,11 @@ suspend fun executeWorkers(ctx: Context) {
         "SyncWorker",
         ExistingPeriodicWorkPolicy.KEEP,
         syncWorkRequest
+    )
+    workManager.enqueueUniqueWork(
+        "OneTimeSyncWorker",
+        ExistingWorkPolicy.REPLACE,
+        onetimeSyncWorkRequest
     )
 }
 
@@ -82,7 +91,8 @@ fun createBudgetWorker(interval: String): PeriodicWorkRequest {
     return PeriodicWorkRequestBuilder<BudgetWorker>(
         repeatInterval = repeatInterval,
         repeatIntervalTimeUnit = TimeUnit.DAYS
-    ).build()
+    ).setInputData(Data.Builder().putLong("repeatInterval", repeatInterval).putString("budgetFrequency", interval).build())
+        .build()
 }
 
 fun createOwedReminderWorker(): PeriodicWorkRequest {
@@ -108,6 +118,17 @@ fun createSyncWorker(): PeriodicWorkRequest {
             .setRequiredNetworkType(NetworkType.NOT_ROAMING)
             .build()
     )
+        .build()
+}
+
+fun createOneTimeSyncWorker(): OneTimeWorkRequest {
+    return OneTimeWorkRequestBuilder<SyncWorker>()
+        .setConstraints(
+            Constraints.Builder()
+                .setRequiresBatteryNotLow(true)
+                .setRequiredNetworkType(NetworkType.NOT_ROAMING)
+                .build()
+        )
         .build()
 }
 

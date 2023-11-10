@@ -29,6 +29,7 @@ object AppViewModelProvider {
                 userSettings = expenseSageApplicaton().userSettings,
                 currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
                 expenseRepository = expenseSageApplicaton().container.expenseRepository,
+                currencyRepository = expenseSageApplicaton().container.currencyRepository,
             )
         }
         initializer {

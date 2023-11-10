@@ -254,7 +254,7 @@ fun Budget(
                     },
                 )
             } else {
-                Text(text = formatMoney(budget.toDouble(), currency, 2))
+                Text(text = formatMoney(budget.replace(",",".").toDouble(), currency, 2))
             }
 
         },
