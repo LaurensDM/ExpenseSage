@@ -24,6 +24,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         val MONEY_OWED = doublePreferencesKey("money_owed") // How much money you spend on debts
         val CURRENCY = stringPreferencesKey("currency") // USD, EUR, GBP, YEN ?
         val CURRENCY_MODIFIER = doublePreferencesKey("currency_modifier") //TODO save in Room database
+       val FIRST_TIME = booleanPreferencesKey("first_time") // if it's the first time the user opens the app
         const val TAG = "UserSettings"
     }
 
@@ -78,6 +79,12 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
     suspend fun saveFirstBudgetChange(firstSettingChange: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_BUDGET_CHANGE] = firstSettingChange
+        }
+    }
+
+    suspend fun saveFirstTime(firstTime: Boolean) {
+        dataStore.edit { preferences ->
+            preferences[FIRST_TIME] = firstTime
         }
     }
 
@@ -194,6 +201,18 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             }
         }.map { preferences ->
             preferences[FIRST_BUDGET_CHANGE] ?: true
+        }
+
+    val firstTime: Flow<Boolean> = dataStore.data
+        .catch {
+            if (it is IOException) {
+                Log.e(TAG, "Error reading preferences.", it)
+                emit(emptyPreferences())
+            } else {
+                throw it
+            }
+        }.map { preferences ->
+            preferences[FIRST_TIME] ?: true
         }
 }
 

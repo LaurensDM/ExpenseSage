@@ -51,9 +51,10 @@ class SettingsViewModel(
     fun updateBudget(newBudget: String) {
         try {
             // If the new budget is not a valid double, this will throw
-            newBudget.toDouble()
+            newBudget.replace(",", ".").toDouble()
             budget = newBudget
         } catch (e: NumberFormatException) {
+            budget = ""
             Log.d("SettingsViewModel", "updateMonthlyBudget: $e")
         }
 

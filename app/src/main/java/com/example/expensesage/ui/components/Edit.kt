@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Button
@@ -21,6 +22,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -89,6 +92,7 @@ fun EditForm(
             value = expenseState.name,
             onValueChange = { onValueChange(expenseState.copy(name = it)) },
             label = { Text(text = "Name") },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             isError = nameError,
         )
         if (nameError) {
@@ -100,9 +104,10 @@ fun EditForm(
         }
         OutlinedTextField(
             value = expenseState.amount,
-            onValueChange = { onValueChange(expenseState.copy(amount = decimalFormatter.cleanup(it))) },
+            onValueChange = { onValueChange(expenseState.copy(amount = decimalFormatter.cleanup( expenseState.amount,it))) },
             label = { Text(text = "Amount") },
             isError = amountError,
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             visualTransformation = CurrencyVisualTransformation(decimalFormatter)
         )
         if (amountError) {

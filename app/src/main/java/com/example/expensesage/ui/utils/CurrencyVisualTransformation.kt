@@ -19,11 +19,14 @@ class DecimalFormatter(
     private val thousandsSeparator = symbols.groupingSeparator
     private val decimalSeparator = symbols.decimalSeparator
 
-    fun cleanup(input: String): String {
+    fun cleanup(current: String, input: String): String {
 
         if (input.matches("\\D".toRegex())) return ""
         if (input.matches("0+".toRegex())) return "0"
         if (input.matches("^0[1-9]".toRegex())) return input.substring(1)
+
+        if (current == "0")
+            return input
 
         val sb = StringBuilder()
 

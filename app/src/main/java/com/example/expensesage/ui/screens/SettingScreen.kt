@@ -115,8 +115,8 @@ fun CurrencySettings(
             showSnackBar = showSnackBar,
             budget = settingsViewModel.budget,
             budgetFrequency = settingsViewModel.budgetFrequencyState,
-            updateMonthlyBudget = { settingsViewModel.updateBudget(it) },
-            changeMonthlyBudget = { settingsViewModel.changeBudget() },
+            updateBudget = { settingsViewModel.updateBudget(it) },
+            changeBudget = { settingsViewModel.changeBudget() },
             currency = settingsViewModel.currency
         )
         CurrencySelect(
@@ -194,13 +194,12 @@ fun BudgetTextField(
             .width(128.dp),
         label = { Text(text = "Budget") },
         placeholder = { Text(text = "Enter your budget") },
-        value = decimalFormatter.cleanup(moneyAvailable),
+        value = moneyAvailable,
         onValueChange = {
-            updateMoneyAvailable(decimalFormatter.cleanup(it))
+            updateMoneyAvailable(decimalFormatter.cleanup(moneyAvailable, it))
         },
-
         singleLine = true,
-        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
         visualTransformation = CurrencyVisualTransformation(decimalFormatter),
         keyboardActions = KeyboardActions(
             onDone = {
@@ -217,8 +216,8 @@ fun Budget(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
     budget: String,
     budgetFrequency: String,
-    updateMonthlyBudget: (String) -> Unit,
-    changeMonthlyBudget: () -> Unit,
+    updateBudget: (String) -> Unit,
+    changeBudget: () -> Unit,
     currency: String
 ) {
 
@@ -243,10 +242,10 @@ fun Budget(
             if (edit) {
                 BudgetTextField(
                     moneyAvailable = budget,
-                    updateMoneyAvailable = updateMonthlyBudget,
+                    updateMoneyAvailable = updateBudget,
                     onDone = {
                         edit = false
-                        changeMonthlyBudget()
+                        changeBudget()
                         showSnackBar(
                             "Changed budget to $budget",
                             SnackBarType.SUCCESS

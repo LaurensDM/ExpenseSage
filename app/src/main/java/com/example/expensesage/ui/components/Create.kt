@@ -22,7 +22,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -80,6 +83,7 @@ fun Create(
         }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateForm(
     expenseState: ExpenseDetail,
@@ -90,12 +94,15 @@ fun CreateForm(
     decimalFormatter: DecimalFormatter = DecimalFormatter()
 ) {
 
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedTextField(
             value = expenseState.name,
             onValueChange = {
                 updateState(expenseState.copy(name = it))
             },
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             label = { Text(text = "Name") },
             isError = nameError,
         )
@@ -109,10 +116,10 @@ fun CreateForm(
         OutlinedTextField(
             value = expenseState.amount,
             onValueChange = {
-                updateState(expenseState.copy(amount = decimalFormatter.cleanup(it)))
+                updateState(expenseState.copy(amount = decimalFormatter.cleanup(expenseState.amount,it)))
             },
             label = { Text(text = "Amount") },
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             isError = amountError,
             visualTransformation = CurrencyVisualTransformation(decimalFormatter),
         )

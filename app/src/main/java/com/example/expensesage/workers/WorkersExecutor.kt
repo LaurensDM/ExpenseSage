@@ -1,6 +1,7 @@
 package com.example.expensesage.workers
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -15,6 +16,7 @@ import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
 suspend fun executeWorkers(ctx: Context) {
@@ -42,56 +44,76 @@ suspend fun executeWorkers(ctx: Context) {
         ExistingPeriodicWorkPolicy.KEEP,
         syncWorkRequest
     )
-    workManager.enqueueUniqueWork(
-        "OneTimeSyncWorker",
-        ExistingWorkPolicy.REPLACE,
-        onetimeSyncWorkRequest
-    )
+    if (userSettings.firstTime.first()) {
+        workManager.enqueueUniqueWork(
+            "OneTimeSyncWorker",
+            ExistingWorkPolicy.KEEP,
+            onetimeSyncWorkRequest
+        )
+        Log.i("WorkersExecutor", "First time")
+        userSettings.saveFirstTime(false)
+    }
+
+
 }
 
 fun createBudgetWorker(interval: String): PeriodicWorkRequest {
     val date = LocalDate.now()
-    val repeatInterval = when (interval) {
+    val currentDateTime = LocalDateTime.now()
+    val hour = currentDateTime.hour.toLong()
+    val minute = currentDateTime.minute.toLong()
+    val currentMinutes = hour * 60 + minute
+    val dayMinutes = 24 * 60
+    val repeatInterval: Long
+    when (interval) {
         "Weekly" -> {
             val weekday = date.dayOfWeek.value.toLong()
 
-            if (weekday == 7L) {
-                1L
+            repeatInterval = if (weekday == 7L) {
+                dayMinutes - currentMinutes + 7 * dayMinutes
             } else {
-                7L - weekday
+                val day = 7L - weekday - 1L
+                dayMinutes - currentMinutes + day * dayMinutes
             }
         }
 
         "Monthly" -> {
             val monthDay = date.dayOfMonth.toLong()
             val monthLength = date.lengthOfMonth().toLong()
-            if (monthDay == monthLength) {
-                val nextMonth = date.plusMonths(1L).lengthOfMonth().toLong()
 
-                nextMonth + 1L
+            repeatInterval = if (monthDay == monthLength) {
+                val nextMonth = date.plusMonths(1L).lengthOfMonth().toLong()
+                dayMinutes - currentMinutes + nextMonth * dayMinutes
             } else {
-                monthLength - monthDay
+                val days = monthLength - monthDay - 1
+                dayMinutes - currentMinutes + days * dayMinutes
             }
 
         }
 
         "Yearly" -> {
-            if (date.lengthOfYear().toLong() - date.dayOfYear.toLong() == 0L) {
+            val dayOfYear = date.dayOfYear.toLong()
+            val yearLength = date.lengthOfYear().toLong()
+            repeatInterval = if (yearLength - dayOfYear == 0L) {
                 val nextYear = date.plusYears(1).lengthOfYear().toLong()
-                nextYear + 1L
+                dayMinutes - currentMinutes + nextYear * dayMinutes
             } else {
-                date.lengthOfYear().toLong() - date.dayOfYear.toLong()
+                val days = yearLength - dayOfYear - 1
+                dayMinutes - currentMinutes + days * dayMinutes
             }
 
         }
 
-        else -> 7L
+        else -> repeatInterval = (7L * 24 * 60)
     }
 
     return PeriodicWorkRequestBuilder<BudgetWorker>(
         repeatInterval = repeatInterval,
-        repeatIntervalTimeUnit = TimeUnit.DAYS
-    ).setInputData(Data.Builder().putLong("repeatInterval", repeatInterval).putString("budgetFrequency", interval).build())
+        repeatIntervalTimeUnit = TimeUnit.MINUTES
+    ).setInputData(
+        Data.Builder().putLong("repeatInterval", repeatInterval)
+            .putString("budgetFrequency", interval).build()
+    )
         .build()
 }
 
