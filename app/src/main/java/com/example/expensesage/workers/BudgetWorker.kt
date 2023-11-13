@@ -29,7 +29,7 @@ class BudgetWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
 
         when (inputData.getString("budgetFrequency")) {
             "Weekly" -> {
-                if (interval < 7L) {
+                if (interval < 24*7L*60) {
                     changeInterval(context)
                 }
             }

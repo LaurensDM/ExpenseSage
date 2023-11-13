@@ -19,6 +19,8 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
@@ -42,7 +44,6 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
 /**
  * Composable that displays the start screen of the app
  *
- * @param modifier Modifier to apply to this layout node.
  */
 @Composable
 fun StartScreen(
@@ -174,7 +175,8 @@ fun BottomTile(
 ) {
     when (listUiState) {
         is ListUiState.Success -> {
-            TopExpensesList(listUiState.expenses, showModal, showAlert)
+            val expenses by listUiState.expenses.collectAsState()
+            TopExpensesList(expenses, showModal, showAlert)
         }
 
         is ListUiState.Error -> {
