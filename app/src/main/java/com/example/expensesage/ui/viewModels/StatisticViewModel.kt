@@ -5,20 +5,30 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.ui.utils.ExpenseSummary
 import com.example.expensesage.ui.utils.ExpenseSummaryItem
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
+/**
+ * This interface is responsible for the statisticUiState.
+ *
+ */
 sealed interface StatisticUiState {
     data class Success(val summary: ExpenseSummary) : StatisticUiState
     data class Error(val error: String) : StatisticUiState
     data object Loading : StatisticUiState
 }
 
+/**
+ * This class is responsible for the statistic view model.
+ *
+ * @property expenseRepository The expense repository
+ * @property userPref The user preferences
+ */
 class StatisticViewModel(
     private val expenseRepository: ExpenseRepository,
     private val userPref: UserSettings,
@@ -31,6 +41,10 @@ class StatisticViewModel(
         getData()
     }
 
+    /**
+     * This function gets the data.
+     *
+     */
     fun getData() {
         viewModelScope.launch {
             statisticUiState = StatisticUiState.Loading

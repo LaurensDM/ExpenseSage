@@ -15,11 +15,27 @@ import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 
+
+/**
+ * This class is responsible for syncing currencies.
+ *
+ * @constructor
+ * Creates a new SyncWorker.
+ *
+ * @param ctx The application [Context]
+ * @param params Parameters to setup the internal state of this worker
+ */
 class SyncWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx, params) {
 
     private val currencyRepository = AppDataContainer(ctx, CoroutineScope(Dispatchers.IO)).currencyRepository
     private val userSettings = UserSettings(DataStoreSingleton.getInstance(ctx))
     private val api = CurrencyApiExecutor(userSettings)
+
+    /**
+     * This function is called on the background thread, so it is safe to do long running operations here.
+     *
+     * @return [Result.success] if the work was successfully completed,
+     */
     override suspend fun doWork(): Result {
         try {
             sync()
@@ -31,6 +47,10 @@ class SyncWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx, p
         return Result.success()
     }
 
+    /**
+     * This function syncs currencies.
+     *
+     */
     private suspend fun sync() {
         makeStatusNotification(3,"ExpenseSage", "Syncing currencies...", applicationContext)
 

@@ -33,23 +33,8 @@ import com.example.expensesage.ui.theme.ExpenseSageTheme
 
 class MainActivity : ComponentActivity() {
 
-    /**
-     * viewModel that is used to store the state of the app.
-     */
-
-    /**
-     * onCreate function that sets the content of the app to the ExpenseSageApp composable.
-     *
-     *                 val workRequest = OneTimeWorkRequestBuilder<BudgetWorker>()
-     * //            .setConstraints(
-     * //                Constraints.Builder()
-     * //                    .setRequiredNetworkType(NetworkType.CONNECTED)
-     * //                    .build()
-     * //            )
-     *                     .build()
-     *                 WorkManager.getInstance(this).enqueueUniqueWork("BudgetWorker", ExistingWorkPolicy.REPLACE, workRequest)
-     *
-     * @param savedInstanceState The saved instance state of the app
+    /**+
+     * This function is called when the activity is starting.
      */
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -91,6 +76,10 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+/**
+ * Composable that displays the app when permission is denied.
+ *
+ */
 @Composable
 fun PermissionDenied() {
     val context = LocalContext.current

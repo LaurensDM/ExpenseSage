@@ -18,12 +18,7 @@ import android.media.RingtoneManager.TYPE_NOTIFICATION
 import android.media.RingtoneManager.getDefaultUri
 import android.os.Build.VERSION.SDK_INT
 import android.os.Build.VERSION_CODES.O
-import androidx.annotation.RequiresApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBalance
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.example.expensesage.MainActivity
 import com.example.expensesage.R
 
@@ -35,6 +30,14 @@ const val NOTIFICATION_NAME = "appName"
 const val NOTIFICATION_CHANNEL = "appName_channel_01"
 const val NOTIFICATION_WORK = "appName_notification_work"
 
+/**
+ * This function creates a one time sync worker.
+ *
+ * @param id The id of the notification
+ * @param title The title of the notification
+ * @param message The message of the notification
+ * @param applicationContext The application [Context]
+ */
 fun makeStatusNotification(id: Int, title: String, message: String, applicationContext: Context) {
     val intent = Intent(applicationContext, MainActivity::class.java)
     intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK

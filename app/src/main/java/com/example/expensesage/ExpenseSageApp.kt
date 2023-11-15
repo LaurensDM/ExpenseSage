@@ -73,14 +73,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 /**
- * Top app bar for the app
+ * App bar for the app
  *
  * @param currentScreen the current screen
- * @param navigationType the type of navigation required
- * @param onNavIconPressed the action to perform when the navigation icon is pressed
- * @param onBackIconPressed the action to perform when the back icon is pressed
- * @param modifier the modifier to apply to this layout node
- * @param scrollBehavior the scroll behavior of the app bar
+ * @param navigationType the type of navigation
+ * @param onNavIconPressed  the function to call when the navigation icon is pressed
+ * @param onBackIconPressed the function to call when the back icon is pressed
+ * @param scrollBehavior the scroll behavior
  * @param drawerState the state of the drawer
  * @param scope the coroutine scope
  */
@@ -268,6 +267,7 @@ fun ExpenseSageApp(
 /**
  * Alert dialog for the app
  *
+ * @param viewModel the viewModel that holds the data
  */
 @Composable
 fun ExpenseAlert(
@@ -340,7 +340,7 @@ fun ExpenseAlert(
 /**
  * Dialog for the app
  *
- *
+ * @param viewModel the viewModel that holds the data
  */
 @Composable
 fun ExpenseDialog(
@@ -380,7 +380,7 @@ fun ExpenseDialog(
 }
 
 /**
- * Bottom navigation bar for the app
+ * Bottom bar for the app
  *
  * @param navController the navController that handles the navigation
  */
@@ -424,7 +424,7 @@ fun BottomBar(navController: NavController) {
 }
 
 /**
- * Modal drawer content for navigation drawer
+ * Navigation drawer content for the app
  *
  * @param navController the navController that handles the navigation
  * @param drawerState the state of the drawer

@@ -42,8 +42,11 @@ import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 
 /**
- * Composable that displays the start screen of the app
+ * This function is responsible for the start screen.
  *
+ * @param listViewModel The list view model
+ * @param showModal The show modal function
+ * @param showAlert The show alert function
  */
 @Composable
 fun StartScreen(
@@ -127,6 +130,7 @@ fun ExpenseSageTopAppBar(modifier: Modifier = Modifier) {
 /**
  * Composable that displays the top tile of the start screen. Has information about the amount of money left.
  *
+ * @param settingsViewModel The settings view model
  */
 @Composable
 fun TopTile(settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
@@ -166,6 +170,14 @@ fun TopTile(settingsViewModel: SettingsViewModel = viewModel(factory = AppViewMo
     }
 }
 
+/**
+ * Composable that displays the bottom tile of the start screen. Has information about the latest expenses.
+ *
+ * @param listUiState The list ui state
+ * @param retry The retry function
+ * @param showModal The show modal function
+ * @param showAlert The show alert function
+ */
 @Composable
 fun BottomTile(
     listUiState: ListUiState,
@@ -198,6 +210,13 @@ fun BottomTile(
     }
 }
 
+/**
+ * Composable that displays the 5 latest expenses.
+ *
+ * @param expenses The expenses
+ * @param showModal The show modal function
+ * @param showAlert The show alert function
+ */
 @Composable
 fun TopExpensesList(
     expenses: List<Expense>,

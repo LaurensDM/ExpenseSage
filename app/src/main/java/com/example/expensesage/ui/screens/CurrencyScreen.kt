@@ -45,6 +45,11 @@ import com.example.expensesage.ui.viewModels.CurrencyUIState
 import com.example.expensesage.ui.viewModels.CurrencyViewModel
 import kotlinx.coroutines.launch
 
+/**
+ * This function is responsible for the currency screen.
+ *
+ * @param currencyViewModel The currency view model
+ */
 @Composable
 fun CurrencyScreen(currencyViewModel: CurrencyViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     when (currencyViewModel.currencyUIState) {
@@ -61,6 +66,12 @@ fun CurrencyScreen(currencyViewModel: CurrencyViewModel = viewModel(factory = Ap
     }
 }
 
+/**
+ * This function is responsible for the currencies list.
+ *
+ * @param date The date
+ * @param currencyViewModel The currency view model
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun CurrenciesList(
@@ -167,6 +178,11 @@ fun CurrenciesList(
     }
 }
 
+/**
+ * This function is responsible for the scroll to top button.
+ *
+ * @param goToTop The go to top callback
+ */
 @Composable
 fun ScrollToTop(goToTop: () -> Unit) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -187,6 +203,11 @@ fun ScrollToTop(goToTop: () -> Unit) {
     }
 }
 
+/**
+ * This function is responsible for the loading.
+ *
+ * @param modifier The modifier
+ */
 @Composable
 fun Loading(modifier: Modifier = Modifier) {
     Column(
@@ -205,6 +226,13 @@ fun Loading(modifier: Modifier = Modifier) {
     }
 }
 
+/**
+ * This function is responsible for the error.
+ *
+ * @param retryAction The retry action
+ * @param modifier The modifier
+ * @param error The error
+ */
 @Composable
 fun Error(retryAction: () -> Unit, modifier: Modifier = Modifier, error: String) {
     Column(

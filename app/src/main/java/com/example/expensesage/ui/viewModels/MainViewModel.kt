@@ -56,8 +56,11 @@ class MainViewModel : ViewModel() {
     }
 
     /**
-     * Function that is called when the user clicks on the detail button. Shows dialog
+     * Shows modal
      *
+     * @param expense The expense
+     * @param owed Whether the expense is owed
+     * @param modalType The modal type
      */
     fun showModal(expense: Expense? = Expense(imageResourceId = R.drawable.cost, owed = false), owed: Boolean = false, modalType: ModalType) {
         if (expense != null) {
@@ -68,6 +71,13 @@ class MainViewModel : ViewModel() {
         isDialogShown = true
     }
 
+    /**
+     * Shows alert
+     *
+     * @param onConfirm The on confirm function
+     * @param text The text
+     * @param onCancel The on cancel function
+     */
     fun showAlert(onConfirm: () -> Unit, text: String, onCancel: () -> Unit) {
         alertOnConfirm = onConfirm
         isAlertShown = true
@@ -75,6 +85,12 @@ class MainViewModel : ViewModel() {
         alertOnCancel = onCancel
     }
 
+    /**
+     * Shows snackbar
+     *
+     * @param message The message
+     * @param type The type of snackbar
+     */
     fun showSnackBar(message: String, type: SnackBarType) {
         viewModelScope.launch {
             snackbarType = type

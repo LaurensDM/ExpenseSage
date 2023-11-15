@@ -20,9 +20,11 @@ import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.MapUiState
 
 /**
- * Composable that displays the expense screen of the app
+ * This function is responsible for the expense screen.
  *
- * @param viewModel The view model that is used to store the state of the app
+ * @param showModal The show modal function
+ * @param showAlert The show alert function
+ * @param viewModel The list view model
  */
 @Composable
 fun ExpenseScreen(
@@ -59,6 +61,14 @@ fun ExpenseScreen(
     }
 }
 
+/**
+ * This function is responsible for the expenses view.
+ *
+ * @param mapUiState The map ui state
+ * @param retry The retry function
+ * @param showModal The show modal function
+ * @param showAlert The show alert function
+ */
 @Composable
 fun ExpensesView(
     mapUiState: MapUiState,

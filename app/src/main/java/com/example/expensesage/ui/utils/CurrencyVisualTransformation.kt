@@ -7,10 +7,12 @@ import androidx.compose.ui.text.input.VisualTransformation
 import java.text.DecimalFormatSymbols
 
 /**
- * Visual transformation that masks the input value as a currency value.
+ * This class is responsible for the decimal formatter.
  *
- * @property fixedCursorAtTheEnd If true, the cursor will be fixed at the end of the text. If false, the cursor will be movable.
- * @property numberOfDecimals The number of decimals that the currency value should have.
+ * @constructor
+ * Constructs a DecimalFormatter.
+ *
+ * @param symbols The decimal format symbols
  */
 class DecimalFormatter(
     symbols: DecimalFormatSymbols = DecimalFormatSymbols.getInstance()
@@ -19,6 +21,13 @@ class DecimalFormatter(
     private val thousandsSeparator = symbols.groupingSeparator
     private val decimalSeparator = symbols.decimalSeparator
 
+    /**
+     * This function formats the input.
+     *
+     * @param current The current input
+     * @param input The input to format
+     * @return The formatted input
+     */
     fun cleanup(current: String, input: String): String {
 
         if (input.matches("\\D".toRegex())) return ""
@@ -56,6 +65,12 @@ class DecimalFormatter(
         return sb.toString()
     }
 
+    /**
+     * This function formats the input for visual.
+     *
+     * @param input The input to format
+     * @return The formatted input
+     */
     fun formatForVisual(input: String): String {
 
         val split = input.split(decimalSeparator)
@@ -72,6 +87,11 @@ class DecimalFormatter(
     }
 }
 
+/**
+ * This class is responsible for the textfield visual transformation.
+ *
+ * @property decimalFormatter The decimal formatter
+ */
 class CurrencyVisualTransformation(
     private val decimalFormatter: DecimalFormatter
 ) : VisualTransformation {
@@ -94,6 +114,12 @@ class CurrencyVisualTransformation(
     }
 }
 
+/**
+ * This class is responsible for the offset mapping.
+ *
+ * @property contentLength The content length
+ * @property formattedContentLength The formatted content length
+ */
 private class FixedCursorOffsetMapping(
     private val contentLength: Int,
     private val formattedContentLength: Int,

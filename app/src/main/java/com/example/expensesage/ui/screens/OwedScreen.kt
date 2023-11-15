@@ -18,6 +18,13 @@ import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.ModalType
 import com.example.expensesage.ui.viewModels.ListViewModel
 
+/**
+ * This function is responsible for the owed screen.
+ *
+ * @param showModal The show modal function
+ * @param showAlert The show alert function
+ * @param viewModel The list view model
+ */
 @Composable
 fun OwedScreen(
     showModal: (expense: Expense?, owed: Boolean, modalType: ModalType) -> Unit,

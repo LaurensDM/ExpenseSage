@@ -4,7 +4,16 @@ import com.example.expensesage.R
 import com.example.expensesage.data.expenses.Expense
 import java.time.LocalDateTime
 
-
+/**
+ * This class is responsible for the expense detail.
+ *
+ * @property id The id
+ * @property date The date
+ * @property name The name
+ * @property amount The amount
+ * @property owed The owed
+ * @property category The category
+ */
 data class ExpenseDetail(
     var id: Int = 0,
     var date: String = LocalDateTime.now().toString(),
@@ -14,6 +23,12 @@ data class ExpenseDetail(
     var category: String = "Other",
 )
 
+/**
+ * This function converts an expense detail to an expense.
+ *
+ * @param currencyRate The currency rate
+ * @return The expense
+ */
 fun ExpenseDetail.toExpense(currencyRate: Double): Expense = Expense(
     id = id,
     name = name,
@@ -24,6 +39,12 @@ fun ExpenseDetail.toExpense(currencyRate: Double): Expense = Expense(
     category = category,
 )
 
+/**
+ * This function converts an expense to an expense detail.
+ *
+ * @param currencyRate The currency rate
+ * @return The expense detail
+ */
 fun Expense.toExpenseDetail(currencyRate: Double): ExpenseDetail = ExpenseDetail(
     id = id,
     name = name,
@@ -33,6 +54,11 @@ fun Expense.toExpenseDetail(currencyRate: Double): ExpenseDetail = ExpenseDetail
     category = category,
 )
 
+/**
+ * This function formats a number to a currency.
+ *
+ * @return The formatted number
+ */
 fun Number.formatToCurrency(): String {
     return String.format("%.2f", this)
 }

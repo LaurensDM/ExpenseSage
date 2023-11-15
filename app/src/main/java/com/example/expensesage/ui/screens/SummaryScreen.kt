@@ -57,6 +57,11 @@ import kotlin.random.Random
 
 val graphColors = listOf(Slice1, Slice2, Slice3, Slice4, Slice5, Slice6)
 
+/**
+ * This function is responsible for the summary screen.
+ *
+ * @param viewModel The statistic view model
+ */
 @Composable
 fun SummaryScreen(
     viewModel: StatisticViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -74,6 +79,11 @@ fun SummaryScreen(
     }
 }
 
+/**
+ * This function is responsible for the summary.
+ *
+ * @param summaryData The summary data
+ */
 @Composable
 fun Summary(
     summaryData: ExpenseSummary = ExpenseSummary(),
@@ -101,6 +111,11 @@ fun Summary(
     }
 }
 
+/**
+ * This function is responsible for the weekly comparison.
+ *
+ * @param moneySaved The money saved
+ */
 @Composable
 fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
     val chartData = BarChartData(
@@ -172,6 +187,11 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
 
 }
 
+/**
+ * This function is responsible for the category chart.
+ *
+ * @param categoryData The category data
+ */
 @Composable
 fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
     val chartData = DonutChartDataCollection(
@@ -229,6 +249,11 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
     }
 }
 
+/**
+ * This function is responsible for the month chart.
+ *
+ * @param monthData The month data
+ */
 @Composable
 fun MonthChart(monthData: List<ExpenseSummaryItem>) {
     val chartData = BarChartData(
@@ -287,6 +312,12 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>) {
     }
 }
 
+/**
+ * This function is responsible for the primary chart.
+ *
+ * @param totalSpent The total spent
+ * @param owedSpent The owed spent
+ */
 @Composable
 fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
     val paidExpenses = totalSpent - owedSpent
@@ -372,6 +403,10 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
     }
 }
 
+/**
+ * This function is responsible for the summary loading.
+ *
+ */
 @Composable
 fun SummaryLoading() {
     Column(
@@ -391,6 +426,10 @@ fun SummaryLoading() {
     }
 }
 
+/**
+ * This function is responsible for the no data view.
+ *
+ */
 @Composable
 fun NoData() {
     Text(

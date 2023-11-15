@@ -21,6 +21,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.io.IOException
 
+/**
+ * This class is responsible for the settings view model.
+ *
+ * @property context The context
+ * @property userSettings The user settings
+ * @property currencyApiExecutor The currency API executor
+ * @property expenseRepository The expense repository
+ * @property currencyRepository The currency repository
+ */
 class SettingsViewModel(
     private val context: Context,
     private val userSettings: UserSettings,
@@ -48,6 +57,11 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * This function updates the budget.
+     *
+     * @param newBudget The new budget
+     */
     fun updateBudget(newBudget: String) {
         try {
             // If the new budget is not a valid double, this will throw
@@ -60,6 +74,11 @@ class SettingsViewModel(
 
     }
 
+    /**
+     * This function updates the budget frequency.
+     *
+     * @param budgetFrequency The new budget frequency
+     */
     fun updateBudgetFrequency(budgetFrequency: String) {
         viewModelScope.launch {
             if (budgetFrequencyList.contains(budgetFrequency) && budgetFrequency != budgetFrequencyState) {
@@ -74,6 +93,11 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * This function gets the budget frequency.
+     *
+     * @return The budget frequency
+     */
     fun getMoneyAvailable(): StateFlow<Double> {
         return userSettings.moneyAvailable.stateIn(
             scope = viewModelScope,
@@ -82,6 +106,10 @@ class SettingsViewModel(
         )
     }
 
+    /**
+     * This function changes the budget.
+     *
+     */
     fun changeBudget() {
         viewModelScope.launch {
             Log.d("SettingsViewModel", "budget: $budget")
@@ -94,6 +122,10 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * This function calculates the money available.
+     *
+     */
     private suspend fun calculateMoneyAvailable() {
         val sumExpenses = when (userSettings.budgetFrequency.first()) {
             "Weekly" -> expenseRepository.getSumOfWeek().first()
@@ -105,18 +137,32 @@ class SettingsViewModel(
     }
 
 
+    /**
+     * This function turns the sound off.
+     *
+     */
     fun turnOffSound() {
         viewModelScope.launch {
             userSettings.saveSoundPreference(false)
         }
     }
 
+    /**
+     * This function changes the sound volume.
+     *
+     * @param newVolume The new volume
+     */
     fun changeSoundVolume(newVolume: Double) {
         viewModelScope.launch {
             userSettings.saveSoundVolume(newVolume)
         }
     }
 
+    /**
+     * This function returns the sound volume
+     *
+     * @return The sound volume
+     */
     fun getSoundVolume(): StateFlow<Double> {
         return userSettings.soundVolume.stateIn(
             scope = viewModelScope,
@@ -125,6 +171,11 @@ class SettingsViewModel(
         )
     }
 
+    /**
+     * This function returns the sound preference.
+     *
+     * @return The sound preference
+     */
     fun getSoundPreference(): StateFlow<Boolean> {
         return userSettings.playSound.stateIn(
             scope = viewModelScope,
@@ -133,6 +184,11 @@ class SettingsViewModel(
         )
     }
 
+    /**
+     * This function changes the sound preference.
+     *
+     * @param newCurrency The new currency
+     */
     fun changeCurrency(newCurrency: String) {
         viewModelScope.launch {
             try {
@@ -163,6 +219,11 @@ class SettingsViewModel(
         }
     }
 
+    /**
+     * This function returns the currency.
+     *
+     * @return The currency
+     */
     fun getCurrency(): StateFlow<String> {
         return userSettings.currency.stateIn(
             scope = viewModelScope,
@@ -171,6 +232,11 @@ class SettingsViewModel(
         )
     }
 
+    /**
+     * This function returns the currency modifier.
+     *
+     * @return The currency modifier
+     */
     fun getCurrencyModifier(): StateFlow<Double> {
         return userSettings.currencyModifier.stateIn(
             scope = viewModelScope,

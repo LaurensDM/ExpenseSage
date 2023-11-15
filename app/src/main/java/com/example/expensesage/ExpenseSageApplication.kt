@@ -14,6 +14,13 @@ import kotlinx.coroutines.launch
 
 private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
 
+/**
+ * This class is responsible for setting up the application.
+ *
+ * @constructor
+ * Creates a new ExpenseSageApplication.
+ *
+ */
 class ExpenseSageApplication : Application() {
     lateinit var userSettings: UserSettings
     lateinit var container: AppContainer

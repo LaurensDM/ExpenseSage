@@ -12,6 +12,9 @@ import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.StatisticViewModel
 
+/**
+ * This object is responsible for providing the view models.
+ */
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
@@ -51,5 +54,10 @@ object AppViewModelProvider {
     }
 }
 
+/**
+ * This function returns the application.
+ *
+ * @return The application
+ */
 fun CreationExtras.expenseSageApplicaton(): ExpenseSageApplication =
     (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as ExpenseSageApplication)

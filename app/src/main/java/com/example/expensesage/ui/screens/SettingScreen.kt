@@ -66,8 +66,10 @@ import com.example.expensesage.ui.viewModels.SnackBarType
 import com.example.expensesage.ui.viewModels.budgetFrequencyList
 
 /**
- * Composable that displays the setting screen of the app
+ * This function is responsible for the setting screen.
  *
+ * @param showSnackBar The show snack bar function
+ * @param showAlert The show alert function
  */
 @Composable
 fun SettingScreen(
@@ -93,6 +95,13 @@ fun SettingScreen(
     }
 }
 
+/**
+ * Composable that displays the currency settings
+ *
+ * @param showSnackBar The show snack bar function
+ * @param showAlert The show alert function
+ * @param settingsViewModel The settings view model
+ */
 @Composable
 fun CurrencySettings(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
@@ -129,6 +138,13 @@ fun CurrencySettings(
     }
 }
 
+/**
+ * Composable that displays the budget frequency select
+ *
+ * @param budgetFrequencyState The budget frequency state
+ * @param updateBudgetFrequency The update budget frequency function
+ * @param showAlert The show alert function
+ */
 @Composable
 fun BudgetFrequencySelect(
     budgetFrequencyState: String,
@@ -179,8 +195,12 @@ fun BudgetFrequencySelect(
 }
 
 /**
- * Composable that displays the pocket money field
+ * Composable that displays the budget text field
  *
+ * @param moneyAvailable The money available
+ * @param updateMoneyAvailable The update money available function
+ * @param onDone The on done function
+ * @param decimalFormatter The decimal formatter
  */
 @Composable
 fun BudgetTextField(
@@ -210,7 +230,16 @@ fun BudgetTextField(
     )
 }
 
-
+/**
+ *  Composable that displays the budget
+ *
+ * @param showSnackBar The show snack bar function
+ * @param budget    The budget
+ * @param budgetFrequency The budget frequency
+ * @param updateBudget The update budget function
+ * @param changeBudget The change budget function
+ * @param currency  The currency
+ */
 @Composable
 fun Budget(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
@@ -258,38 +287,15 @@ fun Budget(
 
         },
     )
-
-//    val keyboardController = LocalSoftwareKeyboardController.current
-//
-//    Row(
-//        modifier = Modifier.padding(16.dp),
-//    ) {
-//        TextField(
-//            modifier = Modifier
-//                .width(164.dp),
-//            label = { Text(text = "Monthly Budget") },
-//            placeholder = { Text(text = "Enter your pocket money") },
-//            value = monthlyBudget,
-//            onValueChange = {
-//                updateMonthlyBudget(it)
-//            },
-//            singleLine = true,
-//            leadingIcon = {
-//                CurrencyIcon()
-//            },
-//            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
-//            visualTransformation = CurrencyVisualTransformation(),
-//            keyboardActions = KeyboardActions(
-//                onDone = {
-//                    changeMonthlyBudget()
-//                    showSnackBar("Changed monthly budget to $monthlyBudget", SnackBarType.SUCCESS)
-//                    keyboardController?.hide()
-//                },
-//            ),
-//        )
-//    }
 }
 
+/**
+ * Composable that displays the currency select
+ *
+ * @param onSelect The on select function
+ * @param currency The currency
+ * @param showSnackBar  The show snack bar function
+ */
 @Composable
 fun CurrencySelect(
     onSelect: (String) -> Unit,
@@ -340,6 +346,11 @@ fun CurrencySelect(
     }
 }
 
+/**
+ * Composable that displays the sound preferences
+ *
+ *
+ */
 @Composable
 fun SoundPreferences() {
 //    val mContext = LocalContext.current
@@ -387,6 +398,10 @@ fun SoundPreferences() {
 
 }
 
+/**
+ * Composable that displays the feedback and help
+ *
+ */
 @Composable
 fun FeedbackHelp() {
     Column(
@@ -422,6 +437,10 @@ fun FeedbackHelp() {
     }
 }
 
+/**
+ * Composable that displays the about section
+ *
+ */
 @Composable
 fun About() {
     var aboutClicked by remember { mutableStateOf(false) }

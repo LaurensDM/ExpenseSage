@@ -20,6 +20,12 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.util.Locale
 
+/**
+ * This class is responsible for the expense details view model.
+ *
+ * @property userPref The user preferences
+ * @property expenseRepository The expense repository
+ */
 class ExpenseDetailsViewModel(
     private val userPref: UserSettings,
     private val expenseRepository: ExpenseRepository,
@@ -48,12 +54,21 @@ class ExpenseDetailsViewModel(
 
     }
 
+    /**
+     * This function resets the state.
+     *
+     */
     fun resetState() {
         expenseDetailState = ExpenseDetail()
         nameError = false
         amountError = false
     }
 
+    /**
+     * This function deletes an expense.
+     *
+     * @param expense The expense to be deleted
+     */
     fun deleteExpense(expense: Expense) {
         viewModelScope.launch {
             if (expense.owed) {
@@ -69,6 +84,11 @@ class ExpenseDetailsViewModel(
         }
     }
 
+    /**
+     * This function pays an expense.
+     *
+     * @param expense The expense to be paid
+     */
     fun payOwed(expense: Expense) {
         val payedExpense = expense.copy(
             owed = false,
@@ -82,6 +102,10 @@ class ExpenseDetailsViewModel(
         }
     }
 
+    /**
+     * This function saves an expense.
+     *
+     */
     fun saveExpense() {
         viewModelScope.launch {
             Log.d("ExpenseDetailsViewModel", "SAVING EXPENSE")
@@ -99,6 +123,11 @@ class ExpenseDetailsViewModel(
         }
     }
 
+    /**
+     * This function updates an expense.
+     *
+     * @param originalExpense The original expense
+     */
     fun updateExpense(originalExpense: Expense) {
         viewModelScope.launch {
             Log.d("ExpenseDetailsViewModel", "UPDATING EXPENSE")
@@ -137,6 +166,12 @@ class ExpenseDetailsViewModel(
         }
     }
 
+    /**
+     * This function validates the input.
+     *
+     * @param expense The expense to be validated
+     * @return A boolean indicating whether the input is valid
+     */
     private fun validateInput(expense: ExpenseDetail = expenseDetailState): Boolean {
         try {
             nameError = expense.name.isBlank()
@@ -156,11 +191,21 @@ class ExpenseDetailsViewModel(
         return !(nameError || amountError)
     }
 
+    /**
+     * This function updates the state.
+     *
+     * @param expense The new expense
+     */
     fun updateState(expense: ExpenseDetail) {
         validateInput(expense)
         expenseDetailState = expense
     }
 
+    /**
+     * This function initializes the state.
+     *
+     * @param expense The expense to initialize the state with
+     */
     fun initializeState(expense: Expense) {
         viewModelScope.launch {
             expenseDetailState = expense.toExpenseDetail(userPref.currencyModifier.first())

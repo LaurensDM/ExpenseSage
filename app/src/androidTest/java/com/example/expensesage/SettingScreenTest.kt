@@ -18,7 +18,7 @@ class SettingScreenTest {
     @Test
     fun settingScreenTest() {
         composeTestRule.setContent {
-            SettingScreen(showSnackBar = {message, snackBarType ->  })
+            SettingScreen(showSnackBar = {message, snackBarType ->  }, showAlert = {onConfirm, title, message ->  })
         }
 
         composeTestRule.onNodeWithText("Pocket Money", substring = true, ignoreCase = true)

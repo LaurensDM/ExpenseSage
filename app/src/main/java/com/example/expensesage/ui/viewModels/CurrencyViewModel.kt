@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.viewModels
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +15,13 @@ import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.time.LocalDate
 
+/**
+ * This class is responsible for the currency view model.
+ *
+ * @property userPref The user preferences
+ * @property currencyApiExecutor The currency API executor
+ * @property currencyRepository The currency repository
+ */
 class CurrencyViewModel(
     private val userPref: UserSettings,
     private val currencyApiExecutor: CurrencyApiExecutor,
@@ -37,13 +43,17 @@ class CurrencyViewModel(
 
 
     init {
-        Log.d("CurrencyViewModel", "init")
+//        Log.d("CurrencyViewModel", "init")
 
             getData()
 
 
     }
 
+    /**
+     * This function gets the data.
+     *
+     */
     fun getData() {
         viewModelScope.launch {
             currencyUIState = CurrencyUIState.Loading
@@ -77,17 +87,29 @@ class CurrencyViewModel(
         }
     }
 
+    /**
+     * This function searches for a currency.
+     *
+     */
     fun search() {
-        list = originalData
-        list = list.filter { it.currencyCode.contains(queryState.lowercase()) }
+        list = originalData.filter { it.currencyCode.contains(queryState.lowercase()) }
     }
 
+    /**
+     * This function updates the query.
+     *
+     * @param searchQuery The search query
+     */
     fun updateQuery(searchQuery: String){
         queryState = searchQuery
     }
 
 }
 
+/**
+ * This interface is responsible for the currency UI state.
+ *
+ */
 sealed interface CurrencyUIState {
     data object Loading : CurrencyUIState
     data class Success(val date: String) : CurrencyUIState

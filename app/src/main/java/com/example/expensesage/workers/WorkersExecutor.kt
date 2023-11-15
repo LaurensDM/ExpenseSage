@@ -19,6 +19,11 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.util.concurrent.TimeUnit
 
+/**
+ * This function executes the workers.
+ *
+ * @param ctx The application [Context]
+ */
 suspend fun executeWorkers(ctx: Context) {
 
     val userSettings = UserSettings(DataStoreSingleton.getInstance(ctx))
@@ -57,6 +62,12 @@ suspend fun executeWorkers(ctx: Context) {
 
 }
 
+/**
+ * This function creates a budget worker.
+ *
+ * @param interval The budget interval
+ * @return A [PeriodicWorkRequest] object
+ */
 fun createBudgetWorker(interval: String): PeriodicWorkRequest {
     val date = LocalDate.now()
     val currentDateTime = LocalDateTime.now()
@@ -117,6 +128,11 @@ fun createBudgetWorker(interval: String): PeriodicWorkRequest {
         .build()
 }
 
+/**
+ * This function creates a reminder worker.
+ *
+ * @return A [PeriodicWorkRequest] object
+ */
 fun createOwedReminderWorker(): PeriodicWorkRequest {
     return PeriodicWorkRequestBuilder<OwedReminderWorker>(
         repeatInterval = 3L,
@@ -130,6 +146,11 @@ fun createOwedReminderWorker(): PeriodicWorkRequest {
         .build()
 }
 
+/**
+ * This function creates a sync worker.
+ *
+ * @return A [PeriodicWorkRequest] object
+ */
 fun createSyncWorker(): PeriodicWorkRequest {
     return PeriodicWorkRequestBuilder<SyncWorker>(
         repeatInterval = 2L,
@@ -143,6 +164,11 @@ fun createSyncWorker(): PeriodicWorkRequest {
         .build()
 }
 
+/**
+ * This function creates a one time sync worker.
+ *
+ * @return A [OneTimeWorkRequest] object
+ */
 fun createOneTimeSyncWorker(): OneTimeWorkRequest {
     return OneTimeWorkRequestBuilder<SyncWorker>()
         .setConstraints(
@@ -154,6 +180,11 @@ fun createOneTimeSyncWorker(): OneTimeWorkRequest {
         .build()
 }
 
+/**
+ * This function changes the interval of the budget worker.
+ *
+ * @param ctx The application [Context]
+ */
 suspend fun changeInterval(ctx: Context) {
     val workManager = WorkManager.getInstance(ctx)
     workManager.cancelUniqueWork("BudgetUpdateWorker")

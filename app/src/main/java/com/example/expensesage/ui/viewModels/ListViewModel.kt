@@ -14,6 +14,11 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.Month
 
+/**
+ * This class is responsible for the list view model.
+ *
+ * @property expenseRepository The expense repository
+ */
 class ListViewModel(val expenseRepository: ExpenseRepository) :
     ViewModel() {
 
@@ -23,6 +28,10 @@ class ListViewModel(val expenseRepository: ExpenseRepository) :
     var listUiState: ListUiState by mutableStateOf(ListUiState.Loading)
         private set
 
+    /**
+     * This function gets the top 5 expenses.
+     *
+     */
     fun get5Expenses(){
         viewModelScope.launch {
             listUiState = ListUiState.Loading
@@ -39,6 +48,11 @@ class ListViewModel(val expenseRepository: ExpenseRepository) :
         }
     }
 
+    /**
+     * This function gets the expenses.
+     *
+     * @param owed  Whether the expense is owed
+     */
     fun getExpenses(owed: Boolean) {
         viewModelScope.launch {
             mapUiState = MapUiState.Loading
@@ -55,12 +69,22 @@ class ListViewModel(val expenseRepository: ExpenseRepository) :
         }
     }
 
+    /**
+     * This function groups expenses.
+     *
+     * @param list The list of expenses
+     * @return The grouped expenses
+     */
     private fun groupExpenses(list: List<Expense>): Map<Pair<Month, Int>, List<Expense>> {
         val expensesList: List<Expense> = list
         return expensesList.groupBy { it.date.month to it.date.year }
     }
 }
 
+/**
+ * This class is responsible for the map UI state.
+ *
+ */
 sealed interface MapUiState {
     data class Error(val message: String) : MapUiState
     data class Success(val expenses: StateFlow<Map<Pair<Month, Int>, List<Expense>>>) : MapUiState
@@ -68,6 +92,10 @@ sealed interface MapUiState {
 
 }
 
+/**
+ * This class is responsible for the list UI state.
+ *
+ */
 sealed interface ListUiState {
     data class Error(val message: String) : ListUiState
     data class Success(val expenses: StateFlow<List<Expense>>) : ListUiState

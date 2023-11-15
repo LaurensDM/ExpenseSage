@@ -42,6 +42,18 @@ class DonutChartState(
     }
 }
 
+/**
+ * Calculate the drawing angles for each data point. The angles are calculated based on the total amount of the data points.
+ *
+ * @param center The center of the canvas
+ * @param tapOffset The offset of the tap
+ * @param anglesList The list of angles
+ * @param currentSelectedIndex The current selected index
+ * @param currentStrokeValues The current stroke values
+ * @param onItemSelected The on item selected callback
+ * @param onItemDeselected The on item deselected callback
+ * @param onNoItemSelected The on no item selected callback
+ */
 fun handleCanvasTap(
     center: Offset,
     tapOffset: Offset,
