@@ -32,6 +32,15 @@ import com.example.expensesage.ui.utils.calculateGapAngle
 import com.example.expensesage.ui.utils.findSweepAngle
 import com.example.expensesage.ui.utils.handleCanvasTap
 
+/**
+ * Donut Chart Composable
+ *
+ * @param modifier
+ * @param chartSize
+ * @param data
+ * @param gapPercentage
+ * @param selectionView
+ */
 @Composable
 fun DonutChart(
     modifier: Modifier = Modifier,

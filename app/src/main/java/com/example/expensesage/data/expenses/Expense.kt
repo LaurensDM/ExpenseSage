@@ -6,6 +6,17 @@ import androidx.room.PrimaryKey
 import com.example.expensesage.R
 import java.time.LocalDateTime
 
+/**
+ * Expense Entity
+ *
+ * @property id Int (auto-generated)
+ * @property date LocalDateTime (auto-generated)
+ * @property imageResourceId Drawable resource id
+ * @property name Name of expense
+ * @property amount Amount of expense
+ * @property owed Boolean (true if owed, false if not)
+ * @property category Category of expense
+ */
 @Entity(tableName = "expense_table")
 data class Expense(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -17,6 +28,11 @@ data class Expense(
     val category: String = "Other",
 )
 
+/**
+ * Populate data for testing
+ *
+ * @return List<Expense> List of expenses
+ */
 fun populateData(): List<Expense> {
     return listOf(
         Expense(1, LocalDateTime.of(2021, 1, 1, 10, 10), R.drawable.cost, "Carrefour", 40.0, false, "Food & Groceries"),

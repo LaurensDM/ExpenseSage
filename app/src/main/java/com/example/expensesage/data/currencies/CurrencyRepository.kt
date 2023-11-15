@@ -3,9 +3,19 @@ package com.example.expensesage.data.currencies
 import kotlinx.coroutines.flow.Flow
 
 interface CurrencyRepository {
-
+    /**
+     * Get all currencies
+     *
+     * @return Flow<List<Currency>> List of currencies
+     */
     fun getAllCurrencies(): Flow<List<Currency>>
 
+    /**
+     * Get currency by id
+     *
+     * @param id String Currency code (e.g. EUR)
+     * @return Flow<Currency> Currency
+     */
     fun getCurrency(id: String): Flow<Currency>
 
     suspend fun insert(currency: Currency)

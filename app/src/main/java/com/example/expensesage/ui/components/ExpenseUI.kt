@@ -96,11 +96,13 @@ fun ExpenseItemHome(
 }
 
 /**
- * Composable that displays the expense items on the expense screen.
+ * Composable that displays an expense item
  *
- * @param expense the expense to display
+ * @param expense  the expense to display
  * @param modifier the modifier to apply to this layout node
- * @param viewModel the view model to use
+ * @param showModal show the modal
+ * @param showAlert show the alert
+ * @param dataViewModel ExpenseDetailsViewModel: View model for expense details
  */
 @Composable
 fun ExpenseItem(
@@ -201,10 +203,13 @@ private fun ExpenseItemButton(
 }
 
 /**
- *  Composable that displays the expense options on the expense item.
+ * Composable that displays the expense options on the expense item.
  *
- * @param modifier the modifier to apply to this layout node
- * @param onDetailClick the function to call when the details button is clicked
+ * @param onEditClicked callback for edit button
+ * @param onDetailClick callback for detail button
+ * @param onPayedClick callback for payed button
+ * @param onDeleteClick callback for delete button
+ * @param expense the expense to display
  */
 @Composable
 fun ExpenseOptions(
@@ -323,6 +328,13 @@ fun ExpenseSageIcon(
     )
 }
 
+/**
+ * Composable that displays the expense list
+ *
+ * @param groupedExpenses the expenses to display
+ * @param showModal callback to show the modal
+ * @param showAlert callback to show the alert
+ */
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ExpenseList(
@@ -386,6 +398,12 @@ fun ExpenseList(
     }
 }
 
+/**
+ * Composable that displays the expense list
+ *
+ * @param onSelect callback to select a category
+ * @param category the category to display
+ */
 @Composable
 fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
     var expanded by rememberSaveable { mutableStateOf(false) }
@@ -424,6 +442,11 @@ fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
     }
 }
 
+/**
+ * Composable that displays the expense list
+ *
+ * @param onClick callback to add an expense
+ */
 @Composable
 fun ExpenseFloatingActionButton(
     onClick: () -> Unit,

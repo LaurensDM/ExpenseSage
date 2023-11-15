@@ -22,11 +22,11 @@ import coil.compose.AsyncImage
 import com.example.expensesage.data.expenses.Expense
 
 /**
- * Composable that displays the details of an expense as a dialog
+ * Details Dialog
  *
- * @param viewModel The viewModel that keeps information about the state of the app
- *
- * */
+ * @param selectedExpense Expense: Selected expense
+ * @param onDialogDismiss () -> Unit: Callback to dismiss dialog
+ */
 @Composable
 fun Details(selectedExpense: Expense, onDialogDismiss: () -> Unit) {
     Card(

@@ -30,10 +30,6 @@ class ExpenseSageApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            executeWorkers(this@ExpenseSageApplication)
-        }
-
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         userSettings = UserSettings(DataStoreSingleton.getInstance(context = this))
         container = AppDataContainer(this, appScope)

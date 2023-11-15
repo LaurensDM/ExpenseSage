@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CurrencyDao {
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(currency: Currency)
 
@@ -22,9 +23,20 @@ interface CurrencyDao {
     @Delete
     suspend fun delete(currency: Currency)
 
+    /**
+     * Get all currencies
+     *
+     * @return Flow<List<Currency>> List of currencies
+     */
     @Query("SELECT * FROM currency_table ORDER BY currencyCode ASC")
     fun getAllCurrencies(): Flow<List<Currency>>
 
+    /**
+     * Get currency
+     *
+     * @param id String Currency code (e.g. EUR)
+     * @return Flow<Currency> Currency
+     */
     @Query("SELECT * FROM currency_table WHERE currencyCode = :id")
     fun getCurrency(id: String): Flow<Currency>
 }

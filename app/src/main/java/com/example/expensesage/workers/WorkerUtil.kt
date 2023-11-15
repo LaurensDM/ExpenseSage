@@ -66,7 +66,7 @@ fun makeStatusNotification(id: Int, title: String, message: String, applicationC
         channel.enableLights(true)
         channel.lightColor = RED
         channel.enableVibration(true)
-        channel.vibrationPattern = longArrayOf(100, 200, 300, 400, 500, 400, 300, 200, 400)
+        channel.vibrationPattern = longArrayOf(100, 200, 300)
         channel.setSound(ringtoneManager, audioAttributes)
         notificationManager.createNotificationChannel(channel)
     }

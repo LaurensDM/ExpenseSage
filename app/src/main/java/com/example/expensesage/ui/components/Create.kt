@@ -36,6 +36,13 @@ import com.example.expensesage.ui.utils.DecimalFormatter
 import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 
+/**
+ * Create Expense Dialog
+ *
+ * @param onDialogDismiss onDialogDismiss function
+ * @param isOwed isOwed boolean
+ * @param dataViewModel ExpenseDetailsViewModel
+ */
 @Composable
 fun Create(
     onDialogDismiss: () -> Unit,
@@ -83,6 +90,16 @@ fun Create(
         }
 }
 
+/**
+ *  Create Expense Form
+ *
+ * @param expenseState ExpenseDetail state
+ * @param updateState update ExpenseDetail state
+ * @param onDoneClicked onDoneClicked function
+ * @param nameError nameError state boolean
+ * @param amountError amountError state boolean
+ * @param decimalFormatter DecimalFormatter object to format amount input
+ */
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun CreateForm(

@@ -28,65 +28,116 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
         const val TAG = "UserSettings"
     }
 
+    /**
+     * Save sound preference
+     *
+     * @param playSound Boolean whether to play sound or not
+     */
     suspend fun saveSoundPreference(playSound: Boolean) {
         dataStore.edit { preferences ->
             preferences[PLAY_SOUND] = playSound
         }
     }
 
+    /**
+     * Save sound volume
+     *
+     * @param soundVolume Double Sound volume
+     */
     suspend fun saveSoundVolume(soundVolume: Double) {
         dataStore.edit { preferences ->
             preferences[SOUND_VOLUME] = soundVolume
         }
     }
 
+    /**
+     * Save budget
+     *
+     * @param budget Double Budget
+     */
     suspend fun saveBudget(budget: Double) {
         dataStore.edit { preferences ->
             preferences[BUDGET] = budget
         }
     }
 
+    /**
+     * Save money available
+     *
+     * @param moneyAvailable Double Money available
+     */
     suspend fun saveMoneyAvailable(moneyAvailable: Double) {
         dataStore.edit { preferences ->
             preferences[MONEY_AVAILABLE] = moneyAvailable
         }
     }
 
+    /**
+     * Save budget frequency
+     *
+     * @param budgetFrequency String Budget frequency
+     */
     suspend fun saveBudgetFrequency(budgetFrequency: String) {
         dataStore.edit { preferences ->
             preferences[BUDGET_FREQUENCY] = budgetFrequency
         }
     }
 
+    /**
+     * Save money owed
+     *
+     * @param moneyOwed Double Money owed
+     */
     suspend fun saveMoneyOwed(moneyOwed: Double) {
         dataStore.edit { preferences ->
             preferences[MONEY_OWED] = moneyOwed
         }
     }
 
+    /**
+     * Save currency
+     *
+     * @param currency String Currency
+     */
     suspend fun saveCurrency(currency: String) {
         dataStore.edit { preferences ->
             preferences[CURRENCY] = currency
         }
     }
 
+    /**
+     * Save currency modifier
+     *
+     * @param currencyModifier Double Currency modifier
+     */
     suspend fun saveCurrencyModifier(currencyModifier: Double) {
         dataStore.edit { preferences ->
             preferences[CURRENCY_MODIFIER] = currencyModifier
         }
     }
 
+    /**
+     * Save first budget change
+     *
+     * @param firstSettingChange Boolean whether it's the first time the user changes the settings
+     */
     suspend fun saveFirstBudgetChange(firstSettingChange: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_BUDGET_CHANGE] = firstSettingChange
         }
     }
 
+    /**
+     * Save first time
+     *
+     * @param firstTime Boolean whether it's the first time the user opens the app
+     */
     suspend fun saveFirstTime(firstTime: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_TIME] = firstTime
         }
     }
+
 
     val playSound: Flow<Boolean> = dataStore.data
         .catch {

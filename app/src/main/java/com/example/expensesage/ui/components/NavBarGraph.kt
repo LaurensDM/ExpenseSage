@@ -16,10 +16,12 @@ import com.example.expensesage.ui.utils.Navigations
 import com.example.expensesage.ui.viewModels.SnackBarType
 
 /**
- * Composable that displays content based on the current route
+ * Navigation Bar Graph Composable (NavHost) for the app
  *
- * @param navController The navController that handles the navigation
- * @param viewModel The viewModel that holds the data
+ * @param navController NavHostController
+ * @param showModal callback to show modal
+ * @param showAlert callback to show alert
+ * @param showSnackbar callback to show snackbar
  */
 @Composable
 fun NavBarGraph(

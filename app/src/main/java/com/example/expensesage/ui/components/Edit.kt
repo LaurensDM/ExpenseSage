@@ -34,6 +34,13 @@ import com.example.expensesage.ui.utils.DecimalFormatter
 import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 
+/**
+ * Edit Dialog
+ *
+ * @param selectedExpense Expense: Selected expense
+ * @param onDialogDismiss () -> Unit: Callback to dismiss dialog
+ * @param dataViewModel ExpenseDetailsViewModel: View model for expense details
+ */
 @Composable
 fun Edit(
     selectedExpense: Expense,
@@ -73,6 +80,17 @@ fun Edit(
     }
 }
 
+/**
+ * Edit Form
+ *
+ * @param expenseState ExpenseDetail State
+ * @param onValueChange (ExpenseDetail) -> Unit:  Callback to update state
+ * @param onDoneClicked (Expense) -> Unit: Callback to update expense
+ * @param originalExpense Expense: Original expense
+ * @param nameError Boolean: Name error
+ * @param amountError Boolean: Amount error
+ * @param decimalFormatter DecimalFormatter: Decimal formatter for currency
+ */
 @Composable
 fun EditForm(
     expenseState: ExpenseDetail,

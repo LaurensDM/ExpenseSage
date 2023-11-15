@@ -30,6 +30,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import com.example.expensesage.ui.theme.ExpenseSageTheme
+import com.example.expensesage.workers.executeWorkers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -45,6 +49,9 @@ class MainActivity : ComponentActivity() {
             if (it) {
                 // Permission is granted
                 Log.d("MainActivity", "Permission granted")
+                CoroutineScope(Dispatchers.IO).launch {
+                    executeWorkers(this@MainActivity)
+                }
                 setContent {
                     ExpenseSageTheme {
                         // A surface container using the 'background' color from the theme

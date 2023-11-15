@@ -3,6 +3,10 @@ package com.example.expensesage.data.converter
 import androidx.room.TypeConverter
 import java.time.LocalDateTime
 
+/**
+ * Date Converter for Room Database
+ *
+ */
 open class DateConverter {
     @TypeConverter
     fun toDate(date: String?): LocalDateTime? {

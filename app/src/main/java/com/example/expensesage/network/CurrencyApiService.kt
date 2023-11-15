@@ -18,6 +18,10 @@ private val retrofit = Retrofit.Builder()
     )
     .baseUrl(BASE_URL).build()
 
+/**
+ * Currency API Service
+ *
+ */
 interface CurrencyApiService {
     @GET
     suspend fun getCurrencies(): JsonObject
@@ -42,6 +46,9 @@ interface CurrencyApiService {
 //    suspend fun getJpyRate(): JsonObject
 }
 
+/**
+ * Currency API Object to access Currency API Service
+ */
 object CurrencyApi {
     val retrofitService: CurrencyApiService by lazy {
         retrofit.create(CurrencyApiService::class.java)

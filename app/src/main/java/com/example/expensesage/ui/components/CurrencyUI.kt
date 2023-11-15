@@ -20,6 +20,11 @@ import java.text.DecimalFormatSymbols
 import java.text.NumberFormat
 import java.util.Currency
 
+/**
+ *  Currency Icon
+ *
+ * @param viewModel SettingsViewModel
+ */
 @Composable
 fun CurrencyIcon(viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)) {
     val currentCurrency by viewModel.getCurrency().collectAsState()
@@ -30,6 +35,13 @@ fun CurrencyIcon(viewModel: SettingsViewModel = viewModel(factory = AppViewModel
     }
 }
 
+/**
+ * Currency Text
+ *
+ * @param currency StateFlow<String> Currency code (e.g. EUR)
+ * @param moneyAvailable StateFlow<Double> Amount of money available
+ * @param currencyModifier  StateFlow<Double> Currency modifier (e.g. 1.0)
+ */
 @Composable
 fun CurrencyText(
     currency: StateFlow<String>,
@@ -56,6 +68,14 @@ fun CurrencyText(
     )
 }
 
+/**
+ * Currency String
+ *
+ * @param money Double Amount of money
+ * @param fractionDigits Int Number of fraction digits
+ * @param viewModel SettingsViewModel
+ * @return
+ */
 @Composable
 fun CurrencyString(
     money: Double,
@@ -74,6 +94,14 @@ fun CurrencyString(
     return "€ $currentMoney"
 }
 
+/**
+ * Format Money (e.g. 1.0 -> € 1.00)
+ *
+ * @param currentMoney Amount of money
+ * @param currency Currency code (e.g. EUR)
+ * @param fractionDigits Number of fraction digits (e.g. 2)
+ * @return
+ */
 fun formatMoney(currentMoney: Double, currency: String, fractionDigits: Int): String {
     val format = NumberFormat.getCurrencyInstance()
     val symbols = DecimalFormatSymbols()

@@ -12,6 +12,12 @@ interface AppContainer {
     val currencyRepository: CurrencyRepository
 }
 
+/**
+ * Class that handles the creation of the repositories
+ *
+ * @property context Context Application context
+ * @property scope CoroutineScope Coroutine scope for the database operations
+ */
 class AppDataContainer(private val context: Context, private val scope: CoroutineScope) : AppContainer {
     override val expenseRepository: ExpenseRepository by lazy {
         OfflineExpenseRepository(ExpenseSageDatabase.getDatabase(context, scope).expenseDao())

@@ -98,4 +98,5 @@ dependencies {
     implementation("com.github.tehras:charts:0.2.4-alpha")
 
     implementation("androidx.work:work-runtime-ktx:2.8.1")
+    androidTestImplementation("androidx.work:work-testing:2.8.1")
 }
