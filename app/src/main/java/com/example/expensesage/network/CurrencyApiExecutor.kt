@@ -2,8 +2,11 @@ package com.example.expensesage.network
 
 import android.util.Log
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.currencies.Currency
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 /**
  * Currency API Executor
@@ -16,10 +19,20 @@ class CurrencyApiExecutor(private val userSettings: UserSettings) {
      *
      * @return JsonObject Currency rates
      */
-    suspend fun getCurrencyRates(): JsonObject {
+    suspend fun getCurrencyRates(): List<Currency> {
         val currency = userSettings.currency.first()
-        return CurrencyApi.retrofitService.getCurrencyRates(currency.lowercase())
+        val onlineCurrencies = CurrencyApi.retrofitService.getCurrencyRates(currency.lowercase())
+        val date = onlineCurrencies["date"]?.jsonPrimitive?.content ?: ""
+        val currencies = onlineCurrencies[currency.lowercase()]?.jsonObject?.entries?.map {
+            Currency(
+                currencyCode = it.key,
+                rate = it.value.jsonPrimitive.content.toDouble(),
+                date = date,
+                comparedCurrency = currency.lowercase()
+            )
+        } ?: emptyList()
 
+        return currencies;
     }
 
     /**

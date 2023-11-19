@@ -1,6 +1,5 @@
 package com.example.expensesage.ui.viewModels
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableDoubleStateOf
@@ -8,12 +7,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.UserSettingsService
 import com.example.expensesage.data.currencies.CurrencyRepository
 import com.example.expensesage.data.expenses.ExpenseRepository
-import com.example.expensesage.network.CurrencyApiExecutor
 import com.example.expensesage.ui.utils.formatToCurrency
-import com.example.expensesage.workers.changeInterval
+import com.example.expensesage.ui.utils.formatToDouble
+import com.example.expensesage.workers.WorkersExecutor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -24,16 +23,14 @@ import java.io.IOException
 /**
  * This class is responsible for the settings view model.
  *
- * @property context The context
+ * @property executor The executor for the workers
  * @property userSettings The user settings
- * @property currencyApiExecutor The currency API executor
  * @property expenseRepository The expense repository
  * @property currencyRepository The currency repository
  */
 class SettingsViewModel(
-    private val context: Context,
-    private val userSettings: UserSettings,
-    private val currencyApiExecutor: CurrencyApiExecutor,
+    private val changeInterval: () -> Unit,
+    private val userSettings: UserSettingsService,
     private val expenseRepository: ExpenseRepository,
     private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
@@ -65,7 +62,7 @@ class SettingsViewModel(
     fun updateBudget(newBudget: String) {
         try {
             // If the new budget is not a valid double, this will throw
-            newBudget.replace(",", ".").toDouble()
+            newBudget.formatToDouble()
             budget = newBudget
         } catch (e: NumberFormatException) {
             budget = ""
@@ -88,7 +85,7 @@ class SettingsViewModel(
                 budget = "0"
                 userSettings.saveBudget(0.0)
                 calculateMoneyAvailable()
-                changeInterval(context)
+                changeInterval()
             }
         }
     }
@@ -112,8 +109,8 @@ class SettingsViewModel(
      */
     fun changeBudget() {
         viewModelScope.launch {
-            Log.d("SettingsViewModel", "budget: $budget")
-            userSettings.saveBudget(budget.toDouble() / modifier)
+//            Log.d("SettingsViewModel", "budget: $budget")
+            userSettings.saveBudget(budget.formatToDouble()/ modifier)
             if (userSettings.firstBudgetChange.first()) {
                 calculateMoneyAvailable()
                 userSettings.saveFirstBudgetChange(false)
@@ -133,7 +130,7 @@ class SettingsViewModel(
             "Yearly" -> expenseRepository.getSumOfYear().first()
             else -> 0.0
         }
-        userSettings.saveMoneyAvailable(budget.toDouble() / modifier - sumExpenses)
+        userSettings.saveMoneyAvailable(budget.formatToDouble() / modifier - sumExpenses)
     }
 
 
@@ -192,16 +189,13 @@ class SettingsViewModel(
     fun changeCurrency(newCurrency: String) {
         viewModelScope.launch {
             try {
-                if (currencyRepository.getAllCurrencies().first().isEmpty()) {
-                    userSettings.saveCurrencyModifier(currencyApiExecutor.getRate(newCurrency))
-                } else {
                     userSettings.saveCurrencyModifier(
                         currencyRepository.getCurrency(newCurrency.lowercase()).first().rate
                     )
-                }
             } catch (e: IOException) {
                 // This only occurs if a sync hasn't occurred yet,
                 // and the user has no internet when calling this function
+                // Very unlikely, but still possible
                 userSettings.saveCurrencyModifier(
                     when (newCurrency) {
                         "EUR" -> 1.0
@@ -213,7 +207,7 @@ class SettingsViewModel(
             }
             userSettings.saveCurrency(newCurrency)
             val newModifier = userSettings.currencyModifier.first()
-            budget = (budget.toDouble() / modifier * newModifier).toString()
+            budget = (budget.formatToDouble() / modifier * newModifier).toString()
             modifier = newModifier
             currency = newCurrency
         }

@@ -2,9 +2,10 @@ package com.example.expensesage.data
 
 import android.content.Context
 import com.example.expensesage.data.currencies.CurrencyRepository
-import com.example.expensesage.data.currencies.OfflineCurrencyRepository
+import com.example.expensesage.data.currencies.CurrencyRepositoryImpl
 import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.data.expenses.OfflineExpenseRepository
+import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.CoroutineScope
 
 interface AppContainer {
@@ -23,6 +24,6 @@ class AppDataContainer(private val context: Context, private val scope: Coroutin
         OfflineExpenseRepository(ExpenseSageDatabase.getDatabase(context, scope).expenseDao())
     }
     override val currencyRepository: CurrencyRepository by lazy {
-        OfflineCurrencyRepository(ExpenseSageDatabase.getDatabase(context, scope).currencyDao())
+        CurrencyRepositoryImpl(ExpenseSageDatabase.getDatabase(context, scope).currencyDao(), CurrencyApiExecutor(UserSettings(DataStoreSingleton.getInstance(context = context))))
     }
 }

@@ -29,8 +29,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
+import com.example.expensesage.data.DataStoreSingleton
+import com.example.expensesage.data.UserSettings
 import com.example.expensesage.ui.theme.ExpenseSageTheme
-import com.example.expensesage.workers.executeWorkers
+import com.example.expensesage.workers.WorkersExecutor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -49,8 +51,9 @@ class MainActivity : ComponentActivity() {
             if (it) {
                 // Permission is granted
                 Log.d("MainActivity", "Permission granted")
+                val executeWorkers = WorkersExecutor(this, UserSettings(DataStoreSingleton.getInstance(this)))
                 CoroutineScope(Dispatchers.IO).launch {
-                    executeWorkers(this@MainActivity)
+                    executeWorkers.executeWorkers()
                 }
                 setContent {
                     ExpenseSageTheme {

@@ -46,20 +46,21 @@ class BudgetWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
         val budget = userSettings.budget.first()
         userSettings.saveMoneyAvailable(budget)
         val interval = inputData.getLong("interval", 0L)
+        val executor = WorkersExecutor(context, userSettings)
 
         when (inputData.getString("budgetFrequency")) {
             "Weekly" -> {
                 if (interval < 24*7L*60) {
-                    changeInterval(context)
+                    executor.changeInterval()
                 }
             }
 
             "Monthly" -> {
-                changeInterval(context)
+                executor.changeInterval()
             }
 
             "Yearly" -> {
-                changeInterval(context)
+                executor.changeInterval()
             }
         }
 //

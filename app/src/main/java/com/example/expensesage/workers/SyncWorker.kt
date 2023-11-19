@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
+import java.io.IOException
 
 
 /**
@@ -25,9 +26,10 @@ import kotlinx.serialization.json.jsonPrimitive
  * @param ctx The application [Context]
  * @param params Parameters to setup the internal state of this worker
  */
-class SyncWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx, params) {
+class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, params) {
 
-    private val currencyRepository = AppDataContainer(ctx, CoroutineScope(Dispatchers.IO)).currencyRepository
+    private val currencyRepository =
+        AppDataContainer(ctx, CoroutineScope(Dispatchers.IO)).currencyRepository
     private val userSettings = UserSettings(DataStoreSingleton.getInstance(ctx))
     private val api = CurrencyApiExecutor(userSettings)
 
@@ -39,7 +41,7 @@ class SyncWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx, p
     override suspend fun doWork(): Result {
         try {
             sync()
-        } catch (e: Exception) {
+        } catch (e: IOException) {
             Log.e("SyncWorker", "Error syncing currencies", e)
             return Result.failure()
         }
@@ -52,20 +54,14 @@ class SyncWorker(ctx: Context, params: WorkerParameters): CoroutineWorker(ctx, p
      *
      */
     private suspend fun sync() {
-        makeStatusNotification(3,"ExpenseSage", "Syncing currencies...", applicationContext)
+        makeStatusNotification(3, "ExpenseSage", "Syncing currencies...", applicationContext)
 
-        val currency = userSettings.currency.first()
-        val currenciesJson = api.getCurrencyRates()
-        val date = currenciesJson["date"]?.jsonPrimitive?.content ?: ""
-        val currencies = currenciesJson[currency.lowercase()]?.jsonObject?.entries?.map {
-            Currency(
-                currencyCode = it.key,
-                date = date,
-                rate = it.value.jsonPrimitive.content.toDouble(),
-                comparedCurrency = currency.lowercase()
-            )
-        } ?: emptyList()
+        val currencies = api.getCurrencyRates()
+
         Log.d("SyncWorker", "Syncing ${currencies.size} currencies")
-        currencyRepository.insertAll(currencies)
+
+        if (currencies.isNotEmpty()) {
+            currencyRepository.insertAll(currencies)
+        }
     }
 }

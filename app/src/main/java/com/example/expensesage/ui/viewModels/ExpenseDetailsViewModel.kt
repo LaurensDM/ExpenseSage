@@ -9,10 +9,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.R
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.UserSettingsService
 import com.example.expensesage.data.expenses.Expense
 import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.ui.utils.ExpenseDetail
 import com.example.expensesage.ui.utils.formatToCurrency
+import com.example.expensesage.ui.utils.formatToDouble
 import com.example.expensesage.ui.utils.toExpense
 import com.example.expensesage.ui.utils.toExpenseDetail
 import kotlinx.coroutines.flow.first
@@ -27,8 +29,9 @@ import java.util.Locale
  * @property expenseRepository The expense repository
  */
 class ExpenseDetailsViewModel(
-    private val userPref: UserSettings,
+    private val userPref: UserSettingsService,
     private val expenseRepository: ExpenseRepository,
+    private val format: NumberFormat = NumberFormat.getInstance(Locale.getDefault())
 ) : ViewModel() {
 
     var expenseDetailState by mutableStateOf(ExpenseDetail())
@@ -40,16 +43,12 @@ class ExpenseDetailsViewModel(
     var amountError by mutableStateOf(false)
         private set
 
-    private val format: NumberFormat = NumberFormat.getInstance(Locale.getDefault())
-
     init {
-        Log.i("ExpenseDetailsViewModel", "init")
+//        Log.i("ExpenseDetailsViewModel", "init")
         viewModelScope.launch {
             expenseDetailState = expenseDetailState.copy(
-                amount = (expenseDetailState.amount.toDouble() * userPref.currencyModifier.first()).formatToCurrency()
+                amount = (expenseDetailState.amount.formatToDouble()* userPref.currencyModifier.first()).formatToCurrency()
             )
-            format.isGroupingUsed = false
-            format.maximumFractionDigits = 2
         }
 
     }
@@ -108,8 +107,8 @@ class ExpenseDetailsViewModel(
      */
     fun saveExpense() {
         viewModelScope.launch {
-            Log.d("ExpenseDetailsViewModel", "SAVING EXPENSE")
-            Log.d("ExpenseDetailsViewModel", "state: $expenseDetailState")
+//            Log.d("ExpenseDetailsViewModel", "SAVING EXPENSE")
+//            Log.d("ExpenseDetailsViewModel", "state: $expenseDetailState")
             if (validateInput()) {
                 val newExpense = expenseDetailState.toExpense(userPref.currencyModifier.first())
                 if (newExpense.owed) {
@@ -117,7 +116,7 @@ class ExpenseDetailsViewModel(
                 } else {
                     userPref.saveMoneyAvailable(moneyAvailable = (userPref.moneyAvailable.first() - newExpense.amount))
                 }
-                Log.d("ExpenseDetailsViewModel", "Saving newExpense: $newExpense")
+//                Log.d("ExpenseDetailsViewModel", "Saving newExpense: $newExpense")
                 expenseRepository.insert(expense = newExpense)
             }
         }
@@ -130,9 +129,9 @@ class ExpenseDetailsViewModel(
      */
     fun updateExpense(originalExpense: Expense) {
         viewModelScope.launch {
-            Log.d("ExpenseDetailsViewModel", "UPDATING EXPENSE")
-            Log.d("ExpenseDetailsViewModel", "updateExpense: $expenseDetailState")
-            Log.d("ExpenseDetailsViewModel", "original: $originalExpense")
+//            Log.d("ExpenseDetailsViewModel", "UPDATING EXPENSE")
+//            Log.d("ExpenseDetailsViewModel", "updateExpense: $expenseDetailState")
+//            Log.d("ExpenseDetailsViewModel", "original: $originalExpense")
             // This code should be mostly useless since the user shouldn't be able to change
             // the owed status of an expense through an edit. Could be a feature in the future
             if (validateInput()) {
@@ -175,15 +174,15 @@ class ExpenseDetailsViewModel(
     private fun validateInput(expense: ExpenseDetail = expenseDetailState): Boolean {
         try {
             nameError = expense.name.isBlank()
-            val amount = expense.amount.replace(",", ".").toDouble()
+            val amount = expense.amount.formatToDouble()
             // If no error is thrown, then the amount is valid
-            Log.i("ExpenseDetailsViewModel", "validateInput: amount is valid: $amount")
+//            Log.i("ExpenseDetailsViewModel", "validateInput: amount is valid: $amount")
             if (amount <= 0) {
                 throw Exception("Amount is negative")
             }
             amountError = false
         } catch (e: Exception) {
-            Log.d("ExpenseDetailsViewModel", "validateInput: ${e.localizedMessage}")
+//            Log.d("ExpenseDetailsViewModel", "validateInput: ${e.localizedMessage}")
             expenseDetailState = expenseDetailState.copy(amount = "0")
             amountError = true
         }

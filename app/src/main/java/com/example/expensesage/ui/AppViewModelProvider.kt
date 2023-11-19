@@ -11,6 +11,10 @@ import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.StatisticViewModel
+import com.example.expensesage.workers.WorkersExecutor
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 /**
  * This object is responsible for providing the view models.
@@ -28,9 +32,15 @@ object AppViewModelProvider {
         }
         initializer {
             SettingsViewModel(
-                context = expenseSageApplicaton().applicationContext,
+                changeInterval = {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        WorkersExecutor(
+                            expenseSageApplicaton().applicationContext,
+                            expenseSageApplicaton().userSettings
+                        ).changeInterval()
+                    }
+                },
                 userSettings = expenseSageApplicaton().userSettings,
-                currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
                 expenseRepository = expenseSageApplicaton().container.expenseRepository,
                 currencyRepository = expenseSageApplicaton().container.currencyRepository,
             )
@@ -44,7 +54,6 @@ object AppViewModelProvider {
         initializer {
             CurrencyViewModel(
                 userPref = expenseSageApplicaton().userSettings,
-                currencyApiExecutor = expenseSageApplicaton().currencyExecutor,
                 currencyRepository = expenseSageApplicaton().container.currencyRepository,
             )
         }

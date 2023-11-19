@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.UserSettingsService
 import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.ui.utils.ExpenseSummary
 import com.example.expensesage.ui.utils.ExpenseSummaryItem
@@ -31,7 +32,7 @@ sealed interface StatisticUiState {
  */
 class StatisticViewModel(
     private val expenseRepository: ExpenseRepository,
-    private val userPref: UserSettings,
+    private val userPref: UserSettingsService,
 ) : ViewModel() {
 
     var statisticUiState: StatisticUiState by mutableStateOf(StatisticUiState.Loading)

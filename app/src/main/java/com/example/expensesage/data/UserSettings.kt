@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import java.io.IOException
 
-class UserSettings(private val dataStore: DataStore<Preferences>) {
+class UserSettings(private val dataStore: DataStore<Preferences>) : UserSettingsService {
     private companion object {
         val PLAY_SOUND = booleanPreferencesKey("play_sound")
         val SOUND_VOLUME = doublePreferencesKey("sound_volume")
@@ -33,7 +33,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param playSound Boolean whether to play sound or not
      */
-    suspend fun saveSoundPreference(playSound: Boolean) {
+    override suspend fun saveSoundPreference(playSound: Boolean) {
         dataStore.edit { preferences ->
             preferences[PLAY_SOUND] = playSound
         }
@@ -44,7 +44,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param soundVolume Double Sound volume
      */
-    suspend fun saveSoundVolume(soundVolume: Double) {
+    override suspend fun saveSoundVolume(soundVolume: Double) {
         dataStore.edit { preferences ->
             preferences[SOUND_VOLUME] = soundVolume
         }
@@ -55,7 +55,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param budget Double Budget
      */
-    suspend fun saveBudget(budget: Double) {
+    override suspend fun saveBudget(budget: Double) {
         dataStore.edit { preferences ->
             preferences[BUDGET] = budget
         }
@@ -66,7 +66,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param moneyAvailable Double Money available
      */
-    suspend fun saveMoneyAvailable(moneyAvailable: Double) {
+    override suspend fun saveMoneyAvailable(moneyAvailable: Double) {
         dataStore.edit { preferences ->
             preferences[MONEY_AVAILABLE] = moneyAvailable
         }
@@ -77,7 +77,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param budgetFrequency String Budget frequency
      */
-    suspend fun saveBudgetFrequency(budgetFrequency: String) {
+    override suspend fun saveBudgetFrequency(budgetFrequency: String) {
         dataStore.edit { preferences ->
             preferences[BUDGET_FREQUENCY] = budgetFrequency
         }
@@ -88,7 +88,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param moneyOwed Double Money owed
      */
-    suspend fun saveMoneyOwed(moneyOwed: Double) {
+    override suspend fun saveMoneyOwed(moneyOwed: Double) {
         dataStore.edit { preferences ->
             preferences[MONEY_OWED] = moneyOwed
         }
@@ -99,7 +99,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param currency String Currency
      */
-    suspend fun saveCurrency(currency: String) {
+    override suspend fun saveCurrency(currency: String) {
         dataStore.edit { preferences ->
             preferences[CURRENCY] = currency
         }
@@ -110,7 +110,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param currencyModifier Double Currency modifier
      */
-    suspend fun saveCurrencyModifier(currencyModifier: Double) {
+    override suspend fun saveCurrencyModifier(currencyModifier: Double) {
         dataStore.edit { preferences ->
             preferences[CURRENCY_MODIFIER] = currencyModifier
         }
@@ -121,7 +121,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param firstSettingChange Boolean whether it's the first time the user changes the settings
      */
-    suspend fun saveFirstBudgetChange(firstSettingChange: Boolean) {
+    override suspend fun saveFirstBudgetChange(firstSettingChange: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_BUDGET_CHANGE] = firstSettingChange
         }
@@ -132,14 +132,14 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
      *
      * @param firstTime Boolean whether it's the first time the user opens the app
      */
-    suspend fun saveFirstTime(firstTime: Boolean) {
+    override suspend fun saveFirstTime(firstTime: Boolean) {
         dataStore.edit { preferences ->
             preferences[FIRST_TIME] = firstTime
         }
     }
 
 
-    val playSound: Flow<Boolean> = dataStore.data
+    override val playSound: Flow<Boolean> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -152,7 +152,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[PLAY_SOUND] ?: true
         }
 
-    val soundVolume: Flow<Double> = dataStore.data
+    override val soundVolume: Flow<Double> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -165,7 +165,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[SOUND_VOLUME] ?: 0.5
         }
 
-    val budget: Flow<Double> = dataStore.data
+    override val budget: Flow<Double> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -178,7 +178,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[BUDGET] ?: 0.0
         }
 
-    val moneyAvailable: Flow<Double> = dataStore.data
+    override val moneyAvailable: Flow<Double> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -191,7 +191,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[MONEY_AVAILABLE] ?: 0.0
         }
 
-    val budgetFrequency: Flow<String> = dataStore.data
+    override val budgetFrequency: Flow<String> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -204,7 +204,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[BUDGET_FREQUENCY] ?: "Weekly"
         }
 
-    val moneyOwed: Flow<Double> = dataStore.data
+    override val moneyOwed: Flow<Double> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -217,7 +217,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[MONEY_OWED] ?: 0.0
         }
 
-    val currency: Flow<String> = dataStore.data
+    override val currency: Flow<String> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -230,7 +230,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[CURRENCY] ?: "EUR"
         }
 
-    val currencyModifier: Flow<Double> = dataStore.data
+    override val currencyModifier: Flow<Double> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -242,7 +242,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[CURRENCY_MODIFIER] ?: 1.0
         }
 
-    val firstBudgetChange: Flow<Boolean> = dataStore.data
+    override val firstBudgetChange: Flow<Boolean> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)
@@ -254,7 +254,7 @@ class UserSettings(private val dataStore: DataStore<Preferences>) {
             preferences[FIRST_BUDGET_CHANGE] ?: true
         }
 
-    val firstTime: Flow<Boolean> = dataStore.data
+    override val firstTime: Flow<Boolean> = dataStore.data
         .catch {
             if (it is IOException) {
                 Log.e(TAG, "Error reading preferences.", it)

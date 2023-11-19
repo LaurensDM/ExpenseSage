@@ -6,6 +6,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.expensesage.data.UserSettings
+import com.example.expensesage.data.UserSettingsService
 import com.example.expensesage.data.currencies.Currency
 import com.example.expensesage.data.currencies.CurrencyRepository
 import com.example.expensesage.network.CurrencyApiExecutor
@@ -23,8 +24,7 @@ import java.time.LocalDate
  * @property currencyRepository The currency repository
  */
 class CurrencyViewModel(
-    private val userPref: UserSettings,
-    private val currencyApiExecutor: CurrencyApiExecutor,
+    private val userPref: UserSettingsService,
     private val currencyRepository: CurrencyRepository,
 ) : ViewModel() {
 
@@ -59,24 +59,11 @@ class CurrencyViewModel(
             currencyUIState = CurrencyUIState.Loading
             currencyUIState = try {
                 currency = userPref.currency.first()
-                var date: String
-                if (currencyRepository.getAllCurrencies().first().isEmpty()){
-                    val data  = currencyApiExecutor.getCurrencyRates()
-                    originalData  = data[currency.lowercase()]?.jsonObject?.entries?.toList()?.map {
-                        Currency(
-                            currencyCode = it.key,
-                            date = data["date"]?.jsonObject?.entries?.first()?.value?.jsonPrimitive?.content ?: "",
-                            rate = it.value.jsonPrimitive.content.toDouble(),
-                            comparedCurrency = currency.lowercase()
-                        )
-                    } ?: emptyList()
-                    list = originalData
-                    date = data["date"]?.jsonPrimitive?.content ?: LocalDate.now().toString()
-                } else {
-                    originalData = currencyRepository.getAllCurrencies().first()
-                    list = originalData
-                    date = originalData.first().date
-                }
+
+                originalData = currencyRepository.getAllCurrencies().first()
+                list = originalData
+                var date: String = originalData.first().date
+
 
                 CurrencyUIState.Success(
                     date

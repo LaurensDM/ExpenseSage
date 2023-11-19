@@ -5,12 +5,10 @@ import com.example.expensesage.data.AppContainer
 import com.example.expensesage.data.AppDataContainer
 import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
-import com.example.expensesage.network.CurrencyApiExecutor
-import com.example.expensesage.workers.executeWorkers
+import com.example.expensesage.data.UserSettingsService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
 
@@ -22,10 +20,9 @@ private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
  *
  */
 class ExpenseSageApplication : Application() {
-    lateinit var userSettings: UserSettings
+    lateinit var userSettings: UserSettingsService
     lateinit var container: AppContainer
     private lateinit var appScope: CoroutineScope
-    lateinit var currencyExecutor: CurrencyApiExecutor
 
     override fun onCreate() {
         super.onCreate()
@@ -33,6 +30,5 @@ class ExpenseSageApplication : Application() {
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         userSettings = UserSettings(DataStoreSingleton.getInstance(context = this))
         container = AppDataContainer(this, appScope)
-        currencyExecutor = CurrencyApiExecutor(userSettings)
     }
 }

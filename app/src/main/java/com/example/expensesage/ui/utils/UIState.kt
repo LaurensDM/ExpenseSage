@@ -32,7 +32,7 @@ data class ExpenseDetail(
 fun ExpenseDetail.toExpense(currencyRate: Double): Expense = Expense(
     id = id,
     name = name,
-    amount = (amount.replace(",", ".").toDouble() / currencyRate),
+    amount = (amount.formatToDouble() / currencyRate),
     owed = owed,
     imageResourceId = if (owed) R.drawable.owed else R.drawable.cost,
     date = LocalDateTime.parse(date),
@@ -55,10 +55,19 @@ fun Expense.toExpenseDetail(currencyRate: Double): ExpenseDetail = ExpenseDetail
 )
 
 /**
- * This function formats a number to a currency.
+ * This function formats a number to a currency string.
  *
- * @return The formatted number
+ * @return String: The formatted number
  */
 fun Number.formatToCurrency(): String {
     return String.format("%.2f", this)
+}
+
+/**
+ * This function formats a string to a double.
+ *
+ * @return Double: a double value
+ */
+fun String.formatToDouble(): Double {
+    return this.replace(",", ".").toDouble()
 }

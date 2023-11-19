@@ -24,19 +24,36 @@ interface CurrencyDao {
     suspend fun delete(currency: Currency)
 
     /**
-     * Get all currencies
+     * Get all currencies in a flow
      *
      * @return Flow<List<Currency>> List of currencies
      */
     @Query("SELECT * FROM currency_table ORDER BY currencyCode ASC")
-    fun getAllCurrencies(): Flow<List<Currency>>
+    fun getAllCurrenciesFlow(): Flow<List<Currency>>
 
     /**
-     * Get currency
+     * Get currency in a flow
      *
      * @param id String Currency code (e.g. EUR)
      * @return Flow<Currency> Currency
      */
     @Query("SELECT * FROM currency_table WHERE currencyCode = :id")
-    fun getCurrency(id: String): Flow<Currency>
+    fun getCurrencyFlow(id: String): Flow<Currency>
+
+    /**
+     * Get all currencies
+     *
+     * @return List<Currency> List of currencies
+     */
+    @Query("SELECT * FROM currency_table ORDER BY currencyCode ASC")
+    suspend fun getAllCurrencies(): List<Currency>
+
+    /**
+     * Get currency
+     *
+     * @param id String Currency code (e.g. EUR)
+     * @return Currency Currency
+     */
+    @Query("SELECT * FROM currency_table WHERE currencyCode = :id")
+    suspend fun getCurrency(id: String): Currency
 }
