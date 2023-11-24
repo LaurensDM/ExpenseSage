@@ -172,7 +172,7 @@ fun BudgetFrequencySelect(
                     onClick = {
                         showAlert(
                             { updateBudgetFrequency(it) },
-                            R.string.budgetFrequency,
+                            R.string.budgetFrequencyAlert,
                             "",
                             {}
                         )
