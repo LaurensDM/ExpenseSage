@@ -7,6 +7,8 @@ import com.example.expensesage.ui.screens.StartScreen
 import org.junit.Rule
 import org.junit.Test
 
+//Requires device language to be set to English
+
 class StartScreenTest {
 
     @get:Rule
@@ -15,7 +17,7 @@ class StartScreenTest {
     @Test
     fun startScreenTest() {
         composeTestRule.setContent {
-            StartScreen(showModal = {_,_,_ -> }, showAlert = {_,_,_ -> })
+            StartScreen(showModal = {_,_,_ -> }, showAlert = {_,_,_,_ -> })
         }
 
         composeTestRule.onNodeWithText("ExpenseSage", substring = true, ignoreCase = true).assertExists()

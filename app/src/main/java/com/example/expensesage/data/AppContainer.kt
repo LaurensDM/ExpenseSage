@@ -24,6 +24,6 @@ class AppDataContainer(private val context: Context, private val scope: Coroutin
         OfflineExpenseRepository(ExpenseSageDatabase.getDatabase(context, scope).expenseDao())
     }
     override val currencyRepository: CurrencyRepository by lazy {
-        CurrencyRepositoryImpl(ExpenseSageDatabase.getDatabase(context, scope).currencyDao(), CurrencyApiExecutor(UserSettings(DataStoreSingleton.getInstance(context = context))))
+        CurrencyRepositoryImpl(ExpenseSageDatabase.getDatabase(context, scope).currencyDao(), UserSettings(DataStoreSingleton.getInstance(context)), CurrencyApiExecutor(UserSettings(DataStoreSingleton.getInstance(context = context))))
     }
 }

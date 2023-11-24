@@ -7,13 +7,9 @@ import androidx.work.WorkerParameters
 import com.example.expensesage.data.AppDataContainer
 import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
-import com.example.expensesage.data.currencies.Currency
 import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.first
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
 import java.io.IOException
 
 
@@ -54,8 +50,6 @@ class SyncWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx, 
      *
      */
     private suspend fun sync() {
-        makeStatusNotification(3, "ExpenseSage", "Syncing currencies...", applicationContext)
-
         val currencies = api.getCurrencyRates()
 
         Log.d("SyncWorker", "Syncing ${currencies.size} currencies")

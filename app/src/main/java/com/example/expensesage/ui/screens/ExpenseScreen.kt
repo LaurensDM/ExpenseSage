@@ -29,7 +29,7 @@ import com.example.expensesage.ui.viewModels.MapUiState
 @Composable
 fun ExpenseScreen(
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
     viewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
 
@@ -74,7 +74,7 @@ fun ExpensesView(
     mapUiState: MapUiState,
     retry: () -> Unit = {},
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
     when (mapUiState) {
         is MapUiState.Loading ->

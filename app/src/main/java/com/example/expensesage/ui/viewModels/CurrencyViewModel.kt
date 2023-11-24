@@ -5,22 +5,18 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.expensesage.data.UserSettings
+import com.example.expensesage.R
 import com.example.expensesage.data.UserSettingsService
 import com.example.expensesage.data.currencies.Currency
 import com.example.expensesage.data.currencies.CurrencyRepository
-import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.jsonObject
-import kotlinx.serialization.json.jsonPrimitive
-import java.time.LocalDate
+import java.io.IOException
 
 /**
  * This class is responsible for the currency view model.
  *
  * @property userPref The user preferences
- * @property currencyApiExecutor The currency API executor
  * @property currencyRepository The currency repository
  */
 class CurrencyViewModel(
@@ -68,8 +64,8 @@ class CurrencyViewModel(
                 CurrencyUIState.Success(
                     date
                 )
-            } catch (e: Exception) {
-                CurrencyUIState.Error(e.localizedMessage ?: "An unknown error occured")
+            } catch (e: IOException) {
+                CurrencyUIState.Error(R.string.network_error)
             }
         }
     }
@@ -100,6 +96,6 @@ class CurrencyViewModel(
 sealed interface CurrencyUIState {
     data object Loading : CurrencyUIState
     data class Success(val date: String) : CurrencyUIState
-    data class Error(val error: String) : CurrencyUIState
+    data class Error(val error: Int) : CurrencyUIState
 
 }

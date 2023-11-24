@@ -52,7 +52,7 @@ import com.example.expensesage.ui.viewModels.SettingsViewModel
 fun StartScreen(
     listViewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
 
     LaunchedEffect(listViewModel ){
@@ -183,7 +183,7 @@ fun BottomTile(
     listUiState: ListUiState,
     retry: () -> Unit = {},
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
     when (listUiState) {
         is ListUiState.Success -> {
@@ -221,7 +221,7 @@ fun BottomTile(
 fun TopExpensesList(
     expenses: List<Expense>,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -230,7 +230,7 @@ fun TopExpensesList(
         Spacer(modifier = Modifier.size(24.dp))
 
             Text(
-                text = "Latest expenses",
+                text = stringResource(R.string.latestExpense),
                 style = MaterialTheme.typography.displayLarge,
                 modifier = Modifier.padding(dimensionResource(R.dimen.padding_small)),
                 textAlign = TextAlign.Center,
@@ -239,7 +239,7 @@ fun TopExpensesList(
         if (expenses.isEmpty()) {
 
                 Text(
-                    text = "No expenses yet",
+                    text = stringResource(id = R.string.noData),
                     style = MaterialTheme.typography.displaySmall,
                     modifier = Modifier
                         .padding(dimensionResource(R.dimen.padding_small))
@@ -263,7 +263,7 @@ fun TopExpensesList(
 @Composable
 fun ExpensePreview() {
     ExpenseSageTheme(darkTheme = false) {
-        StartScreen(showModal = { _, _, _ -> }, showAlert = { _, _, _ -> })
+        StartScreen(showModal = { _, _, _ -> }, showAlert = { _, _, _,_ -> })
     }
 }
 
@@ -274,6 +274,6 @@ fun ExpensePreview() {
 @Composable
 fun ExpenseDarkThemePreview() {
     ExpenseSageTheme(darkTheme = true) {
-        StartScreen(showModal = { _, _, _ -> }, showAlert = { _, _, _ -> })
+        StartScreen(showModal = { _, _, _, -> }, showAlert = { _, _,_, _ -> })
     }
 }

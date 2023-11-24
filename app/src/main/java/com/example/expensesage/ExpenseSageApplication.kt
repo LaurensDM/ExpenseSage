@@ -6,11 +6,11 @@ import com.example.expensesage.data.AppDataContainer
 import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
 import com.example.expensesage.data.UserSettingsService
+import com.example.expensesage.workers.executeWorkers
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-
-private const val SETTINGS_PREFERENCE_NAME = "settings_preferences"
+import kotlinx.coroutines.launch
 
 /**
  * This class is responsible for setting up the application.
@@ -30,5 +30,12 @@ class ExpenseSageApplication : Application() {
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         userSettings = UserSettings(DataStoreSingleton.getInstance(context = this))
         container = AppDataContainer(this, appScope)
+        appScope.launch{
+            executeWorkers(
+                this@ExpenseSageApplication,
+                UserSettings(DataStoreSingleton.getInstance(this@ExpenseSageApplication))
+            )
+        }
+
     }
 }

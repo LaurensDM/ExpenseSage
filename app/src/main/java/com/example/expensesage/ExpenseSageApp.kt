@@ -249,8 +249,8 @@ fun ExpenseSageApp(
                     showModal = { expense, isOwed, modalType ->
                         viewModel.showModal(expense, isOwed, modalType)
                     },
-                    showAlert = { onConfirm, title, onCancel ->
-                        viewModel.showAlert(onConfirm, title, onCancel)
+                    showAlert = { onConfirm, title, subject, onCancel ->
+                        viewModel.showAlert(onConfirm = onConfirm, title, subject, onCancel)
                     },
                     showSnackbar = { message, snackBarType ->
                         viewModel.showSnackBar( message, snackBarType)
@@ -323,7 +323,7 @@ fun ExpenseAlert(
             },
             text = {
                 Text(
-                    text = viewModel.alertText,
+                    text =  "${stringResource(id = viewModel.alertText)} ${viewModel.alertTextSubject}",
                     style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier.fillMaxWidth(),
                 )
@@ -332,7 +332,7 @@ fun ExpenseAlert(
             shape = MaterialTheme.shapes.large,
             properties = DialogProperties(dismissOnBackPress = true, dismissOnClickOutside = true),
             containerColor = MaterialTheme.colorScheme.surface,
-            tonalElevation = 0.dp,
+            tonalElevation = 5.dp,
             )
     }
 }

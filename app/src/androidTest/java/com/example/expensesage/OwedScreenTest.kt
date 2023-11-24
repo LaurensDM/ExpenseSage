@@ -6,11 +6,17 @@ import androidx.compose.ui.test.onAllNodesWithContentDescription
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
+import androidx.test.core.app.ApplicationProvider
+import com.example.expensesage.data.AppDataContainer
+import com.example.expensesage.data.expenses.expenses
 import com.example.expensesage.ui.screens.OwedScreen
-import com.example.expensesage.ui.viewModels.MainViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.junit.Rule
 import org.junit.Test
 
+//Requires device language to be set to English
 class OwedScreenTest {
 
     @get:Rule
@@ -19,10 +25,18 @@ class OwedScreenTest {
     @Test
     fun testOwedScreen() {
         composeTestRule.setContent {
+                val repo = AppDataContainer( ApplicationProvider.getApplicationContext(), CoroutineScope(
+                    Dispatchers.Main)
+                ).expenseRepository
+                expenses.forEach {
+                    CoroutineScope(Dispatchers.Main).launch {
+                        repo.insert(it)
+                    }
+                }
             OwedScreen(showModal = { expense, owed, modalType ->
 
             },
-                showAlert = { onConfirm, title, onCancel ->
+                showAlert = { onConfirm, title, subject, onCancel ->
 
                 },)
         }

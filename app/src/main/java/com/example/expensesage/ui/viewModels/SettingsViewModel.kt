@@ -12,7 +12,6 @@ import com.example.expensesage.data.currencies.CurrencyRepository
 import com.example.expensesage.data.expenses.ExpenseRepository
 import com.example.expensesage.ui.utils.formatToCurrency
 import com.example.expensesage.ui.utils.formatToDouble
-import com.example.expensesage.workers.WorkersExecutor
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -23,7 +22,7 @@ import java.io.IOException
 /**
  * This class is responsible for the settings view model.
  *
- * @property executor The executor for the workers
+ * @property changeInterval The change interval function to be called when the budget frequency is changed
  * @property userSettings The user settings
  * @property expenseRepository The expense repository
  * @property currencyRepository The currency repository

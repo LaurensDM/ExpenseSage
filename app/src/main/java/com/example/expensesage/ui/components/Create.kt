@@ -24,12 +24,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 import com.example.expensesage.ui.utils.DecimalFormatter
@@ -70,7 +71,7 @@ fun Create(
             ) {
 //                Icon(Icons.Outlined., contentDescription = null)
                 Text(
-                    text = "Add Expense",
+                    text = stringResource(id = R.string.addExpense),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.displaySmall
                 )
@@ -110,9 +111,6 @@ fun CreateForm(
     amountError: Boolean,
     decimalFormatter: DecimalFormatter = DecimalFormatter()
 ) {
-
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(16.dp)) {
         OutlinedTextField(
             value = expenseState.name,
@@ -120,12 +118,12 @@ fun CreateForm(
                 updateState(expenseState.copy(name = it))
             },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
-            label = { Text(text = "Name") },
+            label = { Text(text = stringResource(id = R.string.name)) },
             isError = nameError,
         )
         if (nameError) {
             Text(
-                text = "name is not valid",
+                text = stringResource(id = R.string.nameNotValid),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -135,14 +133,14 @@ fun CreateForm(
             onValueChange = {
                 updateState(expenseState.copy(amount = decimalFormatter.cleanup(expenseState.amount,it)))
             },
-            label = { Text(text = "Amount") },
+            label = { Text(text = stringResource(id = R.string.amount)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             isError = amountError,
             visualTransformation = CurrencyVisualTransformation(decimalFormatter),
         )
         if (amountError) {
             Text(
-                text = "amount is not valid",
+                text = stringResource(id = R.string.amountNotValid),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -162,8 +160,12 @@ fun CreateForm(
                 },
                 enabled = !(nameError || amountError),
             ) {
-                Text(text = "Add", style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 8.dp))
-                    Icon(Icons.Rounded.AddCircle, contentDescription = "Add", tint = MaterialTheme.colorScheme.secondary,)
+                Text(text = stringResource(id = R.string.add), style = MaterialTheme.typography.labelMedium, modifier = Modifier.padding(end = 8.dp))
+                    Icon(
+                        Icons.Rounded.AddCircle,
+                        contentDescription = stringResource(id = R.string.add),
+                        tint = MaterialTheme.colorScheme.secondary
+                    )
 
             }
         }

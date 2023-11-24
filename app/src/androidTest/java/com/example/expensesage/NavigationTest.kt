@@ -5,6 +5,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithContentDescription
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -22,6 +23,8 @@ import org.junit.runner.RunWith
  * Instrumented test, which will execute on an Android device.
  *
  * See [testing documentation](http://d.android.com/tools/testing).
+ *
+ * Requires device language to be set to English
  */
 @RunWith(AndroidJUnit4::class)
 class NavigationTest {
@@ -45,7 +48,7 @@ class NavigationTest {
     fun navigation_SettingScreen_navigates() {
         assertEquals(navController.currentDestination?.route, Navigations.Start.route)
         composeTestRule.onNodeWithContentDescription("Settings").performClick()
-        composeTestRule.onNodeWithText("Pocket Money", substring = true, ignoreCase = true)
+        composeTestRule.onAllNodesWithText("budget", substring = true, ignoreCase = true)[0]
             .assertExists()
         assertEquals(navController.currentDestination?.route, Navigations.Settings.route)
 
@@ -95,7 +98,7 @@ class NavigationTest {
 //        composeTestRule.onNodeWithText("Please wait", substring = true, ignoreCase = true).assertExists()
         // Wait for loader to finish loading
 Thread.sleep(1000)
-        composeTestRule.onNodeWithText("Total money spent", substring = true, ignoreCase = true)
+        composeTestRule.onNodeWithText("Expenditures", substring = true, ignoreCase = true)
             .assertExists()
         assertEquals(navController.currentDestination?.route, Navigations.Summary.route)
     }

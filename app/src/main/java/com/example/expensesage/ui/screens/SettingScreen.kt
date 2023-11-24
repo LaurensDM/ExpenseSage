@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Feedback
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -36,8 +35,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Slider
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -47,6 +44,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -55,12 +53,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.R
 import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyIcon
-import com.example.expensesage.ui.components.formatMoney
+import com.example.expensesage.ui.components.CurrencyString
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
 import com.example.expensesage.ui.utils.DecimalFormatter
+import com.example.expensesage.ui.utils.formatToDouble
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.SnackBarType
 import com.example.expensesage.ui.viewModels.budgetFrequencyList
@@ -74,7 +74,7 @@ import com.example.expensesage.ui.viewModels.budgetFrequencyList
 @Composable
 fun SettingScreen(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -87,8 +87,8 @@ fun SettingScreen(
         Spacer(modifier = Modifier.height(16.dp))
         CurrencySettings(showSnackBar = showSnackBar, showAlert = showAlert)
         Divider()
-        SoundPreferences()
-        Divider()
+//        SoundPreferences()
+//        Divider()
         FeedbackHelp()
         Divider()
         About()
@@ -105,7 +105,7 @@ fun SettingScreen(
 @Composable
 fun CurrencySettings(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
     settingsViewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     Column(
@@ -114,7 +114,7 @@ fun CurrencySettings(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Text(text = "Currency Settings", style = MaterialTheme.typography.displaySmall)
+        Text(text = stringResource(id = R.string.currencySettings), style = MaterialTheme.typography.displaySmall)
         BudgetFrequencySelect(
             settingsViewModel.budgetFrequencyState,
             settingsViewModel::updateBudgetFrequency,
@@ -126,7 +126,6 @@ fun CurrencySettings(
             budgetFrequency = settingsViewModel.budgetFrequencyState,
             updateBudget = { settingsViewModel.updateBudget(it) },
             changeBudget = { settingsViewModel.changeBudget() },
-            currency = settingsViewModel.currency
         )
         CurrencySelect(
             onSelect = {
@@ -149,25 +148,32 @@ fun CurrencySettings(
 fun BudgetFrequencySelect(
     budgetFrequencyState: String,
     updateBudgetFrequency: (String) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
 
 
     Column {
         Text(
-            text = "Budget Frequency",
+            text = stringResource(id = R.string.budgetFrequency),
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center
         )
         budgetFrequencyList.forEach {
+            val frequency = when (it) {
+                "Weekly" -> stringResource(id = R.string.weekly)
+                "Monthly" -> stringResource(id = R.string.monthly)
+                "Yearly" -> stringResource(id = R.string.yearly)
+                else -> ""
+            }
             Row(
                 Modifier.selectable(
                     selected = (it == budgetFrequencyState),
                     onClick = {
                         showAlert(
                             { updateBudgetFrequency(it) },
-                            "Are you certain you want to change your budget frequency? This will reset your current budget.",
+                            R.string.budgetFrequency,
+                            "",
                             {}
                         )
                     },
@@ -177,7 +183,7 @@ fun BudgetFrequencySelect(
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = it,
+                            text = frequency,
                             style = MaterialTheme.typography.labelMedium
                         )
                     },
@@ -212,8 +218,8 @@ fun BudgetTextField(
     OutlinedTextField(
         modifier = Modifier
             .width(128.dp),
-        label = { Text(text = "Budget") },
-        placeholder = { Text(text = "Enter your budget") },
+        label = { Text(text = stringResource(id = R.string.budget)) },
+        placeholder = { Text(text = stringResource(id = R.string.enterBudget)) },
         value = moneyAvailable,
         onValueChange = {
             updateMoneyAvailable(decimalFormatter.cleanup(moneyAvailable, it))
@@ -247,13 +253,17 @@ fun Budget(
     budgetFrequency: String,
     updateBudget: (String) -> Unit,
     changeBudget: () -> Unit,
-    currency: String
 ) {
 
     var edit by rememberSaveable { mutableStateOf(false) }
 
-
-
+    val message = "${stringResource(id = R.string.budgetChange)} $budget"
+    val frequency = when (budgetFrequency) {
+        "Weekly" -> stringResource(id = R.string.weekly)
+        "Monthly" -> stringResource(id = R.string.monthly)
+        "Yearly" -> stringResource(id = R.string.yearly)
+        else -> ""
+    }
     ListItem(
         modifier = Modifier.clickable {
             edit = !edit
@@ -263,7 +273,7 @@ fun Budget(
         },
         headlineContent = {
             Text(
-                text = "$budgetFrequency budget",
+                text = "$frequency ${stringResource(id = R.string.budget)}",
                 style = MaterialTheme.typography.labelLarge
             )
         },
@@ -276,13 +286,13 @@ fun Budget(
                         edit = false
                         changeBudget()
                         showSnackBar(
-                            "Changed budget to $budget",
+                            message,
                             SnackBarType.SUCCESS
                         )
                     },
                 )
             } else {
-                Text(text = formatMoney(budget.replace(",",".").toDouble(), currency, 2))
+                Text(text = CurrencyString(money = budget.formatToDouble(), fractionDigits = 2))
             }
 
         },
@@ -303,7 +313,8 @@ fun CurrencySelect(
     showSnackBar: (message: String, snackBarType: SnackBarType) -> Unit
 ) {
     var expanded by rememberSaveable { mutableStateOf(false) }
-
+    var message = stringResource(id = R.string.changedCurrency)
+    
     Box(modifier = Modifier.fillMaxWidth()) {
         ListItem(
             modifier = Modifier
@@ -313,7 +324,7 @@ fun CurrencySelect(
                 CurrencyIcon()
             },
             headlineContent = {
-                Text(text = "Change currency", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(id = R.string.currencyChange), style = MaterialTheme.typography.labelLarge)
             },
             supportingContent = {
                 Text(text = currency)
@@ -339,64 +350,66 @@ fun CurrencySelect(
                     onSelect(it)
                     Log.i("Dropdown", "$it selected")
                     expanded = false
-                    showSnackBar("Changed currency to $it", SnackBarType.SUCCESS)
+                    showSnackBar("$message $it", SnackBarType.SUCCESS)
                 })
             }
         }
     }
 }
 
+
+
 /**
  * Composable that displays the sound preferences
  *
  *
  */
-@Composable
-fun SoundPreferences() {
-//    val mContext = LocalContext.current
-//    val mMediaPlayer = MediaPlayer.create(mContext, R.raw.rockmusic)
-//    mMediaPlayer.setVolume(50f, 50f)
-    var soundOn by remember { mutableStateOf(true) }
-    var volume by remember { mutableStateOf(0.5f) }
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(32.dp),
-    )
-    {
-        Text(text = "Sound Settings", style = MaterialTheme.typography.displaySmall)
-        ListItem(
-            modifier = Modifier.fillMaxWidth(),
-            headlineContent = {
-                Icon(
-                    Icons.Outlined.MusicNote,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            },
-            trailingContent = {
-                Slider(
-                    value = volume,
-                    onValueChange = { volume = it },
-                    modifier = Modifier.fillMaxWidth(0.8f)
-                )
-            }
-        )
-
-
-
-        ListItem(
-            modifier = Modifier.fillMaxWidth(),
-            headlineContent = {
-                Text(text = "Sound On", style = MaterialTheme.typography.labelLarge)
-            }, trailingContent = {
-                Switch(checked = soundOn, onCheckedChange = { soundOn = it })
-            })
-
-
-    }
-
-}
+//@Composable
+//fun SoundPreferences() {
+////    val mContext = LocalContext.current
+////    val mMediaPlayer = MediaPlayer.create(mContext, R.raw.rockmusic)
+////    mMediaPlayer.setVolume(50f, 50f)
+//    var soundOn by remember { mutableStateOf(true) }
+//    var volume by remember { mutableStateOf(0.5f) }
+//    Column(
+//        modifier = Modifier.fillMaxWidth(),
+//        horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.spacedBy(32.dp),
+//    )
+//    {
+//        Text(text = "Sound Settings", style = MaterialTheme.typography.displaySmall)
+//        ListItem(
+//            modifier = Modifier.fillMaxWidth(),
+//            headlineContent = {
+//                Icon(
+//                    Icons.Outlined.MusicNote,
+//                    contentDescription = null,
+//                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+//                )
+//            },
+//            trailingContent = {
+//                Slider(
+//                    value = volume,
+//                    onValueChange = { volume = it },
+//                    modifier = Modifier.fillMaxWidth(0.8f)
+//                )
+//            }
+//        )
+//
+//
+//
+//        ListItem(
+//            modifier = Modifier.fillMaxWidth(),
+//            headlineContent = {
+//                Text(text = "Sound On", style = MaterialTheme.typography.labelLarge)
+//            }, trailingContent = {
+//                Switch(checked = soundOn, onCheckedChange = { soundOn = it })
+//            })
+//
+//
+//    }
+//
+//}
 
 /**
  * Composable that displays the feedback and help
@@ -409,30 +422,30 @@ fun FeedbackHelp() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(32.dp),
     ) {
-        Text(text = "Feedback and Help", style = MaterialTheme.typography.displaySmall)
+        Text(text = stringResource(id = R.string.feedbackHelp), style = MaterialTheme.typography.displaySmall)
         ListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { },
             leadingContent = {
-                Icon(Icons.Default.Feedback, contentDescription = "Feedback")
+                Icon(Icons.Default.Feedback, contentDescription = stringResource(id = R.string.feedback))
             },
             headlineContent = {
-                Text(text = "Feedback", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(id = R.string.feedback), style = MaterialTheme.typography.labelLarge)
             }, supportingContent = {
-                Text(text = "Send us your feedback")
+                Text(text = stringResource(id = R.string.sendFeedback))
             })
         ListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .clickable { },
             leadingContent = {
-                Icon(Icons.Default.Help, contentDescription = "Help")
+                Icon(Icons.Default.Help, contentDescription = stringResource(id = R.string.help))
             },
             headlineContent = {
-                Text(text = "Help", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(id = R.string.help), style = MaterialTheme.typography.labelLarge)
             }, supportingContent = {
-                Text(text = "Get help with the app")
+                Text(text = stringResource(id = R.string.helpDescription))
             })
     }
 }
@@ -464,9 +477,9 @@ fun About() {
                 Icon(Icons.Default.Info, contentDescription = "Info")
             },
             headlineContent = {
-                Text(text = "About", style = MaterialTheme.typography.labelLarge)
+                Text(text = stringResource(id = R.string.about), style = MaterialTheme.typography.labelLarge)
             }, supportingContent = {
-                Text(text = "About the app")
+                Text(text = stringResource(id = R.string.aboutDescription))
             },
             trailingContent = {
                 Icon(
@@ -484,9 +497,7 @@ fun About() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 8.dp),
-                text = "ExpenseSage is an app that helps you manage your expenses." +
-                        " It was developed by nen paljas from HOGent. " +
-                        "\n\n The app was developed as part of the course 'Mobile application development: Android'.",
+                text = stringResource(id = R.string.aboutText),
                 style = MaterialTheme.typography.bodyLarge,
             )
         }

@@ -1,19 +1,12 @@
 package com.example.expensesage.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.work.Constraints
-import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
 import androidx.work.NetworkType
-import androidx.work.OneTimeWorkRequest
-import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.PeriodicWorkRequest
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.expensesage.data.DataStoreSingleton
-import com.example.expensesage.data.UserSettings
 import com.example.expensesage.data.UserSettingsService
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
@@ -26,13 +19,13 @@ import java.util.concurrent.TimeUnit
  * @param ctx The application [Context]
  */
 
-class WorkersExecutor(private val ctx: Context, private val userSettings: UserSettingsService) {
-    suspend fun executeWorkers() {
-        val workRequest = createBudgetWorker(userSettings.budgetFrequency.first())
-        val reminderWorkRequest = createOwedReminderWorker()
-        val syncWorkRequest = createSyncWorker()
-
+    suspend fun executeWorkers( ctx: Context, userSettings: UserSettingsService) {
         val workManager = WorkManager.getInstance(ctx)
+
+        val workRequest = createBudgetWorker(userSettings.budgetFrequency.first())
+        val workRequest2 = createOwedReminderWorker()
+        val workRequest3 = createSyncWorker()
+
         workManager.enqueueUniquePeriodicWork(
             "BudgetWorker",
             ExistingPeriodicWorkPolicy.KEEP,
@@ -41,13 +34,14 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
         workManager.enqueueUniquePeriodicWork(
             "OwedReminderWorker",
             ExistingPeriodicWorkPolicy.KEEP,
-            reminderWorkRequest
+            workRequest2
         )
         workManager.enqueueUniquePeriodicWork(
             "SyncWorker",
             ExistingPeriodicWorkPolicy.KEEP,
-            syncWorkRequest
+            workRequest3
         )
+
     }
 
     /**
@@ -63,15 +57,14 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
         val minute = currentDateTime.minute.toLong()
         val currentMinutes = hour * 60 + minute
         val dayMinutes = 24 * 60
-        val repeatInterval: Long
+        var repeatInterval: Long = 7L * 24 * 60
         when (interval) {
             "Weekly" -> {
                 val weekday = date.dayOfWeek.value.toLong()
-
                 repeatInterval = if (weekday == 7L) {
                     dayMinutes - currentMinutes + 7 * dayMinutes
                 } else {
-                    val day = 7L - weekday - 1L
+                    val day = 7L - weekday
                     dayMinutes - currentMinutes + day * dayMinutes
                 }
             }
@@ -84,7 +77,7 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
                     val nextMonth = date.plusMonths(1L).lengthOfMonth().toLong()
                     dayMinutes - currentMinutes + nextMonth * dayMinutes
                 } else {
-                    val days = monthLength - monthDay - 1
+                    val days = monthLength - monthDay
                     dayMinutes - currentMinutes + days * dayMinutes
                 }
 
@@ -97,7 +90,7 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
                     val nextYear = date.plusYears(1).lengthOfYear().toLong()
                     dayMinutes - currentMinutes + nextYear * dayMinutes
                 } else {
-                    val days = yearLength - dayOfYear - 1
+                    val days = yearLength - dayOfYear
                     dayMinutes - currentMinutes + days * dayMinutes
                 }
 
@@ -109,11 +102,7 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
         return PeriodicWorkRequestBuilder<BudgetWorker>(
             repeatInterval = repeatInterval,
             repeatIntervalTimeUnit = TimeUnit.MINUTES
-        ).setInputData(
-            Data.Builder().putLong("repeatInterval", repeatInterval)
-                .putString("budgetFrequency", interval).build()
-        )
-            .build()
+        ).build()
     }
 
     /**
@@ -128,7 +117,7 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
         ).setConstraints(
             Constraints.Builder()
                 .setRequiresBatteryNotLow(true)
-                .setRequiresDeviceIdle(true)
+                //.setRequiresDeviceIdle(true)
                 .build()
         )
             .build()
@@ -157,7 +146,7 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
      *
      * @param ctx The application [Context]
      */
-    suspend fun changeInterval() {
+    suspend fun changeInterval(ctx: Context, userSettings: UserSettingsService) {
         val workManager = WorkManager.getInstance(ctx)
         workManager.cancelUniqueWork("BudgetUpdateWorker")
 
@@ -166,5 +155,5 @@ class WorkersExecutor(private val ctx: Context, private val userSettings: UserSe
         WorkManager.getInstance(ctx)
             .enqueueUniquePeriodicWork("BudgetWorker", ExistingPeriodicWorkPolicy.KEEP, workRequest)
     }
-}
+
 

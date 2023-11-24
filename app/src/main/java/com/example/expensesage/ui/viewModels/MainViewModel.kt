@@ -2,6 +2,7 @@ package com.example.expensesage.ui.viewModels
 
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
@@ -30,7 +31,10 @@ class MainViewModel : ViewModel() {
 
     var alertOnCancel: () -> Unit by mutableStateOf({})
         private set
-    var alertText by mutableStateOf("")
+    var alertText by mutableIntStateOf(0)
+        private set
+
+    var alertTextSubject by mutableStateOf("")
         private set
 
     var isDialogShown by mutableStateOf(false)
@@ -78,7 +82,7 @@ class MainViewModel : ViewModel() {
      * @param text The text
      * @param onCancel The on cancel function
      */
-    fun showAlert(onConfirm: () -> Unit, text: String, onCancel: () -> Unit) {
+    fun showAlert(onConfirm: () -> Unit, text: Int, subject: String, onCancel: () -> Unit) {
         alertOnConfirm = onConfirm
         isAlertShown = true
         alertText = text

@@ -28,7 +28,6 @@ import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.FloatingActionButton
@@ -63,39 +62,6 @@ import com.example.expensesage.ui.viewModels.ExpenseDetailsViewModel
 import java.time.Month
 
 /**
- * Composable that displays the expense items on the home screen
- *
- * @param expense the expense to display
- */
-@Composable
-fun ExpenseItemHome(
-    expense: Expense,
-) {
-    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer)) {
-        Column(
-            modifier = Modifier
-                .animateContentSize(
-                    animationSpec = spring(
-                        dampingRatio = Spring.DampingRatioNoBouncy,
-                        stiffness = Spring.StiffnessMedium,
-                    ),
-                )
-                .fillMaxWidth(),
-        ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(R.dimen.padding_small)),
-//                horizontalArrangement = Arrangement.Center
-            ) {
-                ExpenseSageIcon(expense.imageResourceId)
-                ExpenseInformation(expense.name, expense.amount)
-            }
-        }
-    }
-}
-
-/**
  * Composable that displays an expense item
  *
  * @param expense  the expense to display
@@ -109,7 +75,7 @@ fun ExpenseItem(
     expense: Expense,
     modifier: Modifier = Modifier,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
     dataViewModel: ExpenseDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     var expanded by remember { mutableStateOf(false) }
@@ -157,7 +123,8 @@ fun ExpenseItem(
                             {
                                 dataViewModel.payOwed(expense)
                             },
-                            "Are you sure you want to pay \n ${expense.name}?"
+                            R.string.payAlert,
+                            expense.name
                         ) {
                             expanded = true
                         }
@@ -168,7 +135,8 @@ fun ExpenseItem(
                             {
                                 dataViewModel.deleteExpense(expense)
                             },
-                            "Are you sure you want to delete \n ${expense.name}?"
+                            R.string.deleteAlert,
+                            expense.name
                         ) {
                             expanded = true
                         }
@@ -242,14 +210,14 @@ fun ExpenseOptions(
                 ),
             ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
-                Text(text = "Edit")
+                Text(text = stringResource(id = R.string.edit))
             }
             Button(
                 onClick = onDetailClick,
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.inversePrimary),
             ) {
 //                    Text(text = stringResource(id = R.string.complete_btn))
-                Text(text = "Details")
+                Text(text = stringResource(id = R.string.details))
             }
             Button(
                 onClick = onDeleteClick,
@@ -340,7 +308,7 @@ fun ExpenseSageIcon(
 fun ExpenseList(
     groupedExpenses: Map<Pair<Month, Int>, List<Expense>>,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier.padding(8.dp),
@@ -353,7 +321,7 @@ fun ExpenseList(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        text = "Nothing to see here",
+                        text = stringResource(id = R.string.noData),
                         style = MaterialTheme.typography.headlineSmall,
                         modifier = Modifier
                             .fillMaxWidth()
@@ -416,9 +384,15 @@ fun CategoryDropdown(onSelect: (String) -> Unit = {}, category: String) {
         Button(onClick = { expanded = !expanded }) {
             Text(text = category)
             if (expanded) {
-                Icon(Icons.Filled.ExpandLess, contentDescription = "Expand")
+                Icon(
+                    Icons.Filled.ExpandLess,
+                    contentDescription = stringResource(id = R.string.expand)
+                )
             } else {
-                Icon(Icons.Filled.ExpandMore, contentDescription = "Expand")
+                Icon(
+                    Icons.Filled.ExpandMore,
+                    contentDescription = stringResource(id = R.string.expanded)
+                )
             }
         }
         DropdownMenu(
@@ -464,7 +438,11 @@ fun ExpenseFloatingActionButton(
         }
         onClick()
     }) {
-        Icon(Icons.Default.Add, contentDescription = "Add expense", modifier = Modifier.rotate(rotate))
+        Icon(
+            Icons.Default.Add,
+            contentDescription = stringResource(id = R.string.addExpense),
+            modifier = Modifier.rotate(rotate)
+        )
     }
 }
 

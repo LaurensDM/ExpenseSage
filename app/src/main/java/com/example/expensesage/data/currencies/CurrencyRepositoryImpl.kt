@@ -1,17 +1,17 @@
 package com.example.expensesage.data.currencies
 
+import com.example.expensesage.data.UserSettingsService
 import com.example.expensesage.network.CurrencyApiExecutor
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.firstOrNull
-import kotlinx.serialization.json.jsonPrimitive
 
-class CurrencyRepositoryImpl(private val currencyDao: CurrencyDao, private val api :CurrencyApiExecutor): CurrencyRepository {
+class CurrencyRepositoryImpl(private val currencyDao: CurrencyDao, private val settings: UserSettingsService, private val api :CurrencyApiExecutor): CurrencyRepository {
     override suspend fun getAllCurrencies(): Flow<List<Currency>> {
         val dbCurrencies = currencyDao.getAllCurrencies()
-        if (dbCurrencies.isEmpty()) {
-            val onlineCurrencies = api.getCurrencyRates()
-            currencyDao.insertAll(onlineCurrencies)
+        val currency = settings.currency.first()
+        if (dbCurrencies.isEmpty() || currency != dbCurrencies[0].comparedCurrency.uppercase()) {
+                val onlineCurrencies = api.getCurrencyRates()
+                currencyDao.insertAll(onlineCurrencies)
         }
         return currencyDao.getAllCurrenciesFlow()
     }

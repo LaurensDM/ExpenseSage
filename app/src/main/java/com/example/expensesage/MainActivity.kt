@@ -29,13 +29,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
-import com.example.expensesage.data.DataStoreSingleton
-import com.example.expensesage.data.UserSettings
 import com.example.expensesage.ui.theme.ExpenseSageTheme
-import com.example.expensesage.workers.WorkersExecutor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -50,11 +44,6 @@ class MainActivity : ComponentActivity() {
         ) {
             if (it) {
                 // Permission is granted
-                Log.d("MainActivity", "Permission granted")
-                val executeWorkers = WorkersExecutor(this, UserSettings(DataStoreSingleton.getInstance(this)))
-                CoroutineScope(Dispatchers.IO).launch {
-                    executeWorkers.executeWorkers()
-                }
                 setContent {
                     ExpenseSageTheme {
                         // A surface container using the 'background' color from the theme
@@ -82,7 +71,6 @@ class MainActivity : ComponentActivity() {
         launcher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
 
 
-
     }
 }
 
@@ -98,7 +86,10 @@ fun PermissionDenied() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        Text(text = "This app needs permission to run. Please grant permission in the settings.", style = MaterialTheme.typography.displaySmall)
+        Text(
+            text = "This app needs permission to run. Please grant permission in the settings.",
+            style = MaterialTheme.typography.displaySmall
+        )
         Spacer(modifier = Modifier.height(20.dp))
         Button(
             modifier = Modifier

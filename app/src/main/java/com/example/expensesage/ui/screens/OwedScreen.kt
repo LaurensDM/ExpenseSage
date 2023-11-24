@@ -28,7 +28,7 @@ import com.example.expensesage.ui.viewModels.ListViewModel
 @Composable
 fun OwedScreen(
     showModal: (expense: Expense?, owed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
     viewModel: ListViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
 

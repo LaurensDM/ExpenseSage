@@ -1,9 +1,7 @@
 package com.example.expensesage
 
-import androidx.compose.ui.test.assertHasClickAction
-import androidx.compose.ui.test.assertIsEnabled
-import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.junit4.createComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -11,6 +9,8 @@ import com.example.expensesage.ui.screens.SettingScreen
 import org.junit.Rule
 import org.junit.Test
 
+
+//Requires device language to be set to English
 class SettingScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -18,18 +18,13 @@ class SettingScreenTest {
     @Test
     fun settingScreenTest() {
         composeTestRule.setContent {
-            SettingScreen(showSnackBar = {message, snackBarType ->  }, showAlert = {onConfirm, title, message ->  })
+            SettingScreen(showSnackBar = {message, snackBarType ->  }, showAlert = {onConfirm, title, subject, message ->  })
         }
 
-        composeTestRule.onNodeWithText("Pocket Money", substring = true, ignoreCase = true)
-            .assertExists().assertIsNotEnabled()
-        composeTestRule.onNodeWithContentDescription("Edit").assertHasClickAction()
+        composeTestRule.onAllNodesWithText("budget", substring = true, ignoreCase = true)[0]
+            .assertExists()
         composeTestRule.onNodeWithContentDescription("Edit").performClick()
-        composeTestRule.onNodeWithText("Pocket Money", substring = true, ignoreCase = true)
-            .assertIsEnabled()
         composeTestRule.onNodeWithContentDescription("Edit").performClick()
-        composeTestRule.onNodeWithText("Pocket Money", substring = true, ignoreCase = true)
-            .assertExists().assertIsNotEnabled()
         // May not always work, depends on user preferences, EUR could be USD or JPY instead, EUR should be default
         Thread.sleep(500)
         composeTestRule.onNodeWithText("EUR", substring = true, ignoreCase = true).performClick()

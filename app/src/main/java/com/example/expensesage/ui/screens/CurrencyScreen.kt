@@ -35,11 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.viewModels.CurrencyUIState
 import com.example.expensesage.ui.viewModels.CurrencyViewModel
@@ -61,7 +63,7 @@ fun CurrencyScreen(currencyViewModel: CurrencyViewModel = viewModel(factory = Ap
         is CurrencyUIState.Error -> Error(
             { currencyViewModel.getData() },
             modifier = Modifier.fillMaxSize(),
-            (currencyViewModel.currencyUIState as CurrencyUIState.Error).error,
+            stringResource(id = (currencyViewModel.currencyUIState as CurrencyUIState.Error).error),
         )
     }
 }
@@ -121,7 +123,7 @@ fun CurrenciesList(
         ) {
             item {
                 Text(
-                    text = "Retrieval date: $date",
+                    text = "${stringResource(id = R.string.retrievalDate)}: $date",
                     style = MaterialTheme.typography.displayMedium,
                     lineHeight = 24.sp,
                 )
@@ -160,7 +162,7 @@ fun CurrenciesList(
             ) {
                 item {
                     Text(
-                        text = "No results found ",
+                        text = stringResource(id = R.string.NoResult),
                         style = MaterialTheme.typography.labelLarge,
                         lineHeight = 24.sp,
                         fontWeight = FontWeight.Bold,
@@ -218,7 +220,7 @@ fun Loading(modifier: Modifier = Modifier) {
         CircularProgressIndicator(modifier = Modifier.size(60.dp), strokeWidth = 6.dp)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Loading...",
+            text = "${stringResource(id = R.string.loading)}...",
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -241,14 +243,14 @@ fun Error(retryAction: () -> Unit, modifier: Modifier = Modifier, error: String)
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Text(
-            text = error,
+            text =  error,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.error,
             lineHeight = 24.sp,
         )
         Spacer(modifier = Modifier.height(8.dp))
         Button(onClick = retryAction) {
-            Text(text = "Retry")
+            Text(text = stringResource(id = R.string.retry))
         }
     }
 }

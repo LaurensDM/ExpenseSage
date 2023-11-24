@@ -3,14 +3,13 @@ package com.example.expensesage
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.onRoot
-import androidx.compose.ui.test.printToLog
 import com.example.expensesage.ui.screens.CurrenciesList
 import com.example.expensesage.ui.screens.CurrencyScreen
 import com.example.expensesage.ui.screens.Error
 import org.junit.Rule
 import org.junit.Test
 
+//Requires device language to be set to English
 class CurrencyScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()

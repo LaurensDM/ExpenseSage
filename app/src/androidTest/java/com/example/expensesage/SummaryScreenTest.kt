@@ -1,8 +1,5 @@
 package com.example.expensesage
 
-import androidx.compose.ui.test.SemanticsMatcher
-import androidx.compose.ui.test.assertAll
-import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
@@ -14,6 +11,7 @@ import com.example.expensesage.ui.utils.ExpenseSummaryItem
 import org.junit.Rule
 import org.junit.Test
 
+//Requires device language to be set to English
 class SummaryScreenTest {
     @get:Rule
     val composeTestRule = createComposeRule()
@@ -30,7 +28,7 @@ class SummaryScreenTest {
         // Give application time to finish loading
         Thread.sleep(2000)
         // Actual summary screen
-        composeTestRule.onNodeWithText("Total money spent", substring = true, ignoreCase = true)
+        composeTestRule.onNodeWithText("Expenditures", substring = true, ignoreCase = true)
             .assertExists()
         composeTestRule.onNodeWithText(
             "Money spent per category",

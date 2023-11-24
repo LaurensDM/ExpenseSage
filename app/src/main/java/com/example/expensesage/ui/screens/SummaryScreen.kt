@@ -20,10 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.R
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.components.CurrencyString
 import com.example.expensesage.ui.components.DonutChart
@@ -124,18 +126,33 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
         else if (moneySaved.size == 1) listOf(
             Bar(
                 value = moneySaved[0].totalExpense.toFloat(),
-                label = "This week \n ${CurrencyString(money = moneySaved[0].totalExpense, fractionDigits = 2)}",
+                label = "${stringResource(id = R.string.thisWeek)}: \n ${
+                    CurrencyString(
+                        money = moneySaved[0].totalExpense,
+                        fractionDigits = 2
+                    )
+                }",
                 color = graphColors[4],
             ),
         ) else listOf(
             Bar(
                 value = moneySaved[0].totalExpense.toFloat(),
-                label = "Last week: ${CurrencyString(money = moneySaved[0].totalExpense, fractionDigits = 2)}",
+                label = "${stringResource(id = R.string.lastWeek)}: ${
+                    CurrencyString(
+                        money = moneySaved[0].totalExpense,
+                        fractionDigits = 2
+                    )
+                }",
                 color = graphColors[0],
             ),
             Bar(
                 value = moneySaved[1].totalExpense.toFloat(),
-                label = "This week: ${CurrencyString(money = moneySaved[1].totalExpense, fractionDigits = 2)}",
+                label = "${stringResource(id = R.string.thisWeek)}: ${
+                    CurrencyString(
+                        money = moneySaved[1].totalExpense,
+                        fractionDigits = 2
+                    )
+                }",
                 color = graphColors[1],
             ),
         ),
@@ -143,7 +160,6 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
     Column(
         modifier = Modifier
             .fillMaxWidth(),
-//            .padding(4.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -151,7 +167,9 @@ fun WeeklyComparison(moneySaved: List<ExpenseSummaryItem>) {
             NoData()
         } else {
             Text(
-                text = if (moneySaved.size == 1) "Money spent this week" else "Money spent last week vs this week",
+                text = if (moneySaved.size == 1) stringResource(id = R.string.moneySpentWeek) else stringResource(
+                    id = R.string.moneySpentWeekVariant
+                ),
                 style = MaterialTheme.typography.displayMedium,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center
@@ -208,7 +226,7 @@ fun CategoryChart(categoryData: List<ExpenseSummaryItem>) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Money spent per category \n ${LocalDate.now().year}",
+            text = "${stringResource(id = R.string.moneySpentCategory)} \n ${LocalDate.now().year}",
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -272,7 +290,7 @@ fun MonthChart(monthData: List<ExpenseSummaryItem>) {
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         Text(
-            text = "Money spent per month \n ${LocalDate.now().year}",
+            text = "${stringResource(id = R.string.moneySpentMonth)} \n ${LocalDate.now().year}",
             style = MaterialTheme.typography.displayMedium,
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
@@ -339,7 +357,7 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
         modifier = Modifier.padding(top = 16.dp),
     ) {
         Text(
-            text = "Expenditures: \n ${CurrencyString(money = totalSpent, fractionDigits = 2)}",
+            text = "${stringResource(id = R.string.expenditures)} \n ${CurrencyString(money = totalSpent, fractionDigits = 2)}",
             style = MaterialTheme.typography.displayLarge,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth(),
@@ -353,7 +371,7 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Text(
-                    text = "normal expenses: ${
+                    text = "${stringResource(id = R.string.normalExpense)}: ${
                         CurrencyString(
                             money = paidExpenses,
                             fractionDigits = 2,
@@ -362,7 +380,7 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
                     style = MaterialTheme.typography.displaySmall,
                 )
                 Text(
-                    text = "owed expenses: ${
+                    text = "${stringResource(id = R.string.owedExpense)}: ${
                         CurrencyString(
                             money = owedSpent,
                             fractionDigits = 2
@@ -389,14 +407,14 @@ fun PrimaryChart(totalSpent: Double, owedSpent: Double) {
                     shape = MaterialTheme.shapes.extraSmall,
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                 ) {}
-                Text(text = "normal expenses", style = MaterialTheme.typography.labelMedium)
+                Text(text = stringResource(id = R.string.normalExpense), style = MaterialTheme.typography.labelMedium)
                 Spacer(modifier = Modifier.size(16.dp))
                 Card(
                     modifier = Modifier.size(16.dp),
                     shape = MaterialTheme.shapes.extraSmall,
                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.onPrimaryContainer),
                 ) {}
-                Text(text = "owed expenses", style = MaterialTheme.typography.labelMedium)
+                Text(text = stringResource(id = R.string.owedExpense), style = MaterialTheme.typography.labelMedium)
             }
         }
 
@@ -419,7 +437,7 @@ fun SummaryLoading() {
         CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimaryContainer)
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = "Please wait while we prepare your summary...",
+            text = "${stringResource(id = R.string.summaryLoading)} ...",
             style = MaterialTheme.typography.displayMedium,
             textAlign = TextAlign.Center,
         )
@@ -433,7 +451,7 @@ fun SummaryLoading() {
 @Composable
 fun NoData() {
     Text(
-        text = "No data to display", style = MaterialTheme.typography.displaySmall,
+        text = stringResource(id = R.string.noData), style = MaterialTheme.typography.displaySmall,
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 32.dp),

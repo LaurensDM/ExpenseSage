@@ -22,11 +22,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.R
 import com.example.expensesage.data.expenses.Expense
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.utils.CurrencyVisualTransformation
@@ -61,7 +63,7 @@ fun Edit(
     ) {
         Spacer(modifier = Modifier.size(16.dp))
         Text(
-            text = "Edit",
+            text = stringResource(id = R.string.edit),
             modifier = Modifier.fillMaxWidth(),
             textAlign = TextAlign.Center,
             style = MaterialTheme.typography.displaySmall
@@ -109,13 +111,13 @@ fun EditForm(
         OutlinedTextField(
             value = expenseState.name,
             onValueChange = { onValueChange(expenseState.copy(name = it)) },
-            label = { Text(text = "Name") },
+            label = { Text(text = stringResource(id = R.string.name)) },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             isError = nameError,
         )
         if (nameError) {
             Text(
-                text = "name is not valid",
+                text = stringResource(id = R.string.nameNotValid),
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -123,14 +125,14 @@ fun EditForm(
         OutlinedTextField(
             value = expenseState.amount,
             onValueChange = { onValueChange(expenseState.copy(amount = decimalFormatter.cleanup( expenseState.amount,it))) },
-            label = { Text(text = "Amount") },
+            label = { Text(text = stringResource(id = R.string.amount)) },
             isError = amountError,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text, imeAction = ImeAction.Done),
             visualTransformation = CurrencyVisualTransformation(decimalFormatter)
         )
         if (amountError) {
             Text(
-                text = "amount is not valid, must be a number",
+                text = stringResource(id = R.string.amountNotValid) ,
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error,
             )
@@ -139,13 +141,15 @@ fun EditForm(
             category = expenseState.category,
             onSelect = { onValueChange(expenseState.copy(category = it)) })
         Row(
-            modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
             horizontalArrangement = Arrangement.End
         ) {
             Button(onClick = {
                 onDoneClicked(originalExpense)
             }, enabled = !(nameError || amountError)) {
-                Text(text = "Save", modifier = Modifier.padding(end = 8.dp))
+                Text(text = stringResource(id = R.string.save), modifier = Modifier.padding(end = 8.dp))
                 Icon(Icons.Default.Edit, contentDescription = "Edit expense")
             }
         }

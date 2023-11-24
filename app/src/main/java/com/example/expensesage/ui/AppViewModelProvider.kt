@@ -11,7 +11,7 @@ import com.example.expensesage.ui.viewModels.ListViewModel
 import com.example.expensesage.ui.viewModels.MainViewModel
 import com.example.expensesage.ui.viewModels.SettingsViewModel
 import com.example.expensesage.ui.viewModels.StatisticViewModel
-import com.example.expensesage.workers.WorkersExecutor
+import com.example.expensesage.workers.changeInterval
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -34,10 +34,8 @@ object AppViewModelProvider {
             SettingsViewModel(
                 changeInterval = {
                     CoroutineScope(Dispatchers.IO).launch {
-                        WorkersExecutor(
-                            expenseSageApplicaton().applicationContext,
-                            expenseSageApplicaton().userSettings
-                        ).changeInterval()
+                        changeInterval(expenseSageApplicaton().applicationContext,
+                            expenseSageApplicaton().userSettings)
                     }
                 },
                 userSettings = expenseSageApplicaton().userSettings,

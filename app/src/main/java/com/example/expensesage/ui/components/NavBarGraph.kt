@@ -27,7 +27,7 @@ import com.example.expensesage.ui.viewModels.SnackBarType
 fun NavBarGraph(
     navController: NavHostController,
     showModal: (expense: Expense?, isOwed: Boolean, modalType: ModalType) -> Unit,
-    showAlert: (onConfirm: () -> Unit, title: String, onCancel: () -> Unit) -> Unit,
+    showAlert: (onConfirm: () -> Unit, title: Int, subject: String, onCancel: () -> Unit) -> Unit,
     showSnackbar: (message: String, snackBarType: SnackBarType) -> Unit,
 ) {
     NavHost(

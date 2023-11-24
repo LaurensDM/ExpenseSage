@@ -1,6 +1,7 @@
 package com.example.expensesage.workers
 
 import android.content.Context
+import android.util.Log
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.expensesage.data.AppDataContainer
@@ -39,6 +40,7 @@ class OwedReminderWorker(ctx: Context, params: WorkerParameters): CoroutineWorke
      */
     private suspend  fun sendReminder() {
         val expenses = database.getExpenses(true).first().size
+        Log.d("OwedWorker", "You still have $expenses expenses to pay")
         if (expenses > 0) {
             makeStatusNotification(2,"OwedReminderWorker", "You still have $expenses expenses to pay", applicationContext)
         }

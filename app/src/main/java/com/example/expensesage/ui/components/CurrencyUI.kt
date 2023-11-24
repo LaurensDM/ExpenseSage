@@ -10,8 +10,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.example.expensesage.R
 import com.example.expensesage.data.currencyList
 import com.example.expensesage.ui.AppViewModelProvider
 import com.example.expensesage.ui.viewModels.SettingsViewModel
@@ -61,7 +63,7 @@ fun CurrencyText(
     }
 
     return Text(
-        text = "You have $formattedMoney  left",
+        text = stringResource(id = R.string.moneyString1) +" $formattedMoney " + stringResource(id = R.string.moneyString2),
         style = MaterialTheme.typography.displayLarge,
         color = color,
         textAlign = TextAlign.Center
