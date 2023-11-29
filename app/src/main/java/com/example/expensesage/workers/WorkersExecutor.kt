@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 
         workManager.enqueueUniquePeriodicWork(
             "BudgetWorker",
-            ExistingPeriodicWorkPolicy.KEEP,
+            ExistingPeriodicWorkPolicy.UPDATE,
             workRequest
         )
         workManager.enqueueUniquePeriodicWork(
@@ -57,7 +57,7 @@ import java.util.concurrent.TimeUnit
         val minute = currentDateTime.minute.toLong()
         val currentMinutes = hour * 60 + minute
         val dayMinutes = 24 * 60
-        var repeatInterval: Long = 7L * 24 * 60
+        val repeatInterval: Long
         when (interval) {
             "Weekly" -> {
                 val weekday = date.dayOfWeek.value.toLong()

@@ -7,8 +7,6 @@ import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
 import kotlinx.coroutines.flow.first
 
-private const val TAG = "BudgetWorker"
-
 /**
  *
  *
@@ -22,7 +20,6 @@ class BudgetWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
 
     private val userSettings: UserSettings =
         UserSettings(DataStoreSingleton.getInstance(context = ctx))
-    private val context = ctx
 
     /**
      *  This function is called on the background thread, so it is safe to do long running operations here.
@@ -49,9 +46,5 @@ class BudgetWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
             "Your money has been reset to $budget",
             applicationContext
         )
-
-        changeInterval(context, userSettings)
-
-
     }
 }
