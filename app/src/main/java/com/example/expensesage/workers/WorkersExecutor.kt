@@ -28,7 +28,7 @@ import java.util.concurrent.TimeUnit
 
         workManager.enqueueUniquePeriodicWork(
             "BudgetWorker",
-            ExistingPeriodicWorkPolicy.UPDATE,
+            ExistingPeriodicWorkPolicy.KEEP,
             workRequest
         )
         workManager.enqueueUniquePeriodicWork(
@@ -130,7 +130,7 @@ import java.util.concurrent.TimeUnit
      */
     private fun createSyncWorker(): PeriodicWorkRequest {
         return PeriodicWorkRequestBuilder<SyncWorker>(
-            repeatInterval = 2L,
+            repeatInterval = 1L,
             repeatIntervalTimeUnit = TimeUnit.DAYS
         ).setConstraints(
             Constraints.Builder()

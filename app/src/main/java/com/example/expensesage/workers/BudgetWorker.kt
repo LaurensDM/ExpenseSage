@@ -2,6 +2,7 @@ package com.example.expensesage.workers
 
 import android.content.Context
 import androidx.work.CoroutineWorker
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
@@ -28,6 +29,7 @@ class BudgetWorker(ctx: Context, params: WorkerParameters) : CoroutineWorker(ctx
      */
     override suspend fun doWork(): Result {
         updateBudget()
+        WorkManager.getInstance(applicationContext).cancelAllWorkByTag("BudgetWorker")
         return Result.success()
     }
 
