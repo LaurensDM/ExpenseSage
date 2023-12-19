@@ -1,6 +1,7 @@
 package com.example.expensesage.workers
 
 import android.content.Context
+import android.util.Log
 import androidx.work.Constraints
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.NetworkType
@@ -11,6 +12,7 @@ import com.example.expensesage.data.UserSettingsService
 import kotlinx.coroutines.flow.first
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.util.Random
 import java.util.concurrent.TimeUnit
 
 /**
@@ -56,13 +58,17 @@ import java.util.concurrent.TimeUnit
         val hour = currentDateTime.hour.toLong()
         val minute = currentDateTime.minute.toLong()
         val currentMinutes = hour * 60 + minute
-        val dayMinutes = 24 * 60
+        val dayMinutes = 1440L
         val repeatInterval: Long
         when (interval) {
             "Weekly" -> {
                 val weekday = date.dayOfWeek.value.toLong()
+                Log.i( "BudgetWorker", "weekday: $weekday")
+                Log.i( "BudgetWorker", "currentDate: $currentDateTime")
+                Log.i( "BudgetWorker", "hour: $hour")
+                Log.i( "BudgetWorker", "minute: $minute")
                 repeatInterval = if (weekday == 7L) {
-                    dayMinutes - currentMinutes + 7 * dayMinutes
+                    dayMinutes - currentMinutes
                 } else {
                     val day = 7L - weekday
                     dayMinutes - currentMinutes + day * dayMinutes
@@ -74,8 +80,7 @@ import java.util.concurrent.TimeUnit
                 val monthLength = date.lengthOfMonth().toLong()
 
                 repeatInterval = if (monthDay == monthLength) {
-                    val nextMonth = date.plusMonths(1L).lengthOfMonth().toLong()
-                    dayMinutes - currentMinutes + nextMonth * dayMinutes
+                    dayMinutes - currentMinutes
                 } else {
                     val days = monthLength - monthDay
                     dayMinutes - currentMinutes + days * dayMinutes
@@ -87,8 +92,7 @@ import java.util.concurrent.TimeUnit
                 val dayOfYear = date.dayOfYear.toLong()
                 val yearLength = date.lengthOfYear().toLong()
                 repeatInterval = if (yearLength - dayOfYear == 0L) {
-                    val nextYear = date.plusYears(1).lengthOfYear().toLong()
-                    dayMinutes - currentMinutes + nextYear * dayMinutes
+                    dayMinutes - currentMinutes
                 } else {
                     val days = yearLength - dayOfYear
                     dayMinutes - currentMinutes + days * dayMinutes
@@ -99,9 +103,14 @@ import java.util.concurrent.TimeUnit
             else -> repeatInterval = (7L * 24 * 60)
         }
 
+        Log.i("BudgetWorker", "currentMinutes: $currentMinutes")
+        Log.i("BudgetWorker", "interval: $interval")
+        Log.i("BudgetWorker", "repeatInterval: $repeatInterval")
         return PeriodicWorkRequestBuilder<BudgetWorker>(
             repeatInterval = repeatInterval,
-            repeatIntervalTimeUnit = TimeUnit.MINUTES
+            repeatIntervalTimeUnit = TimeUnit.MINUTES,
+            flexTimeInterval = 5L,
+            flexTimeIntervalUnit = TimeUnit.MINUTES
         ).build()
     }
 
@@ -113,7 +122,9 @@ import java.util.concurrent.TimeUnit
     private fun createOwedReminderWorker(): PeriodicWorkRequest {
         return PeriodicWorkRequestBuilder<OwedReminderWorker>(
             repeatInterval = 3L,
-            repeatIntervalTimeUnit = TimeUnit.DAYS
+            repeatIntervalTimeUnit = TimeUnit.DAYS,
+            flexTimeInterval = 5L,
+            flexTimeIntervalUnit = TimeUnit.MINUTES
         ).setConstraints(
             Constraints.Builder()
                 .setRequiresBatteryNotLow(true)
@@ -148,12 +159,12 @@ import java.util.concurrent.TimeUnit
      */
     suspend fun changeInterval(ctx: Context, userSettings: UserSettingsService) {
         val workManager = WorkManager.getInstance(ctx)
-        workManager.cancelUniqueWork("BudgetUpdateWorker")
+
+        workManager.cancelUniqueWork("BudgetWorker")
 
         val workRequest = createBudgetWorker(userSettings.budgetFrequency.first())
 
-        WorkManager.getInstance(ctx)
-            .enqueueUniquePeriodicWork("BudgetWorker", ExistingPeriodicWorkPolicy.KEEP, workRequest)
+        workManager.enqueueUniquePeriodicWork("BudgetWorker", ExistingPeriodicWorkPolicy.KEEP, workRequest)
     }
 
 

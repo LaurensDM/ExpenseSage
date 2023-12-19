@@ -6,10 +6,13 @@ import com.example.expensesage.data.AppDataContainer
 import com.example.expensesage.data.DataStoreSingleton
 import com.example.expensesage.data.UserSettings
 import com.example.expensesage.data.UserSettingsService
+//import com.example.expensesage.workers.Interval
 import com.example.expensesage.workers.executeWorkers
+//import com.example.expensesage.workers.scheduleBudgetUpdate
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 /**
@@ -30,12 +33,12 @@ class ExpenseSageApplication : Application() {
         appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
         userSettings = UserSettings(DataStoreSingleton.getInstance(context = this))
         container = AppDataContainer(this, appScope)
-        appScope.launch{
-            executeWorkers(
-                this@ExpenseSageApplication,
-                UserSettings(DataStoreSingleton.getInstance(this@ExpenseSageApplication))
-            )
+        appScope.launch(Dispatchers.IO) {
+            if (userSettings.firstTime.first()) {
+                executeWorkers(this@ExpenseSageApplication, userSettings)
+                userSettings.saveFirstTime(false)
+//                scheduleBudgetUpdate(this@ExpenseSageApplication, Interval.WEEKLY)
+            }
         }
-
     }
 }
