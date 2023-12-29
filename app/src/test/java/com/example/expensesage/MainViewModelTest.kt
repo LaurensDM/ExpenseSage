@@ -41,7 +41,7 @@ class MainViewModelTest {
     @Test
     fun `showAlert sets isAlertShown to true`() {
         assert(!viewModel.isAlertShown)
-        viewModel.showAlert({}, "", {})
+        viewModel.showAlert({}, 0,"", {})
         assert(viewModel.isAlertShown)
     }
 
@@ -52,16 +52,19 @@ class MainViewModelTest {
             exampleVariable += 1
         }
         assert(viewModel.alertOnConfirm != onConfirm)
-        viewModel.showAlert(onConfirm, "", {})
+        viewModel.showAlert(onConfirm, 0,"", {})
         assert(viewModel.alertOnConfirm == onConfirm)
     }
 
     @Test
     fun `showAlert sets alertTitle to title`() {
-        val title = "title"
-        assert(viewModel.alertText != title)
-        viewModel.showAlert({}, title, {})
+        val title = 3
+        val subject = "subject"
+        assert(viewModel.alertText != 3)
+        assert(viewModel.alertTextSubject != "subject")
+        viewModel.showAlert({}, title, subject, {})
         assert(viewModel.alertText == title)
+        assert(viewModel.alertTextSubject == subject)
     }
 
     @Test
@@ -71,7 +74,7 @@ class MainViewModelTest {
             exampleVariable -= 1
         }
         assert(viewModel.alertOnCancel != onCancel)
-        viewModel.showAlert({}, "", onCancel)
+        viewModel.showAlert({}, 0,"", onCancel)
         assert(viewModel.alertOnCancel == onCancel)
     }
 
@@ -79,7 +82,7 @@ class MainViewModelTest {
     fun `onDismiss sets dialog and alert to false`() {
         viewModel.showModal(modalType = ModalType.CREATE)
         assert(viewModel.isDialogShown)
-        viewModel.showAlert({}, "", {})
+        viewModel.showAlert({}, 0,"", {})
         assert(viewModel.isAlertShown)
         viewModel.onDialogDismiss()
         assert(!viewModel.isDialogShown)

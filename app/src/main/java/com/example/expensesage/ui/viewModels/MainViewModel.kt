@@ -86,6 +86,7 @@ class MainViewModel : ViewModel() {
         alertOnConfirm = onConfirm
         isAlertShown = true
         alertText = text
+        alertTextSubject = subject
         alertOnCancel = onCancel
     }
 
@@ -114,5 +115,6 @@ class MainViewModel : ViewModel() {
 }
 
 enum class SnackBarType {
-    SUCCESS, ERROR
+    SUCCESS,
+//    ERROR
 }
